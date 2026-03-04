@@ -1,0 +1,3379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIDIZ Digital Catalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sidiz-navy: #0D3BFF;
+            --sidiz-blue: #0026cc;
+            --sidiz-accent: #4d6fff;
+            --sidiz-light: #e6ebff;
+            --sidiz-dark: #001499;
+            --warm-gray: #f4f5fb;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --card-shadow: 0 4px 24px rgba(13, 59, 255, 0.08);
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --card-shadow: 0 4px 24px rgba(10, 30, 61, 0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans KR', 'Outfit', sans-serif;
+            background: var(--warm-gray);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-logo {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: var(--sidiz-dark);
+            letter-spacing: -0.5px;
+        }
+        .header-logo span { color: var(--sidiz-blue); }
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+        .hamburger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--sidiz-navy);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+        .header-nav {
+            display: flex;
+            gap: 4px;
+        }
+        .header-nav a {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .header-nav a:hover { background: var(--sidiz-light); color: var(--sidiz-blue); }
+        .header-nav a.active { background: var(--sidiz-navy); color: white; }
+
+        /* ── LAYOUT ── */
+        .page-wrapper {
+            padding-top: 64px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            position: relative;
+            background: linear-gradient(135deg, #0026cc 0%, #0D3BFF 50%, #3355ff 100%);
+            padding: 80px 40px 60px;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to top, var(--warm-gray), transparent);
+        }
+        .hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+        .hero p {
+            font-size: 1.05rem;
+            color: rgba(255,255,255,0.65);
+            max-width: 520px;
+            line-height: 1.7;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(59,130,246,0.2);
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93bbfc;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── SECTIONS ── */
+        .section {
+            display: none;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 40px 80px;
+            animation: fadeUp 0.5s ease;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--sidiz-blue);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        .section-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            margin-bottom: 36px;
+            max-width: 600px;
+        }
+
+        /* ── PRODUCT CARDS ── */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(10,30,61,0.12);
+        }
+        .product-card-img {
+            height: 220px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            background-color: #eef2f7;
+        }
+        .product-card-img .badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--sidiz-navy);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+        .product-card-body {
+            padding: 24px;
+        }
+        .product-card-body h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--sidiz-dark);
+        }
+        .product-card-body .subtitle {
+            font-size: 0.85rem;
+            color: var(--sidiz-blue);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .product-card-body p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .product-card-body .price {
+            margin-top: 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .product-card-body .price span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        /* ── PRODUCT DETAIL ── */
+        .detail-hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 48px;
+            align-items: center;
+        }
+        .detail-img {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 24px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-color: white;
+            box-shadow: var(--card-shadow);
+        }
+        .detail-info .name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--sidiz-dark);
+            letter-spacing: -0.5px;
+        }
+        .detail-info .tagline {
+            color: var(--sidiz-blue);
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 8px 0 20px;
+        }
+        .detail-info .desc {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.92rem;
+            margin-bottom: 24px;
+        }
+        .detail-info .price-tag {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+        .detail-info .price-tag small {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        .feature-item {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid #eee;
+            transition: var(--transition);
+        }
+        .feature-item:hover { border-color: var(--sidiz-accent); }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--sidiz-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        .feature-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .feature-item p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .rec-tag {
+            display: inline-block;
+            background: var(--sidiz-light);
+            color: var(--sidiz-blue);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .cta-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            background: var(--sidiz-navy);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: var(--sidiz-blue); }
+        .btn-secondary {
+            background: white;
+            color: var(--sidiz-dark);
+            border: 1.5px solid #ddd;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover { border-color: var(--sidiz-blue); color: var(--sidiz-blue); }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 28px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--sidiz-blue); }
+
+        /* ── COMPARE TABLE ── */
+        .compare-wrapper {
+            overflow-x: auto;
+            margin-top: 8px;
+            border-radius: 16px;
+            border: 1px solid #e8eaf0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .compare-table {
+            width: 100%;
+            min-width: 700px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .compare-table thead th {
+            background: #f7f8fc;
+            color: var(--sidiz-dark);
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 2px solid #e8eaf0;
+        }
+        .compare-table thead th:first-child {
+            border-radius: 16px 0 0 0;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .compare-table thead th:last-child {
+            border-radius: 0 16px 0 0;
+        }
+        .compare-table tbody td {
+            padding: 15px 20px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f3f4f8;
+            color: var(--text-primary);
+        }
+        .compare-table tbody tr:last-child td { border-bottom: none; }
+        .compare-table tbody tr:hover td { background: #fafbff; }
+        .compare-table tbody tr:hover td:first-child { background: #f3f4f8; }
+        .compare-table tbody td:first-child {
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: #f7f8fc;
+            white-space: nowrap;
+            font-size: 0.8rem;
+            border-right: 1px solid #e8eaf0;
+        }
+        .compare-table .highlight-col {
+            background: #f0f3ff !important;
+            border-left: 2px solid var(--sidiz-navy) !important;
+        }
+        .compare-table thead .highlight-col {
+            background: var(--sidiz-navy) !important;
+            color: white !important;
+        }
+        .check { color: var(--sidiz-navy); font-weight: 700; font-size: 1rem; }
+        .dash { color: #d1d5db; font-size: 1rem; }
+
+        /* ── RECOMMENDATION QUIZ ── */
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            padding: 48px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .quiz-progress {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 36px;
+        }
+        .quiz-dot {
+            width: 32px;
+            height: 4px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            transition: var(--transition);
+        }
+        .quiz-dot.active { background: var(--sidiz-blue); }
+        .quiz-dot.done { background: var(--sidiz-navy); }
+        .quiz-question {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 32px;
+            line-height: 1.4;
+        }
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .quiz-option {
+            background: var(--warm-gray);
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 20px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+        .quiz-option:hover { border-color: var(--sidiz-accent); background: var(--sidiz-light); }
+        .quiz-option.selected { border-color: var(--sidiz-blue); background: var(--sidiz-light); }
+        .quiz-option .icon { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+        .quiz-option .label { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+
+        .quiz-result {
+            display: none;
+            text-align: center;
+        }
+        .quiz-result h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 8px;
+        }
+        .quiz-result .result-subtitle {
+            color: var(--sidiz-blue);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .quiz-result p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.92rem;
+        }
+
+        /* ── PROCESS STEPS ── */
+        .steps-timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        .steps-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #0D3BFF, #4d6fff);
+            border-radius: 2px;
+        }
+        .step-item {
+            position: relative;
+            margin-bottom: 36px;
+            animation: fadeUp 0.5s ease;
+        }
+        .step-item:last-child { margin-bottom: 0; }
+        .step-num {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--sidiz-blue);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: var(--card-shadow);
+        }
+        .step-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 8px;
+        }
+        .step-card p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .step-card .tip {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fef9e7;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #92700c;
+            font-weight: 500;
+        }
+
+        /* ── 알림톡 뱃지 & 미리보기 ── */
+        .kakao-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #FEE500;
+            color: #3C1E1E;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+        .kakao-preview {
+            margin-top: 12px;
+            background: #FFFDE7;
+            border: 1px solid #EDD900;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .kakao-preview-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 14px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #5a4200;
+            user-select: none;
+        }
+        .kakao-preview-toggle .arrow {
+            font-size: 0.7rem;
+            transition: transform 0.25s ease;
+        }
+        .kakao-preview-toggle.open .arrow { transform: rotate(180deg); }
+        .kakao-preview-body {
+            display: none;
+            padding: 10px 14px 14px;
+            font-size: 0.78rem;
+            color: #3C1E1E;
+            line-height: 1.75;
+            white-space: pre-line;
+            border-top: 1px solid #EDD900;
+        }
+        .kakao-preview-body.open { display: block; }
+
+        /* ── CARE SECTION ── */
+        .care-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .care-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+        }
+        .care-card .care-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--sidiz-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+        .care-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 10px;
+        }
+        .care-card p, .care-card li {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .care-card ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+        .care-card ul li { margin-bottom: 6px; }
+
+        /* ── FOOTER CTA ── */
+        .footer-cta {
+            background: linear-gradient(135deg, #0026cc, #3355ff);
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            margin-top: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+        .footer-cta::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .footer-cta h2 {
+            font-family: 'Outfit', sans-serif;
+            color: white;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        .footer-cta p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+            position: relative;
+        }
+        .footer-cta .cta-row { justify-content: center; position: relative; }
+        .footer-cta .btn-primary { background: white; color: var(--sidiz-dark); }
+        .footer-cta .btn-primary:hover { background: var(--sidiz-light); }
+        .footer-cta .btn-secondary { border-color: rgba(255,255,255,0.3); color: white; background: transparent; }
+        .footer-cta .btn-secondary:hover { border-color: white; }
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+            /* 헤더 */
+            header { padding: 0 20px; }
+            .hamburger { display: flex; }
+            .header-nav {
+                display: none;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 12px;
+                border-bottom: 1px solid #eee;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+                gap: 2px;
+            }
+            .header-nav.open { display: flex; }
+            /* 네비 탭 — 터치 영역 충분히 */
+            .header-nav a {
+                padding: 16px 18px;
+                border-radius: 10px;
+                font-size: 1rem;
+                font-weight: 500;
+            }
+
+            /* 히어로 */
+            .hero { padding: 44px 20px 36px; }
+            .hero h1 { font-size: 1.75rem; letter-spacing: -0.5px; }
+            .hero p { font-size: 0.92rem; }
+
+            /* 섹션 */
+            .section { padding: 28px 16px 60px; }
+            .section-title { font-size: 1.5rem; }
+            .section-desc { font-size: 0.9rem; }
+
+            /* 제품 카드 */
+            .product-grid { grid-template-columns: 1fr; gap: 16px; }
+            .product-card-body { padding: 20px; }
+            .product-card-body h3 { font-size: 1.2rem; }
+            .product-card-body p { font-size: 0.9rem; }
+            .product-card-body .price { font-size: 1.2rem; }
+            .product-card-img { height: 200px; }
+
+            /* 상세 페이지 */
+            .detail-hero { grid-template-columns: 1fr; gap: 20px; }
+            .detail-img { aspect-ratio: 4/3; }
+            .detail-info .name { font-size: 1.6rem; }
+            .detail-info .desc { font-size: 0.9rem; }
+            .detail-info .price-tag { font-size: 1.5rem; }
+            .feature-grid { grid-template-columns: 1fr; gap: 12px; }
+
+            /* 비교 테이블 — 가로 스크롤 + 힌트 */
+            .compare-wrapper {
+                position: relative;
+                border-radius: 12px;
+                border: 1px solid #e8eaf0;
+            }
+            .compare-wrapper::after {
+                content: '← 좌우로 스크롤하세요 →';
+                display: block;
+                text-align: center;
+                font-size: 0.72rem;
+                color: var(--text-secondary);
+                padding: 8px 0 2px;
+            }
+            .compare-table thead th,
+            .compare-table tbody td {
+                padding: 12px 14px;
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
+            /* 퀴즈 */
+            .quiz-container { padding: 28px 16px; }
+            .quiz-options { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .quiz-option { padding: 16px 10px; }
+            .quiz-option .icon { font-size: 1.4rem; }
+            .quiz-option .label { font-size: 0.85rem; }
+            .quiz-question { font-size: 1.15rem; }
+
+            /* 구매 후 안내 — step 텍스트 크게 */
+            .steps-timeline { padding-left: 36px; }
+            .step-card { padding: 20px 20px; }
+            .step-card h3 {
+                font-size: 1.15rem;
+                margin-bottom: 10px;
+            }
+            .step-card p {
+                font-size: 1rem;
+                line-height: 1.75;
+            }
+            .step-card .tip {
+                font-size: 0.88rem;
+                line-height: 1.65;
+            }
+
+            /* 알림톡 미리보기 — 터치 영역 */
+            .kakao-preview-toggle {
+                padding: 13px 16px;
+                font-size: 0.85rem;
+            }
+            .kakao-preview-body {
+                font-size: 0.83rem;
+                padding: 12px 16px 16px;
+                line-height: 1.8;
+            }
+            .kakao-badge {
+                font-size: 0.76rem;
+                padding: 5px 12px;
+                margin-top: 14px;
+            }
+
+            /* 관리법 */
+            .care-grid { grid-template-columns: 1fr; gap: 14px; }
+            .care-card { padding: 22px; }
+            .care-card h3 { font-size: 1rem; }
+            .care-card p, .care-card li { font-size: 0.9rem; }
+
+            /* 하단 CTA */
+            .footer-cta { padding: 32px 18px; border-radius: 16px; margin-top: 36px; }
+            .footer-cta h2 { font-size: 1.25rem; }
+            .footer-cta p { font-size: 0.88rem; }
+            .cta-row { flex-direction: column; gap: 10px; margin-top: 20px; }
+            .btn-primary, .btn-secondary {
+                text-align: center;
+                justify-content: center;
+                padding: 16px 24px;
+                font-size: 0.95rem;
+                border-radius: 14px;
+            }
+
+            /* 뒤로가기 링크 */
+            .back-link { font-size: 0.9rem; padding: 4px 0; margin-bottom: 20px; }
+        }
+
+        /* ══════════════════════════════════
+           관리자 모드 스타일
+        ══════════════════════════════════ */
+
+        /* 비밀번호 모달 */
+        .admin-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,20,0.6);
+            backdrop-filter: blur(6px);
+            z-index: 9000;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-modal-overlay.open { display: flex; }
+        .admin-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 36px 32px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+            animation: fadeUp 0.3s ease;
+        }
+        .admin-modal h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 6px;
+        }
+        .admin-modal p { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 20px; }
+        .admin-pw-input {
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 6px;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 14px;
+        }
+        .admin-pw-input:focus { border-color: var(--sidiz-navy); }
+        .admin-pw-input.error { border-color: #ef4444; animation: shake 0.3s ease; }
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .admin-modal-btn {
+            width: 100%;
+            background: var(--sidiz-navy);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background 0.2s;
+        }
+        .admin-modal-btn:hover { background: var(--sidiz-blue); }
+        .admin-modal-cancel {
+            background: none;
+            border: none;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+        }
+        .admin-error-msg {
+            font-size: 0.78rem;
+            color: #ef4444;
+            margin-bottom: 10px;
+            min-height: 18px;
+        }
+
+        /* 관리자 모드 배너 */
+        .admin-bar {
+            display: none;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            z-index: 500;
+            background: var(--sidiz-navy);
+            color: white;
+            padding: 10px 24px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .admin-bar.open { display: flex; }
+        .admin-bar-left { display: flex; align-items: center; gap: 8px; }
+        .admin-bar-dot {
+            width: 8px; height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+        .admin-bar-right { display: flex; gap: 8px; }
+        .admin-bar-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .admin-bar-btn:hover { background: rgba(255,255,255,0.25); }
+        .admin-bar-btn.danger { background: rgba(239,68,68,0.3); border-color: rgba(239,68,68,0.5); }
+        .admin-bar-btn.danger:hover { background: rgba(239,68,68,0.5); }
+
+        /* 관리자 모드일 때 page-wrapper 내려가기 */
+        body.admin-mode .page-wrapper { padding-top: calc(64px + 44px); }
+
+        /* 편집 가능 요소 스타일 */
+        body.admin-mode [data-editable] {
+            position: relative;
+            cursor: text;
+            border-radius: 4px;
+            transition: outline 0.15s, background 0.15s;
+            outline: 2px dashed transparent;
+        }
+        body.admin-mode [data-editable]:hover {
+            outline: 2px dashed var(--sidiz-navy);
+            background: rgba(13,59,255,0.04);
+        }
+        body.admin-mode [data-editable]:focus {
+            outline: 2px solid var(--sidiz-navy);
+            background: rgba(13,59,255,0.06);
+        }
+        body.admin-mode [data-editable]::after {
+            content: '✏️';
+            position: absolute;
+            top: -10px;
+            right: -4px;
+            font-size: 0.7rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+        }
+        body.admin-mode [data-editable]:hover::after { opacity: 1; }
+
+        /* 제품 카드 편집 버튼 */
+        body.admin-mode .product-card { position: relative; }
+        .card-edit-btn {
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--sidiz-navy);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            gap: 4px;
+            align-items: center;
+        }
+        body.admin-mode .card-edit-btn { display: flex; }
+
+        /* 제품 카드 편집 패널 */
+        .card-edit-panel {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 8000;
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            width: min(480px, 92vw);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+            animation: fadeUp 0.25s ease;
+        }
+        .card-edit-panel.open { display: block; }
+        .edit-panel-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,20,0.45);
+            z-index: 7999;
+            backdrop-filter: blur(3px);
+        }
+        .edit-panel-overlay.open { display: block; }
+        .card-edit-panel h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .panel-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: 2px 6px;
+        }
+        .edit-field { margin-bottom: 16px; }
+        .edit-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+        }
+        .edit-field input,
+        .edit-field textarea {
+            width: 100%;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s;
+            resize: vertical;
+        }
+        .edit-field input:focus,
+        .edit-field textarea:focus { border-color: var(--sidiz-navy); }
+        .edit-field textarea { min-height: 80px; }
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .panel-save {
+            flex: 1;
+            background: var(--sidiz-navy);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .panel-cancel {
+            background: #f3f4f6;
+            color: var(--text-primary);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 이미지 업로드 영역 */
+        .img-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+            position: relative;
+        }
+        .img-upload-area:hover { border-color: var(--sidiz-navy); background: var(--sidiz-light); }
+        .img-upload-area.drag-over { border-color: var(--sidiz-navy); background: var(--sidiz-light); transform: scale(1.01); }
+        .img-preview-thumb {
+            width: 100%;
+            height: 130px;
+            border-radius: 8px;
+            object-fit: cover;
+            display: none;
+            margin-bottom: 10px;
+        }
+        .img-preview-thumb.visible { display: block; }
+        .img-upload-placeholder { color: var(--text-secondary); }
+        .img-upload-placeholder .upload-icon { font-size: 1.8rem; margin-bottom: 6px; }
+        .img-upload-placeholder p { font-size: 0.8rem; line-height: 1.5; }
+        .img-upload-placeholder span { color: var(--sidiz-navy); font-weight: 600; }
+        .img-upload-input { display: none; }
+        .img-url-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .img-url-input {
+            flex: 1;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.78rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .img-url-input:focus { border-color: var(--sidiz-navy); }
+        .img-url-btn {
+            background: var(--sidiz-light);
+            color: var(--sidiz-dark);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .img-url-btn:hover { background: var(--sidiz-navy); color: white; }
+        .img-reset-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: #ef4444;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 6px;
+            text-decoration: underline;
+        }
+        .img-reset-btn.visible { display: block; }
+
+        /* 저장 완료 토스트 */
+        .save-toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 9999;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+        .save-toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* 초기화 확인 모달 */
+        .reset-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9500;
+            background: rgba(0,0,20,0.6);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+        .reset-modal.open { display: flex; }
+        .reset-modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 28px;
+            width: min(340px, 90vw);
+            text-align: center;
+        }
+        .reset-modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+        .reset-modal-box p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        .reset-modal-actions { display: flex; gap: 10px; }
+        .reset-confirm-btn {
+            flex: 1;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .reset-cancel-btn {
+            flex: 1;
+            background: #f3f4f6;
+            color: var(--text-primary);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ── 올바른 의자 사용법 ── */
+        .posture-steps {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border: 1px solid #e8eaf0;
+            box-shadow: var(--card-shadow);
+        }
+        .posture-step-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 20px;
+        }
+        .posture-step-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .posture-step-card {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            padding: 16px 18px;
+            background: var(--warm-gray);
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .posture-step-card:hover { background: var(--sidiz-light); }
+        .ps-num {
+            width: 32px;
+            height: 32px;
+            background: var(--sidiz-navy);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .ps-body { flex: 1; }
+        .ps-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 5px;
+        }
+        .ps-desc {
+            font-size: 0.87rem;
+            color: var(--text-primary);
+            line-height: 1.65;
+            margin-bottom: 6px;
+        }
+        .ps-tip {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            background: white;
+            border-left: 3px solid var(--sidiz-accent);
+            padding: 5px 10px;
+            border-radius: 0 6px 6px 0;
+        }
+
+        /* 인체공학 카드 그리드 */
+        .ergo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .ergo-card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            border: 1px solid #e8eaf0;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+        .ergo-card:hover { transform: translateY(-2px); }
+        .ergo-icon { font-size: 1.8rem; margin-bottom: 12px; }
+        .ergo-card h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 8px;
+        }
+        .ergo-card p {
+            font-size: 0.83rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        /* 나쁜 자세 섹션 */
+        .bad-posture-section {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border: 1px solid #e8eaf0;
+            box-shadow: var(--card-shadow);
+        }
+        .bad-posture-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 18px;
+        }
+        .bad-posture-list { display: flex; flex-direction: column; gap: 12px; }
+        .bad-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 16px;
+            background: #fff8f6;
+            border-radius: 12px;
+            border-left: 3px solid #f97316;
+        }
+        .bad-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+        .bad-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .bad-effect {
+            font-size: 0.81rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .ergo-grid { grid-template-columns: 1fr; gap: 12px; }
+            .posture-step-card { flex-direction: row; }
+            .ergo-card { padding: 18px; }
+            .bad-posture-section, .posture-steps { padding: 20px 18px; }
+        }
+
+        /* ── 배송 유형 카드 ── */
+        .delivery-type-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 36px;
+        }
+        .delivery-type-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: white;
+            border: 1.5px solid var(--sidiz-light);
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: var(--card-shadow);
+        }
+        .dt-icon { font-size: 2rem; flex-shrink: 0; }
+        .dt-label {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            margin-bottom: 4px;
+        }
+        .dt-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* step 시점 표시 */
+        .step-meta {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--sidiz-navy);
+            background: var(--sidiz-light);
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .delivery-type-cards { grid-template-columns: 1fr; gap: 10px; }
+            .delivery-type-card { padding: 16px 18px; }
+            .dt-icon { font-size: 1.6rem; }
+        }
+
+        /* ── 로고 눌림 피드백 ── */
+        .header-logo { cursor: pointer; user-select: none; }
+        .header-logo.pressing { opacity: 0.5; transition: opacity 0.1s; }
+
+        /* ── 제품 선택 칩 (비교) ── */
+        .compare-picker {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .chip-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .chip-group-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #bbb;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            width: 60px;
+            flex-shrink: 0;
+        }
+        .chip-group-divider {
+            width: 100%;
+            height: 1px;
+            background: #f0f0f5;
+            margin: 2px 0;
+        }
+        .compare-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+        .compare-chip:hover { border-color: var(--sidiz-accent); color: var(--sidiz-dark); }
+        .compare-chip.selected {
+            border-color: var(--sidiz-navy);
+            background: var(--sidiz-navy);
+            color: white;
+        }
+        .compare-chip .chip-check {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.65rem;
+            flex-shrink: 0;
+            transition: all 0.15s;
+        }
+        .compare-chip.selected .chip-check { background: white; border-color: white; color: var(--sidiz-navy); }
+        .compare-hint {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            text-align: center;
+            padding: 12px;
+            background: var(--sidiz-light);
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .compare-chip { padding: 9px 14px; font-size: 0.82rem; }
+        }
+
+        /* ── 가격 비교 바 차트 ── */
+        .price-chart {
+            background: white;
+            border-radius: 16px;
+            padding: 22px 24px 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e8eaf0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .price-chart-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .price-chart-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+        }
+        .price-chart-sub {
+            font-size: 0.74rem;
+            color: var(--text-secondary);
+        }
+
+        /* 가격 범위 바 차트 */
+        .price-range-chart {
+            position: relative;
+            padding-bottom: 28px; /* 축 공간 */
+        }
+        .price-range-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            position: relative;
+        }
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            height: 36px;
+        }
+        .price-row-label {
+            width: 62px;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            text-align: right;
+        }
+        .price-row-track {
+            flex: 1;
+            position: relative;
+            height: 100%;
+        }
+        /* 배경 격자선 */
+        .price-row-track::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0,
+                transparent calc(var(--tick-w) - 1px),
+                #eef0f6 calc(var(--tick-w) - 1px),
+                #eef0f6 var(--tick-w)
+            );
+            pointer-events: none;
+        }
+        .price-range-bar {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 22px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--sidiz-navy), var(--sidiz-accent));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            box-shadow: 0 2px 8px rgba(13,59,255,0.2);
+            transition: all 0.5s cubic-bezier(0.34,1.1,0.64,1);
+            min-width: 2px;
+        }
+        .price-range-bar .bar-min,
+        .price-range-bar .bar-max {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+        /* 바가 좁을 때 레이블 숨기기 */
+        .price-range-bar.narrow .bar-min,
+        .price-range-bar.narrow .bar-max { display: none; }
+        .price-range-bar.narrow::after {
+            content: attr(data-label);
+            position: absolute;
+            left: calc(100% + 6px);
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--sidiz-dark);
+            white-space: nowrap;
+        }
+        /* X축 눈금 */
+        .price-axis {
+            position: absolute;
+            bottom: 0;
+            left: 74px; /* label 너비 + gap */
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        .price-axis-tick {
+            font-size: 0.62rem;
+            color: #aaa;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .price-axis-tick:first-child { transform: translateX(0); }
+        .price-axis-tick:last-child  { transform: translateX(-100%); }
+
+        @media (max-width: 768px) {
+            .price-row-label { width: 48px; font-size: 0.72rem; }
+            .price-axis { left: 60px; }
+            .price-range-bar .bar-min,
+            .price-range-bar .bar-max { font-size: 0.58rem; }
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <meta name="theme-color" content="#0D3BFF">
+
+</head>
+<body>
+
+<!-- ══ 관리자 비밀번호 모달 ══ -->
+<div class="admin-modal-overlay" id="adminModalOverlay">
+    <div class="admin-modal">
+        <div style="font-size:2rem; margin-bottom:12px;">🔒</div>
+        <h3>관리자 모드</h3>
+        <p>비밀번호를 입력해 주세요</p>
+        <input class="admin-pw-input" type="password" id="adminPwInput" maxlength="6" placeholder="••••"
+            onkeydown="if(event.key==='Enter') checkAdminPw()">
+        <div class="admin-error-msg" id="adminErrorMsg"></div>
+        <button class="admin-modal-btn" onclick="checkAdminPw()">확인</button>
+        <button class="admin-modal-cancel" onclick="closeAdminModal()">취소</button>
+    </div>
+</div>
+
+<!-- ══ 관리자 상단 바 ══ -->
+<div class="admin-bar" id="adminBar">
+    <div class="admin-bar-left">
+        <div class="admin-bar-dot"></div>
+        <span>관리자 편집 모드 — 텍스트를 클릭해 바로 수정하세요</span>
+    </div>
+    <div class="admin-bar-right">
+        <button class="admin-bar-btn" onclick="saveAllEdits()">💾 저장</button>
+        <button class="admin-bar-btn danger" onclick="openResetModal()">↺ 초기화</button>
+        <button class="admin-bar-btn" onclick="exitAdminMode()">✕ 나가기</button>
+    </div>
+</div>
+
+<!-- ══ 편집 패널 오버레이 ══ -->
+<div class="edit-panel-overlay" id="editPanelOverlay" onclick="closeEditPanel()"></div>
+
+<!-- ══ 제품 카드 편집 패널 ══ -->
+<div class="card-edit-panel" id="cardEditPanel">
+    <h4>
+        <span id="editPanelTitle">제품 편집</span>
+        <button class="panel-close" onclick="closeEditPanel()">✕</button>
+    </h4>
+    <div class="edit-field">
+        <label>제품명</label>
+        <input type="text" id="ef-name" placeholder="예: T50 시리즈">
+    </div>
+    <div class="edit-field">
+        <label>태그라인 (부제)</label>
+        <input type="text" id="ef-tagline" placeholder="예: 국가대표 의자">
+    </div>
+    <div class="edit-field">
+        <label>카드 설명 (짧은 설명)</label>
+        <textarea id="ef-card-desc" rows="3" placeholder="제품 카드에 표시되는 짧은 설명"></textarea>
+    </div>
+    <div class="edit-field">
+        <label>상세 설명 (긴 설명)</label>
+        <textarea id="ef-desc" rows="4" placeholder="상세 페이지에 표시되는 긴 설명"></textarea>
+    </div>
+    <div class="edit-field">
+        <label>가격</label>
+        <input type="text" id="ef-price" placeholder="예: 449,000원~">
+    </div>
+    <div class="edit-field">
+        <label>뱃지 텍스트</label>
+        <input type="text" id="ef-badge" placeholder="예: BEST SELLER">
+    </div>
+    <div class="edit-field">
+        <label>제품 이미지</label>
+        <!-- 업로드 드롭존 -->
+        <div class="img-upload-area" id="imgDropZone"
+            onclick="document.getElementById('imgFileInput').click()"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event)">
+            <img class="img-preview-thumb" id="imgPreviewThumb" alt="미리보기">
+            <div class="img-upload-placeholder" id="imgUploadPlaceholder">
+                <div class="upload-icon">🖼️</div>
+                <p>클릭하거나 사진을 여기에 끌어다 놓으세요<br><span>JPG, PNG, WEBP 지원</span></p>
+            </div>
+        </div>
+        <button class="img-reset-btn" id="imgResetBtn" onclick="resetImage(event)">✕ 이미지 초기화</button>
+        <!-- URL 직접 입력 -->
+        <div class="img-url-row">
+            <input class="img-url-input" type="text" id="ef-img-url" placeholder="또는 이미지 URL 직접 입력">
+            <button class="img-url-btn" onclick="applyImgUrl()">적용</button>
+        </div>
+        <input class="img-upload-input" type="file" id="imgFileInput" accept="image/*" onchange="handleFileSelect(event)">
+    </div>
+    <div class="panel-actions">
+        <button class="panel-cancel" onclick="closeEditPanel()">취소</button>
+        <button class="panel-save" onclick="applyCardEdit()">✓ 적용</button>
+    </div>
+</div>
+
+<!-- ══ 저장 완료 토스트 ══ -->
+<div class="save-toast" id="saveToast">✅ 변경사항이 저장되었습니다</div>
+
+<!-- ══ 초기화 확인 모달 ══ -->
+<div class="reset-modal" id="resetModal">
+    <div class="reset-modal-box">
+        <h3>⚠️ 초기화 확인</h3>
+        <p>모든 편집 내용이 삭제되고<br>원래 내용으로 되돌아갑니다.<br>계속하시겠어요?</p>
+        <div class="reset-modal-actions">
+            <button class="reset-cancel-btn" onclick="closeResetModal()">취소</button>
+            <button class="reset-confirm-btn" onclick="confirmReset()">초기화</button>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header>
+    <div class="header-logo" id="adminTrigger"
+        onmousedown="startAdminPress()" onmouseup="cancelAdminPress()" onmouseleave="cancelAdminPress()"
+        ontouchstart="startAdminPress()" ontouchend="cancelAdminPress()">
+        SIDIZ <span>CATALOG</span>
+    </div>
+    <button class="hamburger" onclick="toggleMobileNav()" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+    </button>
+    <div class="header-nav" id="headerNav">
+        <a class="active" onclick="navigate('products', this)">제품 라인업</a>
+        <a onclick="navigate('compare', this)">모델 비교</a>
+        <a onclick="navigate('recommend', this)">나에게 맞는 의자</a>
+        <a onclick="navigate('posture', this)">올바른 사용법</a>
+        <a onclick="navigate('process', this)">구매 후 안내</a>
+        <a onclick="navigate('care', this)">관리법</a>
+    </div>
+</header>
+
+<div class="page-wrapper">
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+    <div class="hero-inner">
+        <div class="hero-badge" data-editable data-key="hero-badge" contenteditable="false">SITTING EXPERT'S CHOICE</div>
+        <h1 data-editable data-key="hero-h1" contenteditable="false">당신의 몸이 기억하는<br>올바른 앉음</h1>
+        <p data-editable data-key="hero-p" contenteditable="false">시디즈는 인체공학 연구를 기반으로, 오래 앉아도 편안한 의자를 설계합니다. 나에게 맞는 의자를 찾아보세요.</p>
+    </div>
+</div>
+
+<!-- ──────── PRODUCTS ──────── -->
+<div id="products" class="section active">
+    <div class="section-label">PRODUCT LINEUP</div>
+    <div class="section-title" data-editable data-key="sec-products-title" contenteditable="false">제품 라인업</div>
+    <div class="section-desc" data-editable data-key="sec-products-desc" contenteditable="false">시디즈의 대표 제품을 한눈에 만나보세요. 각 모델을 탭하면 상세 정보를 확인할 수 있습니다.</div>
+
+    <div class="product-grid" id="productGrid">
+        <!-- T50 -->
+        <div class="product-card" onclick="showDetail('t50')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('t50')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/T50_HLDA_black_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">BEST SELLER</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T50 시리즈</h3>
+                <div class="subtitle">국가대표 의자</div>
+                <p>10년 이상 사랑받아 온 시디즈의 시그니처. 검증된 인체공학 설계로 모든 체형에 맞는 편안함을 제공합니다.</p>
+                <div class="price">449,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- T60 -->
+        <div class="product-card" onclick="showDetail('t60')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('t60')">✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/T60_HLDA_gray_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">NEW</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T60</h3>
+                <div class="subtitle">퍼스널 피팅 시스템 체어</div>
+                <p>모든 체형에 맞춰 세밀하게 조절되는 인피니핏 헤드레스트 탑재. 홈라이크 디자인으로 집·사무실 어디서나 어울립니다.</p>
+                <div class="price">599,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- T90 -->
+        <div class="product-card" onclick="showDetail('t90')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('t90')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/T90_HLDA_black_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">NEW 플래그십</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T90 시리즈</h3>
+                <div class="subtitle">퍼포먼스 인체공학 체어</div>
+                <p>2025년 출시된 시디즈 최상위 모델. 4D 팔걸이·퍼펙트 피팅 럼버서포트·플렉서블 등판으로 체형에 정밀하게 대응합니다.</p>
+                <div class="price">1,290,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- T80 -->
+        <div class="product-card" onclick="showDetail('t80')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('t80')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/T80_HLDA_charcoal_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">PREMIUM</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T80 시리즈</h3>
+                <div class="subtitle">Ultimate Comfort</div>
+                <p>프리미엄 소재와 최상급 틸팅 메커니즘으로 완성한 시디즈의 프리미엄 모델입니다.</p>
+                <div class="price">899,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- GC PRO -->
+        <div class="product-card" onclick="showDetail('gcpro')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('gcpro')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/GC_PRO_black_01.jpg?v=1744697809&width=800'); background-color: #0d1117;">
+                <div class="badge">PRO GAMING</div>
+            </div>
+            <div class="product-card-body">
+                <h3>GC PRO</h3>
+                <div class="subtitle">프로 게이밍 체어</div>
+                <p>장시간 게임 플레이를 위해 설계된 프로 게이밍 의자. 쿨링시트·천연가죽 옵션으로 몰입 환경을 완성합니다.</p>
+                <div class="price">690,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- RINGO 2 -->
+        <div class="product-card" onclick="showDetail('ringo2')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('ringo2')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/RINGO_gen2_green_01.jpg?v=1744697809&width=800'); background-color: #f0faf0;">
+                <div class="badge">KIDS</div>
+            </div>
+            <div class="product-card-body">
+                <h3>RINGO 2</h3>
+                <div class="subtitle">어린이 성장 맞춤 의자</div>
+                <p>4단계 그로잉 기능으로 성장하는 아이 체형에 맞게 조절되는 키즈 학습 의자. 발받침 기본 포함.</p>
+                <div class="price">189,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- T20 -->
+        <div class="product-card" onclick="showDetail('t20')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('t20')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/T20_TABPLUS_black_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">입문 추천</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T20</h3>
+                <div class="subtitle">합리적인 인체공학</div>
+                <p>핵심 인체공학 기능을 합리적인 가격에 담았습니다. 처음 시디즈를 만나는 분들에게 추천합니다.</p>
+                <div class="price">279,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- GX 게이밍 -->
+        <div class="product-card" onclick="showDetail('gx')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('gx')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/GX_black_01.jpg?v=1744697809&width=800'); background-color: #0d1117;">
+                <div class="badge">GAMING</div>
+            </div>
+            <div class="product-card-body">
+                <h3>GX</h3>
+                <div class="subtitle">게이밍 퍼포먼스 체어</div>
+                <p>게이밍 디자인과 시디즈 인체공학의 만남. 쿨링시트와 조절형 팔걸이로 장시간 플레이를 지원합니다.</p>
+                <div class="price">393,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- LINIE -->
+        <div class="product-card" onclick="showDetail('linie')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('linie')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/LINIE_ivory_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">DESIGN</div>
+            </div>
+            <div class="product-card-body">
+                <h3>LINIE</h3>
+                <div class="subtitle">디자인 오피스 체어</div>
+                <p>미니멀한 디자인과 인체공학의 균형. 오피스 인테리어와 자연스럽게 어우러지는 의자입니다.</p>
+                <div class="price">599,000원~ <span>부터</span></div>
+            </div>
+        </div>
+        <!-- ible -->
+        <div class="product-card" onclick="showDetail('ible')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('ible')" >✏️ 편집</button>
+            <div class="product-card-img" style="background-image: url('https://kr.sidiz.com/cdn/shop/files/IBLE_gray_01.jpg?v=1744697809&width=800'); background-color: #eef2f7;">
+                <div class="badge">STUDY</div>
+            </div>
+            <div class="product-card-body">
+                <h3>IBLE</h3>
+                
+                <p>집중력을 높이는 최적의 자세를 만들어 줍니다.</p>
+                <div class="price">349,000원~ <span>부터</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ──────── PRODUCT DETAILS (Hidden by default) ──────── -->
+<div id="detail" class="section">
+    <a class="back-link" onclick="navigate('products', document.querySelector('.header-nav a:first-child'))">← 제품 목록으로 돌아가기</a>
+    <div class="detail-hero" id="detailContent">
+        <!-- Filled by JS -->
+    </div>
+    <div id="detailFeatures"></div>
+    <div id="detailCTA"></div>
+</div>
+
+<!-- ──────── COMPARE ──────── -->
+<div id="compare" class="section">
+    <div class="section-label">COMPARISON</div>
+    <div class="section-title" data-editable data-key="sec-compare-title" contenteditable="false">모델 비교</div>
+    <div class="section-desc" data-editable data-key="sec-compare-desc" contenteditable="false">어떤 의자가 나에게 맞을지 한눈에 비교해 보세요.</div>
+
+    <!-- 제품 선택 칩 -->
+    <div class="compare-picker" id="comparePicker"></div>
+    <div class="compare-hint" id="compareHint">2개 이상 선택하면 비교 테이블이 나타납니다</div>
+
+    <!-- 가격 범위 바 차트 -->
+    <div class="price-chart" id="priceChart" style="display:none;">
+        <div class="price-chart-header">
+            <span class="price-chart-title">💰 가격 범위 비교</span>
+            <span class="price-chart-sub">옵션에 따른 실제 가격 범위 &nbsp;·&nbsp; <b>단위: 만 원</b></span>
+        </div>
+        <div class="price-range-chart">
+            <div class="price-range-bars" id="priceRangeBars"></div>
+            <div class="price-axis" id="priceAxis"></div>
+        </div>
+    </div>
+
+    <!-- 동적 비교 테이블 -->
+    <div class="compare-wrapper" id="compareWrapper" style="display:none;">
+        <table class="compare-table" id="compareTable"></table>
+    </div>
+
+    <div class="footer-cta">
+        <h2 data-editable data-key="cta-compare-h2" contenteditable="false">어떤 모델이 좋을지 고민되시나요?</h2>
+        <p data-editable data-key="cta-compare-p" contenteditable="false">간단한 질문 3개로 나에게 맞는 의자를 추천받아 보세요.</p>
+        <div class="cta-row">
+            <a class="btn-primary" onclick="navigate('recommend', document.querySelectorAll('.header-nav a')[2])">나에게 맞는 의자 찾기 →</a>
+        </div>
+    </div>
+</div>
+
+<!-- ──────── RECOMMEND ──────── -->
+<div id="recommend" class="section">
+    <div class="section-label">RECOMMENDATION</div>
+    <div class="section-title" data-editable data-key="sec-recommend-title" contenteditable="false">나에게 맞는 의자 찾기</div>
+    <div class="section-desc" data-editable data-key="sec-recommend-desc" contenteditable="false">3가지 질문에 답하면, 가장 잘 맞는 시디즈 의자를 추천해 드립니다.</div>
+
+    <div class="quiz-container" id="quizContainer">
+        <div class="quiz-progress" id="quizProgress">
+            <div class="quiz-dot active"></div>
+            <div class="quiz-dot"></div>
+            <div class="quiz-dot"></div>
+        </div>
+        <div id="quizBody">
+            <!-- Filled by JS -->
+        </div>
+        <div class="quiz-result" id="quizResult">
+            <!-- Filled by JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ──────── POSTURE ──────── -->
+<div id="posture" class="section">
+    <div class="section-label">ERGONOMICS</div>
+    <div class="section-title" data-editable data-key="sec-posture-title" contenteditable="false">올바른 의자 사용법</div>
+    <div class="section-desc" data-editable data-key="sec-posture-desc" contenteditable="false">좋은 의자도 잘못 사용하면 소용없습니다. 인체공학 원칙에 따른 올바른 세팅과 자세로 척추와 관절을 보호하세요.</div>
+
+        <!-- 핵심 세팅 6단계 -->
+    <div class="posture-steps">
+        <div class="posture-step-title" data-editable data-key="posture-steps-title" contenteditable="false">🪑 내 몸에 맞는 의자 세팅 6단계</div>
+        <div class="posture-step-grid">
+            <div class="posture-step-card">
+                <div class="ps-num">1</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step1-title" contenteditable="false">높이 조절 <span style="font-weight:600;opacity:.7;font-size:.85em;">(앉는 높이)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step1-desc" contenteditable="false">발바닥이 바닥에 완전히 닿고, 무릎이 <b>90~100°</b>가 되도록 조절하세요. 발이 뜨면 발받침을 사용하세요.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step1-tip" contenteditable="false">💡 허벅지와 바닥이 평행하거나 살짝 앞으로 기울어지면 이상적</div>
+                </div>
+            </div>
+
+            <div class="posture-step-card">
+                <div class="ps-num">2</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step2-title" contenteditable="false">허리 지지 &amp; 좌판 길이 <span style="font-weight:600;opacity:.7;font-size:.85em;">(럼버·좌판 깊이)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step2-desc" contenteditable="false"><b>허리 지지대(럼버서포트)</b>는 허리의 자연스러운 S자 곡선이 유지되도록 맞추세요. 동시에 등받이에 등을 붙였을 때, 무릎 뒤쪽과 좌판 끝 사이에 <b>손가락 2~3개</b> 공간이 남도록 <b>좌판 길이(깊이)</b>를 조절하세요.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step2-tip" contenteditable="false">💡 너무 깊으면 혈액순환 저하, 너무 얕으면 허리 지지가 약해질 수 있어요</div>
+                </div>
+            </div>
+
+            <div class="posture-step-card">
+                <div class="ps-num">3</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step3-title" contenteditable="false">등받이 각도 <span style="font-weight:600;opacity:.7;font-size:.85em;">(등판 기울기)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step3-desc" contenteditable="false">업무·학습 자세는 <b>95~105°</b> 정도로 가볍게 기대는 각도가 편안합니다. 통화·휴식 때는 각도를 더 열어 몸의 긴장을 풀어주세요.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step3-tip" contenteditable="false">💡 계속 90°로만 앉기보다, 상황에 맞게 각도를 바꿔주는 게 좋아요</div>
+                </div>
+            </div>
+
+            <div class="posture-step-card">
+                <div class="ps-num">4</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step4-title" contenteditable="false">기대기 강도 <span style="font-weight:600;opacity:.7;font-size:.85em;">(틸팅 강도)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step4-desc" contenteditable="false">등받이를 기댈 때 <b>너무 쉽게 툭 넘어가지도</b>, <b>너무 뻣뻣하지도</b> 않게 강도를 맞추세요. 내 체중으로 자연스럽게 지지되는 느낌이 이상적입니다.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step4-tip" contenteditable="false">💡 강도가 맞으면 기대도 허리가 뜨지 않고, 어깨에 힘이 덜 들어가요</div>
+                </div>
+            </div>
+
+            <div class="posture-step-card">
+                <div class="ps-num">5</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step5-title" contenteditable="false">팔받침 <span style="font-weight:600;opacity:.7;font-size:.85em;">(팔걸이)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step5-desc" contenteditable="false">팔꿈치를 자연스럽게 내려놓았을 때, 어깨가 <b>으쓱하지 않는 높이</b>로 조절하세요. 팔꿈치 각도는 <b>90~110°</b>가 이상적입니다.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step5-tip" contenteditable="false">💡 팔받침이 너무 높으면 어깨 결림, 없으면 손목 피로가 늘 수 있어요</div>
+                </div>
+            </div>
+
+            <div class="posture-step-card">
+                <div class="ps-num">6</div>
+                <div class="ps-body">
+                    <div class="ps-title" data-editable data-key="posture-step6-title" contenteditable="false">목받침 <span style="font-weight:600;opacity:.7;font-size:.85em;">(헤드레스트)</span></div>
+                    <div class="ps-desc" data-editable data-key="posture-step6-desc" contenteditable="false">뒤통수 중앙 또는 목 뒤가 헤드레스트에 <b>가볍게 닿는 높이</b>로 조절하세요. 억지로 기대기보다, 필요할 때 목을 받쳐주는 느낌이면 충분합니다.</div>
+                    <div class="ps-tip" data-editable data-key="posture-step6-tip" contenteditable="false">💡 고개를 앞으로 빼는 자세(거북목) 완화에 특히 도움이 돼요</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 인체공학 카드 -->
+    <div class="ergo-grid">
+        <div class="ergo-card">
+            <div class="ergo-icon">🖥️</div>
+            <h3 data-editable data-key="ergo1-h" contenteditable="false">모니터 거리와 높이</h3>
+            <p><span data-editable data-key="ergo1-p" contenteditable="false">모니터 상단이 눈높이와 같거나 살짝 낮게, 거리는 팔을 뻗었을 때 손끝이 닿는 <b>50~70cm</b>가 적당합니다.</span> 화면을 올려다보면 목 뒤 근육이 지속적으로 긴장됩니다.</p>
+        </div>
+        <div class="ergo-card">
+            <div class="ergo-icon">⌨️</div>
+            <h3 data-editable data-key="ergo2-h" contenteditable="false">키보드와 마우스</h3>
+            <p><span data-editable data-key="ergo2-p" contenteditable="false">팔꿈치 높이와 키보드가 같은 선상에 오도록 배치하세요.</span> 손목이 꺾이지 않고 <b>일직선</b>을 유지해야 손목 터널 증후군을 예방할 수 있습니다.</p>
+        </div>
+        <div class="ergo-card">
+            <div class="ergo-icon">⏱️</div>
+            <h3 data-editable data-key="ergo3-h" contenteditable="false">30분마다 자세 체크</h3>
+            <p><span data-editable data-key="ergo3-p" contenteditable="false">아무리 좋은 자세도 <b>한 시간 이상 유지</b>하면 근육이 피로해집니다.</span> 30분마다 일어나 30초 스트레칭을 하거나 자세를 바꿔주는 것이 척추 건강의 핵심입니다.</p>
+        </div>
+        <div class="ergo-card">
+            <div class="ergo-icon">⚖️</div>
+            <h3 data-editable data-key="ergo4-h" contenteditable="false">틸팅 기능 활용하기</h3>
+            <p><span data-editable data-key="ergo4-p" contenteditable="false">등받이를 <b>100~110°</b> 살짝 뒤로 기울이면 허리 디스크 압력이 직각(90°)보다 오히려 줄어듭니다.</span> 내내 꼿꼿이 앉는 것이 반드시 좋은 것은 아닙니다.</p>
+        </div>
+        <div class="ergo-card">
+            <div class="ergo-icon">🦵</div>
+            <h3 data-editable data-key="ergo5-h" contenteditable="false">다리 꼬지 않기</h3>
+            <p><span data-editable data-key="ergo5-p" contenteditable="false">다리를 꼬면 골반이 틀어져 척추 전체에 불균형한 하중이 걸립니다.</span> 두 발을 바닥에 나란히 놓고, 무릎 각도를 <b>90° 이상</b>으로 유지하세요.</p>
+        </div>
+        <div class="ergo-card">
+            <div class="ergo-icon">📱</div>
+            <h3 data-editable data-key="ergo6-h" contenteditable="false">스마트폰·태블릿 사용 시</h3>
+            <p><span data-editable data-key="ergo6-p" contenteditable="false">고개를 숙여 스마트폰을 보면 목에 최대 <b>27kg</b>의 하중이 가해집니다.</span> 가능하면 기기를 눈높이로 올리거나, 의자에 기대어 상체를 지지한 상태로 사용하세요.</p>
+        </div>
+    </div>
+
+    <!-- 자주 하는 나쁜 자세 -->
+    <div class="bad-posture-section">
+        <div class="bad-posture-title" data-editable data-key="badposture-title" contenteditable="false">⚠️ 자주 하는 나쁜 자세와 영향</div>
+        <div class="bad-posture-list">
+            <div class="bad-row">
+                <div class="bad-icon">😬</div>
+                <div class="bad-content">
+                    <div class="bad-name" data-editable data-key="bad1-name" contenteditable="false">거북목 (전방 두부 자세)</div>
+                    <div class="bad-effect" data-editable data-key="bad1-effect" contenteditable="false">고개가 1cm 앞으로 나올수록 목에 약 2~3kg의 추가 하중. 목 디스크·두통·어깨 결림의 주원인</div>
+                </div>
+            </div>
+            <div class="bad-row">
+                <div class="bad-icon">🪑</div>
+                <div class="bad-content">
+                    <div class="bad-name" data-editable data-key="bad2-name" contenteditable="false">골반 뒤로 빠진 자세 (슬럼프)</div>
+                    <div class="bad-effect" data-editable data-key="bad2-effect" contenteditable="false">요추 전만이 사라지고 등이 굽어 허리 디스크 압력 극대화. 장시간 지속 시 만성 요통으로 발전</div>
+                </div>
+            </div>
+            <div class="bad-row">
+                <div class="bad-icon">↗️</div>
+                <div class="bad-content">
+                    <div class="bad-name" data-editable data-key="bad3-name" contenteditable="false">한쪽으로 기울어진 자세</div>
+                    <div class="bad-effect" data-editable data-key="bad3-effect" contenteditable="false">골반과 척추의 좌우 불균형 유발. 척추측만증 악화 및 한쪽 고관절·어깨 과부하</div>
+                </div>
+            </div>
+            <div class="bad-row">
+                <div class="bad-icon">🙆</div>
+                <div class="bad-content">
+                    <div class="bad-name" data-editable data-key="bad4-name" contenteditable="false">팔꿈치 책상 위에 올린 자세</div>
+                    <div class="bad-effect" data-editable data-key="bad4-effect" contenteditable="false">어깨와 목 근육이 지속적으로 긴장 상태 유지. 승모근 경직·손목 신경 압박</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-cta">
+        <h2 data-editable data-key="cta-posture-h2" contenteditable="false">나에게 맞는 의자가 궁금하신가요?</h2>
+        <p data-editable data-key="cta-posture-p" contenteditable="false">3가지 질문으로 최적의 시디즈 의자를 추천받아 보세요.</p>
+        <div class="cta-row">
+            <a class="btn-primary" onclick="navigate('recommend', document.querySelectorAll('.header-nav a')[2])">나에게 맞는 의자 찾기 →</a>
+        </div>
+    </div>
+</div>
+
+<!-- ──────── PROCESS ──────── -->
+<div id="process" class="section">
+    <div class="section-label">DELIVERY PROCESS</div>
+    <div class="section-title" data-editable data-key="sec-process-title" contenteditable="false">배송 안내</div>
+    <div class="section-desc" data-editable data-key="sec-process-desc" contenteditable="false">시디즈 제품은 아래와 같은 프로세스로 배송됩니다. 구매 후 카카오 알림톡을 확인해 주세요. 카카오톡이 설치되지 않은 경우 문자로 발송됩니다.</div>
+
+    <!-- 배송 유형 안내 -->
+    <div class="delivery-type-cards">
+        <div class="delivery-type-card">
+            <div class="dt-icon">🚚</div>
+            <div class="dt-content">
+                <div class="dt-label" data-editable data-key="dt1-label" contenteditable="false">시공 배송</div>
+                <div class="dt-desc" data-editable data-key="dt1-desc" contenteditable="false">시공팀장님이 직접 방문해 조립·설치까지 완료해 드립니다</div>
+            </div>
+        </div>
+        <div class="delivery-type-card">
+            <div class="dt-icon">📦</div>
+            <div class="dt-content">
+                <div class="dt-label" data-editable data-key="dt2-label" contenteditable="false">택배 배송</div>
+                <div class="dt-desc" data-editable data-key="dt2-desc" contenteditable="false">DIY·택배 제품은 택배사를 통해 배송됩니다</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="steps-timeline">
+        <!-- STEP 1 -->
+        <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step1-h" contenteditable="false">구매 확인</h3>
+                <div class="step-meta" data-editable data-key="step1-meta" contenteditable="false">구매 당일 · 온라인 구매 고객만 발송</div>
+                <p data-editable data-key="step1-p" contenteditable="false">온라인으로 구매하시면 주문 정보와 배송 예정일을 알림톡으로 바로 안내드립니다. 배송 시간 지정은 불가하며, 배송 정보 변경은 배송 예정일 3일 전까지 챗봇을 통해 가능합니다.</p>
+                <div class="tip">💡 주문취소는 배송예정일 2일 전까지만 가능합니다 (주말·공휴일 제외)</div>
+                <div class="kakao-badge">💬 카카오 알림톡 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 구매 확인 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">OOO 고객님, 시디즈 제품을 구매해주셔서 감사합니다.
+
+■ 배송예정일: [       ]
+■ 배송지: [                    ]
+■ 제품명: [       ]
+■ 주문번호: [       ]
+■ 배송유형: [시공 / 택배]
+
+① 배송시간은 배송 전일 안내 예정입니다. 시간 지정은 불가합니다.
+② 배송정보 변경(배송일/주소 등)은 챗봇을 통해 배송예정일 3일 전까지 가능합니다.
+③ 주문취소는 배송예정일 2일 전까지 가능하며, 이후에는 반품배송비가 부과됩니다.
+④ 본인 또는 시공기사 조립·사용 후에는 반품이 불가합니다.
+⑤ 2개 이상 주문 시 송장번호가 각각 발행되어 별도 배송됩니다.
+⑥ 제주·도서산간 지역은 배송일이 1~2일 추가될 수 있습니다.
+
+궁금하신 사항은 시디즈 챗봇으로 문의 부탁드립니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step2-h" contenteditable="false">배송 사전 안내</h3>
+                <div class="step-meta" data-editable data-key="step2-meta" contenteditable="false">배송 3일 전</div>
+                <p data-editable data-key="step2-p" contenteditable="false">배송 예정일 3일 전, 배송 정보를 다시 한 번 확인하실 수 있도록 알림톡을 발송드립니다. 배송 정보 변경이 필요하시면 이 시점까지 컨택센터로 문의해 주세요.</p>
+                <div class="kakao-badge">💬 카카오 알림톡 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 배송 사전 안내 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">OOO 고객님, 구매하신 제품의 배송 정보를 확인해 주세요.
+
+■ 배송예정일: [       ]
+■ 배송지: [                    ]
+■ 제품명: [       ]
+
+· 배송정보 변경(배송일/주소 등)이 필요하신 경우 챗봇 또는 컨택센터로 문의해 주세요.
+· 제주도의 경우 배송일이 1~2일 추가될 수 있습니다.
+
+컨택센터 : 1577-5674
+평일 09:30~17:30 (주말·공휴일 제외)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step3-h" contenteditable="false">방문 일정 안내</h3>
+                <div class="step-meta" data-editable data-key="step3-meta" contenteditable="false">배송 전일 · 배송 당일 (2회 발송)</div>
+                <p data-editable data-key="step3-p" contenteditable="false">배송 전날과 당일, 방문 예정 시간을 안내드립니다. 교통 상황에 따라 시간이 변경될 수 있으니 참고해 주세요. 부재중일 경우 미리 방문팀에 알려주세요.</p>
+                <div class="tip">💡 시공이 완료되었거나 사용한 제품은 단순변심에 의한 반품이 불가합니다.</div>
+                <div class="kakao-badge">💬 카카오 알림톡 2회 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 방문 전일·당일 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">[ 배송 전일 ]
+OOO 고객님, 방문예정일을 안내드립니다.
+
+■ 방문예정일: [       ]
+■ 방문예정시간: [    ]~[    ]
+
+① 방문시간은 교통상황에 따라 변경될 수 있습니다.
+② 배송정보 변경 시 반품비가 부과될 수 있습니다.
+③ 직접배송 제품과 택배 제품 동시 주문 시 분리배송됩니다.
+
+컨택센터 : 1577-5674  평일 09:30~17:30
+
+─────────────────
+[ 배송 당일 ]
+OOO 고객님, 오늘 방문 예정입니다.
+
+■ 방문예정일: [       ]
+■ 방문예정시간: [    ]~[    ]
+
+부재중일 경우 미리 방문팀에게 알려주세요.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4 -->
+        <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step4-h" contenteditable="false">배송 완료 확인</h3>
+                <div class="step-meta" data-editable data-key="step4-meta" contenteditable="false">배송 당일</div>
+                <p data-editable data-key="step4-p" contenteditable="false">배송이 완료되면 조립된 제품 사진과 함께 만족도 조사 링크를 발송드립니다. 사진은 발송일로부터 7일간 확인 가능합니다.</p>
+                <div class="kakao-badge">💬 카카오 알림톡 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 배송 완료 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">주문하신 제품이 배송 완료되었습니다.
+
+아래 버튼을 누르면 조립된 제품 사진을 확인할 수 있습니다.
+사진은 발송일로부터 7일간 유효합니다.
+
+서비스 개선을 위해 간단한 만족도 조사를 진행하고 있습니다.
+소중한 의견을 들려주세요.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 5 -->
+        <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step5-h" contenteditable="false">정품 등록</h3>
+                <div class="step-meta" data-editable data-key="step5-meta" contenteditable="false">배송 다음 날</div>
+                <p data-editable data-key="step5-p" contenteditable="false">시디즈는 5년 또는 15년의 품질보증 정책을 운영합니다. 정품 등록 후 내 제품의 보증 기간을 확인해 보세요. 이지리페어·소모품은 정품 등록 대상이 아닙니다.</p>
+                <div class="kakao-badge">💬 카카오 알림톡 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 정품 등록 안내 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">OOO 고객님, 제품을 받아보셨다면 정품 등록을 해주세요.
+
+시디즈는 제품 품질을 더 오래 유지할 수 있도록
+5년 또는 15년의 품질보증정책을 시행하고 있습니다.
+
+정품 등록 후 보증기간을 확인하실 수 있습니다.
+
+· 이지리페어 및 소모품은 정품 등록 대상이 아닙니다.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 6 -->
+        <div class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-card">
+                <h3 data-editable data-key="step6-h" contenteditable="false">제품 사용 가이드</h3>
+                <div class="step-meta" data-editable data-key="step6-meta" contenteditable="false">배송 후 일주일</div>
+                <p data-editable data-key="step6-p" contenteditable="false">배송 후 일주일이 지나면 내 체형에 맞는 의자 조절 방법을 안내드립니다. 제품마다 기능이 상이할 수 있으니 가이드를 참고해 주세요.</p>
+                <div class="kakao-badge">💬 카카오 알림톡 발송</div>
+                <div class="kakao-preview">
+                    <div class="kakao-preview-toggle" onclick="toggleKakao(this)">
+                        📩 제품 가이드 알림톡 미리보기 <span class="arrow">▼</span>
+                    </div>
+                    <div class="kakao-preview-body">OOO 고객님, 지난 일주일 동안 의자 편하게 사용하셨나요?
+
+나의 체형에 맞게 의자를 조절해 보세요.
+편안하고 올바른 자세를 유지할 수 있도록 도와드립니다.
+
+아래 제품 가이드에서 조절 방법을 확인하세요.
+
+· 제품마다 기능이 상이할 수 있습니다.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-cta">
+        <h2 data-editable data-key="cta-process-h2" contenteditable="false">도움이 필요하신가요?</h2>
+        <p data-editable data-key="cta-process-p" contenteditable="false">시디즈 고객센터에서 친절하게 안내해 드립니다.</p>
+        <div class="cta-row">
+            <a class="btn-primary" href="tel:1577-5674">📞 1577-5674 전화하기</a>
+            <a class="btn-secondary" href="https://kr.sidiz.com/" target="_blank">🌐 홈페이지 방문</a>
+        </div>
+    </div>
+</div>
+
+<!-- ──────── CARE ──────── -->
+<div id="care" class="section">
+    <div class="section-label">MAINTENANCE</div>
+    <div class="section-title" data-editable data-key="sec-care-title" contenteditable="false">자가 점검 및 관리법</div>
+    <div class="section-desc" data-editable data-key="sec-care-desc" contenteditable="false">의자도 관리가 필요합니다. 간단한 점검으로 오래도록 새 의자처럼 사용하세요.</div>
+
+    <div class="care-grid">
+        <div class="care-card">
+            <div class="care-icon">🔩</div>
+            <h3 data-editable data-key="care1-h" contenteditable="false">6개월 정기 점검</h3>
+            <ul>
+                <li data-editable data-key="care1-li1" contenteditable="false">하단 나사 풀림 여부 확인</li>
+                <li data-editable data-key="care1-li2" contenteditable="false">가스 실린더 높이 유지 확인</li>
+                <li data-editable data-key="care1-li3" contenteditable="false">캐스터(바퀴) 회전 상태 확인</li>
+                <li data-editable data-key="care1-li4" contenteditable="false">틸팅 잠금 장치 작동 확인</li>
+            </ul>
+        </div>
+        <div class="care-card">
+            <div class="care-icon">🧹</div>
+            <h3 data-editable data-key="care2-h" contenteditable="false">메쉬/패브릭 관리</h3>
+            <ul>
+                <li data-editable data-key="care2-li1" contenteditable="false">가벼운 먼지는 돌돌이(클리너)로 제거</li>
+                <li data-editable data-key="care2-li2" contenteditable="false">오염 시 중성세제를 묻힌 헝겊으로 톡톡 두드려 닦기</li>
+                <li data-editable data-key="care2-li3" contenteditable="false">직사광선 장시간 노출 피하기</li>
+                <li data-editable data-key="care2-li4" contenteditable="false">좌판 교체 서비스(유상)로 새 의자처럼 사용 가능</li>
+            </ul>
+        </div>
+        <div class="care-card">
+            <div class="care-icon">⚙️</div>
+            <h3 data-editable data-key="care3-h" contenteditable="false">소모품 교체 시기</h3>
+            <ul>
+                <li><b>캐스터:</b> 회전이 뻑뻑하거나 바닥 긁힘 발생 시</li>
+                <li><b>가스 실린더:</b> 앉으면 자동으로 내려가는 경우</li>
+                <li><b>암레스트 패드:</b> 표면 갈라짐이나 탄성 저하 시</li>
+            </ul>
+        </div>
+        <div class="care-card">
+            <div class="care-icon">❓</div>
+            <h3 data-editable data-key="care4-h" contenteditable="false">자주 묻는 질문</h3>
+            <ul>
+                <li><b>"삐걱 소리가 나요"</b> → 이음 부위에 윤활제 도포</li>
+                <li><b>"의자가 기울어져요"</b> → 하단 나사 재조임 확인</li>
+                <li><b>"메쉬가 늘어났어요"</b> → 좌판/등판 교체 서비스 이용</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-cta">
+        <h2 data-editable data-key="cta-care-h2" contenteditable="false">A/S가 필요하신가요?</h2>
+        <p data-editable data-key="cta-care-p" contenteditable="false">시디즈 공식 A/S 센터에서 빠르게 처리해 드립니다.</p>
+        <div class="cta-row">
+            <a class="btn-primary" href="tel:1588-0581">📞 A/S 접수하기</a>
+            <a class="btn-secondary" href="https://kr.sidiz.com/" target="_blank">🌐 온라인 A/S 신청</a>
+        </div>
+    </div>
+</div>
+
+</div><!-- page-wrapper -->
+
+<script>
+// ══════════════════════════════════════════════
+//  관리자 모드 시스템
+// ══════════════════════════════════════════════
+
+const ADMIN_PW = '1234';       // 비밀번호 (변경 가능)
+const STORAGE_KEY = 'sidiz_edits';
+let isAdminMode = false;
+let adminPressTimer = null;
+let currentEditId = null;      // 현재 편집 중인 제품 ID
+
+// ── 롱프레스 (로고 5초) ──
+function startAdminPress() {
+    const logo = document.getElementById('adminTrigger');
+    logo.classList.add('pressing');
+    adminPressTimer = setTimeout(() => {
+        logo.classList.remove('pressing');
+        openAdminModal();
+    }, 3000); // 3초
+}
+function cancelAdminPress() {
+    clearTimeout(adminPressTimer);
+    document.getElementById('adminTrigger').classList.remove('pressing');
+}
+
+// ── 비밀번호 모달 ──
+function openAdminModal() {
+    document.getElementById('adminModalOverlay').classList.add('open');
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminErrorMsg').textContent = '';
+    setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+}
+function closeAdminModal() {
+    document.getElementById('adminModalOverlay').classList.remove('open');
+}
+function checkAdminPw() {
+    const val = document.getElementById('adminPwInput').value;
+    const input = document.getElementById('adminPwInput');
+    if (val === ADMIN_PW) {
+        closeAdminModal();
+        enterAdminMode();
+    } else {
+        input.classList.add('error');
+        document.getElementById('adminErrorMsg').textContent = '비밀번호가 올바르지 않습니다';
+        setTimeout(() => input.classList.remove('error'), 500);
+        input.value = '';
+    }
+}
+
+// ── 관리자 모드 진입/퇴장 ──
+function enterAdminMode() {
+    isAdminMode = true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('adminBar').classList.add('open');
+    // 모든 editable 요소 활성화
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        el.contentEditable = 'true';
+    });
+    showToast('✅ 관리자 모드 진입');
+}
+function exitAdminMode() {
+    isAdminMode = false;
+    document.body.classList.remove('admin-mode');
+    document.getElementById('adminBar').classList.remove('open');
+    document.querySelectorAll('[data-editable]').forEach(el => {
+        el.contentEditable = 'false';
+    });
+    showToast('👋 관리자 모드 종료');
+}
+
+// ── localStorage 저장/불러오기 ──
+function saveAllEdits() {
+    const edits = loadEdits();
+
+    // contenteditable 요소들 저장
+    document.querySelectorAll('[data-editable][data-key]').forEach(el => {
+        edits[el.dataset.key] = el.innerHTML;
+    });
+
+    // products 데이터 저장 (카드 편집 반영)
+    edits['__products__'] = JSON.stringify(products);
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+    showToast('💾 저장 완료!');
+}
+
+function loadEdits() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch { return {}; }
+}
+
+function applyStoredEdits() {
+    const edits = loadEdits();
+
+    // contenteditable 텍스트 복원
+    document.querySelectorAll('[data-editable][data-key]').forEach(el => {
+        if (edits[el.dataset.key] !== undefined) {
+            el.innerHTML = edits[el.dataset.key];
+        }
+    });
+
+    // products 데이터 복원
+    if (edits['__products__']) {
+        try {
+            const saved = JSON.parse(edits['__products__']);
+            Object.assign(products, saved);
+            rebuildProductGrid();
+        } catch {}
+    }
+}
+
+// ── 초기화 ──
+function openResetModal() { document.getElementById('resetModal').classList.add('open'); }
+function closeResetModal() { document.getElementById('resetModal').classList.remove('open'); }
+function confirmReset() {
+    localStorage.removeItem(STORAGE_KEY);
+    closeResetModal();
+    showToast('↺ 초기화 완료. 새로고침합니다...');
+    setTimeout(() => location.reload(), 1200);
+}
+
+// ── 토스트 메시지 ──
+function showToast(msg) {
+    const t = document.getElementById('saveToast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════════════
+//  제품 카드 편집 패널
+// ══════════════════════════════════════════════
+
+let pendingImgData = null; // base64 또는 URL
+
+// ── 드래그&드롭 ──
+function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('imgDropZone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+    document.getElementById('imgDropZone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('imgDropZone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) processImageFile(file);
+}
+
+// ── 파일 선택 ──
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) processImageFile(file);
+}
+
+// ── 파일 → base64 변환 + 미리보기 ──
+function processImageFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        pendingImgData = dataUrl;
+        showImgPreview(dataUrl);
+    };
+    reader.readAsDataURL(file);
+}
+
+// ── URL 직접 입력 적용 ──
+function applyImgUrl() {
+    const url = document.getElementById('ef-img-url').value.trim();
+    if (!url) return;
+    pendingImgData = url;
+    showImgPreview(url);
+}
+
+// ── 미리보기 표시 ──
+function showImgPreview(src) {
+    const thumb = document.getElementById('imgPreviewThumb');
+    const placeholder = document.getElementById('imgUploadPlaceholder');
+    const resetBtn = document.getElementById('imgResetBtn');
+    thumb.src = src;
+    thumb.classList.add('visible');
+    placeholder.style.display = 'none';
+    resetBtn.classList.add('visible');
+}
+
+// ── 이미지 초기화 ──
+function resetImage(e) {
+    e.stopPropagation();
+    pendingImgData = null;
+    const thumb = document.getElementById('imgPreviewThumb');
+    const placeholder = document.getElementById('imgUploadPlaceholder');
+    const resetBtn = document.getElementById('imgResetBtn');
+    const urlInput = document.getElementById('ef-img-url');
+    thumb.src = '';
+    thumb.classList.remove('visible');
+    placeholder.style.display = '';
+    resetBtn.classList.remove('visible');
+    urlInput.value = '';
+    document.getElementById('imgFileInput').value = '';
+}
+
+function openCardEdit(productId) {
+    if (!isAdminMode) return;
+    const p = products[productId];
+    if (!p) return;
+
+    currentEditId = productId;
+    pendingImgData = null;
+
+    const cardEl = document.querySelector(`.product-card[onclick="showDetail('${productId}')"]`);
+    const cardDesc = cardEl ? cardEl.querySelector('.product-card-body p')?.textContent : p.desc;
+    const badge = cardEl ? cardEl.querySelector('.badge')?.textContent : '';
+
+    document.getElementById('editPanelTitle').textContent = `✏️ ${p.name} 편집`;
+    document.getElementById('ef-name').value = p.name;
+    document.getElementById('ef-tagline').value = p.tagline;
+    document.getElementById('ef-card-desc').value = cardDesc || '';
+    document.getElementById('ef-desc').value = p.desc;
+    document.getElementById('ef-price').value = p.price;
+    document.getElementById('ef-badge').value = badge;
+
+    // 이미지 미리보기 초기화 후 현재 이미지 표시
+    resetImage({ stopPropagation: () => {} });
+    if (p.img) {
+        document.getElementById('ef-img-url').value = p.img;
+        showImgPreview(p.img);
+        pendingImgData = p.img;
+    }
+
+    document.getElementById('cardEditPanel').classList.add('open');
+    document.getElementById('editPanelOverlay').classList.add('open');
+}
+
+function closeEditPanel() {
+    document.getElementById('cardEditPanel').classList.remove('open');
+    document.getElementById('editPanelOverlay').classList.remove('open');
+    currentEditId = null;
+    pendingImgData = null;
+}
+
+function applyCardEdit() {
+    if (!currentEditId) return;
+    const p = products[currentEditId];
+
+    const newName     = document.getElementById('ef-name').value.trim();
+    const newTagline  = document.getElementById('ef-tagline').value.trim();
+    const newCardDesc = document.getElementById('ef-card-desc').value.trim();
+    const newDesc     = document.getElementById('ef-desc').value.trim();
+    const newPrice    = document.getElementById('ef-price').value.trim();
+    const newBadge    = document.getElementById('ef-badge').value.trim();
+
+    // products 데이터 업데이트
+    if (newName)    p.name    = newName;
+    if (newTagline) p.tagline = newTagline;
+    if (newDesc)    p.desc    = newDesc;
+    if (newPrice)   p.price   = newPrice;
+    if (pendingImgData) p.img = pendingImgData;
+
+    // 카드 DOM 즉시 반영
+    const cardEl = document.querySelector(`.product-card[onclick="showDetail('${currentEditId}')"]`);
+    if (cardEl) {
+        if (newName)    cardEl.querySelector('.product-card-body h3').textContent = newName;
+        if (newTagline) cardEl.querySelector('.product-card-body .subtitle').textContent = newTagline;
+        if (newCardDesc) cardEl.querySelector('.product-card-body p').textContent = newCardDesc;
+        if (newPrice)   cardEl.querySelector('.product-card-body .price').innerHTML = `${newPrice} <span>부터</span>`;
+        if (newBadge)   cardEl.querySelector('.badge').textContent = newBadge;
+        if (pendingImgData) {
+            const imgEl = cardEl.querySelector('.product-card-img');
+            imgEl.style.backgroundImage = `url('${pendingImgData}')`;
+        }
+    }
+
+    closeEditPanel();
+    showToast(`✏️ ${p.name} 편집 완료 — 저장하려면 상단 [💾 저장]을 누르세요`);
+}
+
+// ── 제품 그리드 재빌드 (저장 데이터 복원용) ──
+function rebuildProductGrid() {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+    grid.querySelectorAll('.product-card').forEach(card => {
+        const onclick = card.getAttribute('onclick');
+        const match = onclick && onclick.match(/showDetail\('(\w+)'\)/);
+        if (!match) return;
+        const id = match[1];
+        const p = products[id];
+        if (!p) return;
+        const body = card.querySelector('.product-card-body');
+        if (body) {
+            body.querySelector('h3').textContent = p.name;
+            if (body.querySelector('.subtitle')) body.querySelector('.subtitle').textContent = p.tagline;
+            body.querySelector('p').textContent = p.desc;
+            body.querySelector('.price').innerHTML = `${p.price} <span>부터</span>`;
+        }
+        if (p.img) {
+            const imgEl = card.querySelector('.product-card-img');
+            if (imgEl) imgEl.style.backgroundImage = `url('${p.img}')`;
+        }
+    });
+}
+
+// 페이지 로드 시 저장된 편집 내용 적용
+document.addEventListener('DOMContentLoaded', () => {
+    applyStoredEdits();
+    initComparePicker();
+});
+
+// ── COMPARE DATA ──
+const compareData = {
+    ringo2: {
+        label: 'RINGO 2', badge: '',
+        포지셔닝: '어린이 성장의자', 가격대: '18만원~', 틸팅방식: '고정형',
+        요추지지대: false, 좌판깊이조절: false, '4D암레스트': false,
+        헤드레스트: false, 특수기능: '그로잉·발받침', 추천대상: '초등학생',
+    },
+    t20: {
+        label: 'T20', badge: '',
+        포지셔닝: '입문/가성비', 가격대: '27만원~', 틸팅방식: '싱크 틸팅',
+        요추지지대: true, 좌판깊이조절: false, '4D암레스트': false,
+        헤드레스트: '별도 옵션', 특수기능: '—', 추천대상: '입문자',
+    },
+    ible: {
+        label: 'IBLE', badge: '',
+        포지셔닝: '학습 전용', 가격대: '34만원~', 틸팅방식: '틸팅 잠금',
+        요추지지대: true, 좌판깊이조절: false, '4D암레스트': false,
+        헤드레스트: false, 특수기능: '전방 틸팅', 추천대상: '수험생·대학생',
+    },
+    gx: {
+        label: 'GX', badge: '',
+        포지셔닝: '게이밍', 가격대: '39만원~', 틸팅방식: '리미티드 틸팅',
+        요추지지대: false, 좌판깊이조절: true, '4D암레스트': false,
+        헤드레스트: true, 특수기능: '쿨링시트', 추천대상: '게이머',
+    },
+    gcpro: {
+        label: 'GC PRO', badge: '',
+        포지셔닝: '프로 게이밍', 가격대: '69만원~', 틸팅방식: '리클라이닝',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
+        헤드레스트: true, 특수기능: '쿨링시트·천연가죽', 추천대상: '프로·헤비 게이머',
+    },
+    t50: {
+        label: 'T50', badge: '',
+        포지셔닝: '올라운더', 가격대: '44만원~', 틸팅방식: '멀티 싱크',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
+        헤드레스트: true, 특수기능: '멀티 리미티드', 추천대상: '직장인·범용',
+    },
+    t60: {
+        label: 'T60', badge: 'NEW',
+        포지셔닝: '퍼스널 피팅', 가격대: '59만원~', 틸팅방식: '리미티드 싱크',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
+        헤드레스트: true, 특수기능: '인피니핏 헤드레스트', 추천대상: '재택·사무 직장인',
+    },
+    linie: {
+        label: 'LINIE', badge: '',
+        포지셔닝: '디자인', 가격대: '59만원~', 틸팅방식: '멀티 싱크',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
+        헤드레스트: true, 특수기능: '다양한 컬러', 추천대상: '디자인 중시',
+    },
+    t80: {
+        label: 'T80', badge: '',
+        포지셔닝: '프리미엄', 가격대: '89만원~', 틸팅방식: '얼티메이트 싱크',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
+        헤드레스트: true, 특수기능: '천연가죽 옵션', 추천대상: '프리미엄 추구',
+    },
+    t90: {
+        label: 'T90', badge: '플래그십',
+        포지셔닝: '최상위 플래그십', 가격대: '129만원~', 틸팅방식: '플렉서블 싱크',
+        요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
+        헤드레스트: true, 특수기능: '퍼펙트 피팅 럼버', 추천대상: '최고를 원하는 분',
+    },
+};
+
+const compareRows = [
+    { key: '포지셔닝', label: '포지셔닝' },
+    { key: '가격대', label: '가격대' },
+    { key: '틸팅방식', label: '틸팅 방식' },
+    { key: '요추지지대', label: '요추 지지대', bool: true },
+    { key: '좌판깊이조절', label: '좌판 깊이 조절', bool: true },
+    { key: '4D암레스트', label: '4D 암레스트', bool: true },
+    { key: '헤드레스트', label: '헤드레스트', bool: true },
+    { key: '특수기능', label: '특수 기능' },
+    { key: '추천대상', label: '추천 대상' },
+];
+
+let selectedModels = [];
+
+function initComparePicker() {
+    const picker = document.getElementById('comparePicker');
+    if (!picker) return;
+    picker.innerHTML = '';
+
+    const groups = [
+        { label: '라이프스타일', ids: ['ringo2', 'ible', 'linie'] },
+        { label: '게이밍',       ids: ['gx', 'gcpro'] },
+        { label: '오피스',       ids: ['t20', 't50', 't60', 't80', 't90'] },
+    ];
+
+    groups.forEach((group, gi) => {
+        const row = document.createElement('div');
+        row.className = 'chip-group';
+
+        const label = document.createElement('span');
+        label.className = 'chip-group-label';
+        label.textContent = group.label;
+        row.appendChild(label);
+
+        group.ids.forEach(id => {
+            const d = compareData[id];
+            if (!d) return;
+            const chip = document.createElement('div');
+            chip.className = 'compare-chip';
+            chip.dataset.id = id;
+            chip.innerHTML = `<div class="chip-check">✓</div><span>${d.label}${d.badge ? ` <small style="opacity:.7;font-size:.7em">${d.badge}</small>` : ''}</span>`;
+            chip.addEventListener('click', () => toggleCompareChip(id, chip));
+            row.appendChild(chip);
+        });
+
+        picker.appendChild(row);
+
+        // 그룹 사이 구분선 (마지막 제외)
+        if (gi < groups.length - 1) {
+            const divider = document.createElement('div');
+            divider.className = 'chip-group-divider';
+            picker.appendChild(divider);
+        }
+    });
+
+    renderCompareTable();
+}
+
+function toggleCompareChip(id, chip) {
+    if (selectedModels.includes(id)) {
+        selectedModels = selectedModels.filter(m => m !== id);
+        chip.classList.remove('selected');
+    } else {
+        selectedModels.push(id);
+        chip.classList.add('selected');
+    }
+    renderCompareTable();
+}
+
+// 가격 문자열 → 숫자 변환
+// 제품별 실제 가격 범위 (공식몰 + 다나와 기준, 단위: 원)
+const priceRanges = {
+    ringo2: { min: 189000, max: 249000 },
+    t20:    { min: 180000, max: 250000 },
+    ible:   { min: 184000, max: 340000 },
+    gx:     { min: 390000, max: 490000 },
+    gcpro:  { min: 590000, max: 690000 },
+    t50:    { min: 359000, max: 489000 },
+    t60:    { min: 419000, max: 599000 },
+    linie:  { min: 490000, max: 680000 },
+    t80:    { min: 629000, max: 829000 },
+    t90:    { min: 999000, max: 1290000 },
+};
+
+// 5만원 단위 눈금 설정
+const CHART_MIN = 150000;
+const CHART_MAX = 1350000;
+const TICK_STEP = 50000;
+
+function formatPrice(v) {
+    return (v / 10000).toFixed(0);
+}
+
+function renderPriceChart() {
+    const chart  = document.getElementById('priceChart');
+    const barsEl = document.getElementById('priceRangeBars');
+    const axisEl = document.getElementById('priceAxis');
+    if (selectedModels.length < 2) { chart.style.display = 'none'; return; }
+    chart.style.display = 'block';
+
+    const chartSpan = CHART_MAX - CHART_MIN;
+
+    // 눈금 생성
+    const ticks = [];
+    for (let v = CHART_MIN; v <= CHART_MAX; v += TICK_STEP) ticks.push(v);
+    const tickW = (TICK_STEP / chartSpan * 100).toFixed(4) + '%';
+
+    axisEl.innerHTML = ticks.map(v =>
+        `<span class="price-axis-tick">${formatPrice(v)}</span>`
+    ).join('');
+
+    // 가격 오름차순 정렬
+    const sorted = [...selectedModels].sort((a, b) =>
+        priceRanges[a].min - priceRanges[b].min
+    );
+
+    barsEl.style.setProperty('--tick-w', tickW);
+
+    barsEl.innerHTML = sorted.map(id => {
+        const r = priceRanges[id];
+        const d = compareData[id];
+        const leftPct  = ((r.min - CHART_MIN) / chartSpan * 100).toFixed(2);
+        const widthPct = ((r.max - r.min)    / chartSpan * 100).toFixed(2);
+        const isNarrow = (r.max - r.min) < 120000;
+
+        return `
+        <div class="price-row">
+            <div class="price-row-label">${d.label}</div>
+            <div class="price-row-track" style="--tick-w:${tickW}">
+                <div class="price-range-bar${isNarrow ? ' narrow' : ''}"
+                    data-label="${formatPrice(r.min)}~${formatPrice(r.max)}"
+                    style="left:${leftPct}%; width:${widthPct}%">
+                    <span class="bar-min">${formatPrice(r.min)}</span>
+                    <span class="bar-max">${formatPrice(r.max)}</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderCompareTable() {
+    const wrapper = document.getElementById('compareWrapper');
+    const hint = document.getElementById('compareHint');
+    const table = document.getElementById('compareTable');
+
+    if (selectedModels.length < 2) {
+        wrapper.style.display = 'none';
+        hint.style.display = 'block';
+        document.getElementById('priceChart').style.display = 'none';
+        hint.textContent = selectedModels.length === 1
+            ? '1개 더 선택하면 비교 테이블이 나타납니다'
+            : '2개 이상 선택하면 비교 테이블이 나타납니다';
+        return;
+    }
+
+    hint.style.display = 'none';
+    wrapper.style.display = 'block';
+    renderPriceChart();
+
+    const models = selectedModels.map(id => compareData[id]);
+
+    // 헤더 — 모든 컬럼 동일하게 (마지막 강조 없음)
+    let thead = '<thead><tr><th>항목</th>';
+    models.forEach(m => {
+        thead += `<th>${m.label}${m.badge ? `<br><small style="font-size:.65em;opacity:.7;font-weight:500">${m.badge}</small>` : ''}</th>`;
+    });
+    thead += '</tr></thead>';
+
+    // 바디
+    let tbody = '<tbody>';
+    compareRows.forEach(row => {
+        tbody += `<tr><td>${row.label}</td>`;
+        models.forEach(m => {
+            const val = m[row.key];
+            if (row.bool) {
+                if (val === true) {
+                    tbody += `<td class="check">●</td>`;
+                } else if (val === false) {
+                    tbody += `<td class="dash">—</td>`;
+                } else {
+                    tbody += `<td>${val}</td>`;
+                }
+            } else {
+                tbody += `<td>${val === '—' ? '<span class="dash">—</span>' : val}</td>`;
+            }
+        });
+        tbody += '</tr>';
+    });
+    tbody += '</tbody>';
+
+    table.innerHTML = thead + tbody;
+}
+
+// ── PRODUCT DATA ──
+const products = {
+    t50: {
+        name: 'T50 시리즈',
+        tagline: '전 세계가 선택한 시디즈의 국가대표 의자',
+        desc: '10년 이상 사랑받아 온 시디즈의 스테디셀러. 멀티 싱크 틸팅과 요추 지지대, 좌판 깊이 조절까지 — 검증된 인체공학 설계로 장시간 편안한 착석감을 제공합니다. 다양한 체형과 업무 환경에 맞게 세밀한 커스터마이징이 가능합니다.',
+        price: '449,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T50_HLDA_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '🔄', title: '멀티 싱크 틸팅', desc: '등판과 좌판이 독립적으로 움직여 자연스러운 기대기 동작을 지원합니다.' },
+            { icon: '🦴', title: '요추 지지대 조절', desc: '높이와 강도를 조절하여 허리를 최적으로 받쳐줍니다.' },
+            { icon: '📐', title: '좌판 깊이/각도 조절', desc: '허벅지 길이에 맞춰 좌판을 앞뒤로 조절할 수 있습니다.' },
+            { icon: '🎯', title: '헤드레스트', desc: '높이 및 각도 조절 가능한 헤드레스트로 목과 어깨 부담을 줄여줍니다.' }
+        ],
+        tags: ['장시간 업무', '직장인', '수험생', '올라운더'],
+    },
+    t60: {
+        name: 'T60',
+        tagline: '나에게 꼭 맞는 퍼스널 피팅 체어',
+        desc: '실제 사용자 데이터를 바탕으로 설계된 시디즈의 신형 퍼스널 피팅 의자입니다. 높이·각도·깊이를 세밀하게 조절할 수 있는 인피니핏 헤드레스트와 요추 지지대로 소형 체형부터 대형 체형까지 모두 편안하게 맞춰집니다. 홈라이크 디자인으로 집·사무실 어디에도 자연스럽게 어울립니다.',
+        price: '599,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T60_HLDA_gray_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '🎯', title: '인피니핏 헤드레스트', desc: '높이 125mm·각도 100도·깊이 35mm까지 조절 가능한 정밀 헤드레스트로 목과 어깨 부담을 최소화합니다.' },
+            { icon: '🦴', title: '퍼스널 피팅 요추 지지대', desc: '높이와 깊이를 개인 체형에 맞게 세밀하게 조절해 허리를 안정적으로 받쳐줍니다.' },
+            { icon: '📐', title: '좌판 깊이 조절', desc: '허벅지 길이에 맞게 좌판을 35mm 범위로 조절해 안정적인 착석 자세를 유지합니다.' },
+            { icon: '🏠', title: '홈라이크 디자인', desc: '라이트 그레이·그레이·차콜 컬러와 부드러운 곡선으로 홈 오피스 인테리어와 자연스럽게 조화됩니다.' }
+        ],
+        tags: ['재택근무', '직장인', '개발자', '홈오피스'],
+    },
+    t80: {
+        name: 'T80 시리즈',
+        tagline: '최상의 편안함, Ultimate Comfort',
+        desc: '독일 디자인 스튜디오와 협업한 시디즈의 플래그십 라인. 얼티메이트 싱크 틸팅과 메모리폼 좌판, 4D 조절형 암레스트까지 — 프리미엄 소재와 기술의 집약체입니다. 최고의 앉음 경험을 추구하는 분들을 위한 의자입니다.',
+        price: '899,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T80_HLDA_charcoal_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '💎', title: '얼티메이트 싱크 틸팅', desc: '시디즈 최상위 틸팅 기술로, 어떤 자세에서도 균형 잡힌 지지력을 제공합니다.' },
+            { icon: '🧠', title: '메모리폼 좌판', desc: '체압을 분산시켜 장시간 착석 시에도 엉덩이와 허벅지의 피로를 줄여줍니다.' },
+            { icon: '🖐️', title: '4D 암레스트', desc: '높이, 각도, 좌우, 앞뒤 4방향으로 조절 가능한 프리미엄 암레스트입니다.' },
+            { icon: '✨', title: '프리미엄 마감', desc: '알루미늄 다이캐스팅 베이스, 고급 원단 적용으로 견고함과 고급스러움을 동시에.' }
+        ],
+        tags: ['프리미엄', '임원용', '홈오피스', '장시간 업무'],
+    },
+    t20: {
+        name: 'T20',
+        tagline: '합리적인 가격, 핵심 인체공학',
+        desc: '시디즈의 인체공학 노하우를 합리적인 가격대에 담았습니다. 싱크 틸팅과 요추 지지대 등 핵심 기능은 그대로 — 처음 인체공학 의자를 경험하는 분들에게 최적의 선택입니다.',
+        price: '279,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T20_TABPLUS_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '🔄', title: '싱크 틸팅', desc: '자연스러운 기대기 동작을 지원하는 기본 틸팅 시스템입니다.' },
+            { icon: '🦴', title: '요추 지지대', desc: '허리를 안정적으로 받쳐주는 조절형 요추 서포트입니다.' },
+            { icon: '💰', title: '합리적 가격', desc: '시디즈 인체공학의 핵심을 가장 합리적인 가격에 경험할 수 있습니다.' },
+            { icon: '🎒', title: '컴팩트 디자인', desc: '작은 책상 공간에도 잘 어울리는 깔끔한 사이즈입니다.' }
+        ],
+        tags: ['입문자', '학생', '가성비', '소형 공간'],
+    },
+    linie: {
+        name: 'LINIE',
+        tagline: '디자인과 인체공학의 균형',
+        desc: '미니멀한 외관 속에 시디즈의 인체공학 기술을 담았습니다. 오피스 인테리어와 자연스럽게 어우러지면서도 멀티 싱크 틸팅, 좌판 깊이 조절, 4D 암레스트 등 본질적인 기능은 타협하지 않았습니다.',
+        price: '599,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/LINIE_ivory_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '🎨', title: '미니멀 디자인', desc: '군더더기 없는 라인으로 어떤 오피스 공간에도 조화롭게 어울립니다.' },
+            { icon: '🔄', title: '멀티 싱크 틸팅', desc: 'T50과 동일한 멀티 싱크 틸팅으로 편안한 기대기를 지원합니다.' },
+            { icon: '🖐️', title: '4D 암레스트', desc: '4방향 조절 가능한 암레스트로 개인 맞춤 세팅이 가능합니다.' },
+            { icon: '🎨', title: '다양한 컬러', desc: '오피스 분위기에 맞춘 다양한 컬러 옵션을 제공합니다.' }
+        ],
+        tags: ['디자인 중시', '오피스', '인테리어', '미팅룸'],
+    },
+    ible: {
+        name: 'IBLE',
+        tagline: '집중과 학습을 위한 체어',
+        desc: '집중력을 높이는 약간의 전방 틸팅과, 안정적인 착석감을 위한 틸팅 잠금 기능이 특징입니다. 공부할 때 최적의 자세를 유지할 수 있도록 설계되었습니다.',
+        price: '349,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/IBLE_gray_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '📚', title: '학습 최적화 설계', desc: '집중 자세를 유도하는 전방 틸팅과 안정적인 잠금 기능을 제공합니다.' },
+            { icon: '🦴', title: '요추 지지대', desc: '장시간 공부 시 허리 피로를 줄여주는 요추 서포트입니다.' },
+            { icon: '✅', title: '검증된 품질', desc: '국내 주요 교육기관과 도서관에 납품된 검증된 학습 의자입니다.' },
+            { icon: '🧼', title: '쉬운 관리', desc: '학습 환경에 최적화된 내구성 높은 소재로 관리가 편합니다.' }
+        ],
+        tags: ['수험생', '대학생', '집중력', '학습용'],
+    },
+    t90: {
+        name: 'T90 시리즈',
+        tagline: '퍼포먼스 인체공학의 정점',
+        desc: '2025년 출시된 시디즈 최상위 플래그십 모델입니다. 4D 암레스트, 퍼펙트 피팅 럼버서포트, 플렉서블 등판을 통해 사용자 체형과 작업 자세에 정밀하게 대응합니다. 사무실·재택·멀티 디바이스 업무 환경 모두에서 최상의 퍼포먼스를 유지하도록 설계되었습니다.',
+        price: '1,290,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T90_HLDA_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '🎯', title: '퍼펙트 피팅 럼버서포트', desc: '사용자 체형에 맞춰 정밀하게 조절되는 요추 지지 시스템입니다.' },
+            { icon: '🖐️', title: '4D 암레스트', desc: '상하·좌우·앞뒤·회전까지 4방향 조절로 팔과 어깨 부담을 최소화합니다.' },
+            { icon: '🔄', title: '플렉서블 등판', desc: '등판이 움직임에 유연하게 반응해 장시간 자세를 안정적으로 지지합니다.' },
+            { icon: '💎', title: '프리미엄 소재', desc: '이탈리아 Mastrotto 천연가죽·아쿠아텍스 패브릭 등 최고급 소재 옵션을 제공합니다.' }
+        ],
+        tags: ['프리미엄', '장시간 업무', '재택근무', '사무실'],
+    },
+    t40: {
+        name: 'T40 시리즈',
+        tagline: '시디즈 품질을 합리적인 가격에',
+        desc: '시디즈의 내구성과 인체공학 설계를 보다 합리적인 가격에 경험할 수 있는 모델입니다. 헤드레스트, 요추 지지대를 기본 탑재했으며, 다양한 컬러 프레임 옵션으로 공간에 맞게 연출할 수 있습니다.',
+        price: '299,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/T40_HLDA_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '💰', title: '합리적인 가격', desc: 'T50의 핵심 설계를 계승하면서 가격 부담을 낮춘 가성비 모델입니다.' },
+            { icon: '🦴', title: '요추 지지대', desc: '허리를 안정적으로 받쳐주는 요추 서포트가 기본 탑재됩니다.' },
+            { icon: '🎯', title: '헤드레스트', desc: '목과 어깨 부담을 줄여주는 헤드레스트를 갖췄습니다.' },
+            { icon: '🎨', title: '다양한 컬러 프레임', desc: '블랙, 화이트쉘 등 다양한 컬러 조합으로 공간에 맞게 선택할 수 있습니다.' }
+        ],
+        tags: ['가성비', '사무용', '입문자', '재택근무'],
+    },
+    gx: {
+        name: 'GX',
+        tagline: '게이밍 디자인 × 시디즈 인체공학',
+        desc: '게이밍 감성과 시디즈의 인체공학 기술을 결합한 모델입니다. 쿨링시트로 장시간 플레이에도 쾌적함을 유지하고, 조절형 팔걸이와 좌판 깊이 조절로 게임에 최적화된 자세를 잡을 수 있습니다.',
+        price: '393,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/GX_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '❄️', title: '쿨링시트', desc: '통기성이 뛰어난 쿨링시트로 장시간 게임 중에도 쾌적한 착석감을 유지합니다.' },
+            { icon: '🖥️', title: '게이밍 최적화 자세', desc: '리미티드 틸팅과 좌판 조절로 모니터와 컨트롤러에 최적화된 자세를 만들어 줍니다.' },
+            { icon: '🖐️', title: '3D 조절형 팔걸이', desc: '상하·좌우·앞뒤 조절이 가능해 게임 컨트롤러 사용에도 편안합니다.' },
+            { icon: '🎮', title: '게이밍 디자인', desc: '블랙블루, 그레이레드 등 게이밍 감성의 컬러라인업을 제공합니다.' }
+        ],
+        tags: ['게이머', 'PC방', '게임', '장시간 플레이'],
+    },
+    gcpro: {
+        name: 'GC PRO',
+        tagline: 'FOR ALL GAME CHANGERS',
+        desc: '장시간 게임 플레이를 고려해 설계된 시디즈 공식 프로 게이밍 의자입니다. 3단계 바람 세기 조절이 가능한 쿨링시트로 쾌적한 플레이 환경을 만들고, 천연가죽 옵션과 15년 품질보증으로 게이밍과 작업 모두를 만족시킵니다.',
+        price: '690,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/GC_PRO_black_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '❄️', title: '3단계 쿨링시트', desc: '바람 세기를 3단계로 조절해 장시간 플레이에도 땀 없는 쾌적한 착석감을 유지합니다.' },
+            { icon: '🎮', title: '프로 게이밍 설계', desc: '몰입도 높은 플레이 환경을 위한 안정적인 지지 구조와 다양한 팔걸이 조절을 지원합니다.' },
+            { icon: '💎', title: '천연가죽 옵션', desc: '소가죽 특유의 멋스러움과 내구성을 갖춘 천연가죽 소재를 선택할 수 있습니다.' },
+            { icon: '🛡️', title: '15년 품질보증', desc: '시디즈의 최상위 품질보증 정책으로 오래도록 안심하고 사용할 수 있습니다.' }
+        ],
+        tags: ['프로 게이머', '헤비 유저', '게이밍', '장시간 플레이'],
+    },
+    ringo2: {
+        name: 'RINGO 2',
+        tagline: '성장하는 아이를 위한 맞춤 의자',
+        desc: '초등 입학부터 졸업까지, 성장하는 아이의 체형에 맞게 함께 자라는 의자입니다. 25도 사선으로 등판 높이와 좌판 깊이가 동시에 조절되는 4단계 그로잉 기능과 발받침이 기본 포함됩니다. KC인증으로 안전성도 검증되었습니다.',
+        price: '189,000원~',
+        img: 'https://kr.sidiz.com/cdn/shop/files/RINGO_gen2_green_01.jpg?v=1744697809&width=800',
+        features: [
+            { icon: '📏', title: '4단계 그로잉 조절', desc: '110~160cm 신장에 맞춰 등판과 좌판이 동시에 조절되어 성장 단계별 최적 자세를 지원합니다.' },
+            { icon: '🦶', title: '발받침 기본 포함', desc: '책상 높이에 맞춰 의자를 올려도 발이 뜨지 않도록 발받침이 기본 제공됩니다.' },
+            { icon: '🛡️', title: 'KC 안전 인증', desc: '어린이 안전 특별법 KC인증 취득. 돌출 레버 제거와 둥근 모서리로 안전하게 설계되었습니다.' },
+            { icon: '🧹', title: '간편한 관리', desc: '액체나 음식물이 묻어도 닦아내기 편한 소재. 별도 전용 커버도 구매 가능합니다.' }
+        ],
+        tags: ['초등학생', '어린이', '키즈', '성장의자'],
+    }
+};
+
+// ── QUIZ DATA ──
+const quizQuestions = [
+    {
+        question: '주로 의자에서 무엇을 하시나요?',
+        options: [
+            { icon: '💻', label: '업무 (PC 작업)', value: 'work' },
+            { icon: '📖', label: '공부 / 독서', value: 'study' },
+            { icon: '🎮', label: '게임 / 멀티미디어', value: 'game' },
+            { icon: '🏠', label: '재택 / 홈오피스', value: 'home' },
+        ]
+    },
+    {
+        question: '의자를 고를 때 가장 중요한 것은?',
+        options: [
+            { icon: '💰', label: '가격 대비 성능', value: 'value' },
+            { icon: '🦴', label: '허리 건강 / 인체공학', value: 'ergo' },
+            { icon: '🎨', label: '디자인 / 인테리어', value: 'design' },
+            { icon: '💎', label: '최고의 편안함', value: 'premium' },
+        ]
+    },
+    {
+        question: '하루에 의자에 얼마나 오래 앉아 계시나요?',
+        options: [
+            { icon: '⏱️', label: '4시간 이하', value: 'short' },
+            { icon: '🕐', label: '4~8시간', value: 'medium' },
+            { icon: '🕛', label: '8시간 이상', value: 'long' },
+            { icon: '🌙', label: '거의 하루종일', value: 'allday' },
+        ]
+    }
+];
+
+let quizAnswers = [];
+let currentQuizStep = 0;
+
+// ── QUIZ RESULT LOGIC ──
+function getRecommendation(answers) {
+    const [usage, priority, hours] = answers;
+    
+    // Simple scoring
+    let scores = { t50: 0, t60: 0, t80: 0, t90: 0, t20: 0, gx: 0, gcpro: 0, linie: 0, ible: 0, ringo2: 0 };
+    
+    // Usage
+    if (usage === 'work') { scores.t50 += 3; scores.t60 += 3; scores.t90 += 3; scores.t80 += 2; scores.linie += 2; scores.t20 += 1; }
+    if (usage === 'study') { scores.ible += 4; scores.t20 += 2; scores.ringo2 += 1; }
+    if (usage === 'game') { scores.gcpro += 5; scores.gx += 4; scores.t80 += 1; }
+    if (usage === 'home') { scores.linie += 3; scores.t60 += 3; scores.t50 += 2; scores.t80 += 1; }
+    
+    // Priority
+    if (priority === 'value') { scores.t20 += 4; scores.ible += 1; scores.ringo2 += 1; }
+    if (priority === 'ergo') { scores.t90 += 4; scores.t60 += 3; scores.t50 += 3; scores.t80 += 2; }
+    if (priority === 'design') { scores.linie += 4; scores.t60 += 2; scores.t90 += 1; }
+    if (priority === 'premium') { scores.t90 += 5; scores.t80 += 4; scores.gcpro += 2; }
+    
+    // Hours
+    if (hours === 'short') { scores.t20 += 2; scores.ringo2 += 1; }
+    if (hours === 'medium') { scores.t50 += 2; scores.t60 += 2; scores.ible += 1; }
+    if (hours === 'long') { scores.t60 += 2; scores.t50 += 2; scores.t80 += 3; scores.t90 += 2; scores.gcpro += 2; }
+    if (hours === 'allday') { scores.t90 += 5; scores.t80 += 4; scores.t50 += 1; scores.gcpro += 1; }
+    
+    const best = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+    return best;
+}
+
+// ── NAVIGATION ──
+function navigate(sectionId, navEl) {
+    // Show hero only on products page
+    document.getElementById('heroSection').style.display = sectionId === 'products' ? 'block' : 'none';
+    
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    
+    document.querySelectorAll('.header-nav a').forEach(a => a.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Close mobile nav
+    document.getElementById('headerNav').classList.remove('open');
+}
+
+function toggleMobileNav() {
+    document.getElementById('headerNav').classList.toggle('open');
+}
+
+// ── PRODUCT DETAIL ──
+function showDetail(productId) {
+    const p = products[productId];
+    if (!p) return;
+    
+    document.getElementById('detailContent').innerHTML = `
+        <div class="detail-img" style="background-image: url('${p.img}'); background-color: #eef2f7;"></div>
+        <div class="detail-info">
+            <div class="name">${p.name}</div>
+            <div class="tagline">${p.tagline}</div>
+            <div class="desc">${p.desc}</div>
+            <div class="price-tag">${p.price} <small>부터</small></div>
+            <div>${p.tags.map(t => `<span class="rec-tag">${t}</span>`).join('')}</div>
+            <div class="cta-row">
+                <a class="btn-primary" href="https://kr.sidiz.com/" target="_blank">🛒 온라인 구매하기</a>
+                <a class="btn-secondary" href="tel:1588-0581">📞 매장 상담 문의</a>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('detailFeatures').innerHTML = `
+        <h2 style="font-family:'Outfit',sans-serif; font-size:1.3rem; font-weight:700; color:var(--sidiz-dark); margin-bottom:20px;">주요 기능</h2>
+        <div class="feature-grid">
+            ${p.features.map(f => `
+                <div class="feature-item">
+                    <div class="feature-icon">${f.icon}</div>
+                    <h4>${f.title}</h4>
+                    <p>${f.desc}</p>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // Hide hero and navigate
+    document.getElementById('heroSection').style.display = 'none';
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('detail').classList.add('active');
+    document.querySelectorAll('.header-nav a').forEach(a => a.classList.remove('active'));
+    document.querySelector('.header-nav a:first-child').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── QUIZ ──
+function renderQuiz() {
+    const q = quizQuestions[currentQuizStep];
+    document.getElementById('quizBody').innerHTML = `
+        <div class="quiz-question">${q.question}</div>
+        <div class="quiz-options">
+            ${q.options.map((opt, i) => `
+                <div class="quiz-option" onclick="selectQuizOption('${opt.value}', this)">
+                    <span class="icon">${opt.icon}</span>
+                    <span class="label">${opt.label}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    // Update progress
+    document.querySelectorAll('.quiz-dot').forEach((dot, i) => {
+        dot.className = 'quiz-dot';
+        if (i < currentQuizStep) dot.classList.add('done');
+        if (i === currentQuizStep) dot.classList.add('active');
+    });
+}
+
+function selectQuizOption(value, el) {
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    
+    quizAnswers[currentQuizStep] = value;
+    
+    setTimeout(() => {
+        currentQuizStep++;
+        if (currentQuizStep < quizQuestions.length) {
+            renderQuiz();
+        } else {
+            showQuizResult();
+        }
+    }, 400);
+}
+
+function showQuizResult() {
+    const recommendId = getRecommendation(quizAnswers);
+    const p = products[recommendId];
+    
+    document.querySelectorAll('.quiz-dot').forEach(d => d.className = 'quiz-dot done');
+    document.getElementById('quizBody').style.display = 'none';
+    
+    const resultEl = document.getElementById('quizResult');
+    resultEl.style.display = 'block';
+    resultEl.innerHTML = `
+        <div style="font-size:3rem; margin-bottom:16px;">🎯</div>
+        <h3>추천 제품: ${p.name}</h3>
+        <div class="result-subtitle">${p.tagline}</div>
+        <p style="margin-bottom:28px;">${p.desc}</p>
+        <div style="margin-bottom:24px;">
+            ${p.tags.map(t => `<span class="rec-tag">${t}</span>`).join('')}
+        </div>
+        <div class="cta-row" style="justify-content:center;">
+            <a class="btn-primary" onclick="showDetail('${recommendId}')">상세 정보 보기 →</a>
+            <a class="btn-secondary" onclick="resetQuiz()">다시 테스트하기</a>
+        </div>
+    `;
+}
+
+function resetQuiz() {
+    quizAnswers = [];
+    currentQuizStep = 0;
+    document.getElementById('quizBody').style.display = 'block';
+    document.getElementById('quizResult').style.display = 'none';
+    renderQuiz();
+}
+
+function toggleKakao(el) {
+    el.classList.toggle('open');
+    const body = el.nextElementSibling;
+    body.classList.toggle('open');
+}
+
+// ── INIT ──
+renderQuiz();
+</script>
+</body>
+</html>
