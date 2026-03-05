@@ -1249,6 +1249,75 @@
         }
         .save-toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* ══ 매장 칩 (배포 페이지) ══ */
+        .store-chip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+        .store-chip {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: 30px;
+            border: 1.5px solid #e5e7eb; background: white;
+            font-size: 0.8rem; font-weight: 600;
+            color: var(--text-secondary); cursor: pointer; transition: all 0.15s; user-select: none;
+        }
+        .store-chip:hover { border-color: var(--sidiz-accent); }
+        .store-chip.on { border-color: #16a34a; background: #16a34a; color: white; }
+        .store-chip .chip-region {
+            font-size: 0.65rem; opacity: .7; font-weight: 500;
+        }
+
+        /* ══ 매장 안내 섹션 (고객용) ══ */
+        .stores-section { background: var(--warm-gray); }
+        .stores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 14px; margin-top: 4px;
+        }
+        .store-card {
+            background: white; border-radius: 16px;
+            padding: 20px 22px;
+            border: 1px solid #e8eaf0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .store-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.09); }
+        .store-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+        .store-card-name {
+            font-size: 1rem; font-weight: 800; color: var(--sidiz-dark);
+        }
+        .store-card-region {
+            font-size: 0.7rem; font-weight: 700; color: white;
+            background: var(--sidiz-navy); border-radius: 20px;
+            padding: 3px 9px; flex-shrink: 0; margin-top: 2px;
+        }
+        .store-card-addr {
+            font-size: 0.78rem; color: var(--text-secondary);
+            line-height: 1.5; margin-bottom: 10px;
+        }
+        .store-card-hours {
+            font-size: 0.75rem; color: #888;
+            display: flex; align-items: center; gap: 5px;
+            margin-bottom: 14px;
+        }
+        .store-card-hours::before { content: '🕐'; font-size: 0.8rem; }
+        .store-card-actions { display: flex; gap: 8px; }
+        .store-card-btn {
+            flex: 1; padding: 9px 0; border-radius: 10px;
+            font-size: 0.78rem; font-weight: 700;
+            border: none; cursor: pointer; text-align: center;
+            text-decoration: none; display: inline-block;
+            transition: background 0.15s;
+        }
+        .store-btn-map {
+            background: var(--sidiz-light); color: var(--sidiz-navy);
+        }
+        .store-btn-map:hover { background: #dde3ff; }
+        .store-btn-call {
+            background: var(--sidiz-navy); color: white;
+        }
+        .store-btn-call:hover { background: var(--sidiz-blue); }
+        @media (max-width: 768px) {
+            .stores-grid { grid-template-columns: 1fr; }
+        }
+
         /* ══ 배포 모드 바 ══ */
         .deploy-bar {
             display: none;
@@ -1996,7 +2065,15 @@
                 <label class="link-toggle"><input type="checkbox" value="process"> 구매 후 안내</label>
                 <label class="link-toggle"><input type="checkbox" value="posture"> 올바른 사용법</label>
                 <label class="link-toggle"><input type="checkbox" value="care"> 관리법</label>
+                <label class="link-toggle"><input type="checkbox" value="stores"> 매장 안내</label>
             </div>
+        </div>
+
+        <!-- 매장 선택 -->
+        <div class="link-section">
+            <div class="link-section-label">함께 보낼 매장 안내</div>
+            <div class="link-section-sub">선택한 매장 정보가 고객 링크에 포함됩니다</div>
+            <div class="store-chip-grid" id="storeChipGrid"></div>
         </div>
 
         <!-- 시작 화면 -->
@@ -2009,6 +2086,7 @@
                 <option value="process">구매 후 안내</option>
                 <option value="posture">올바른 사용법</option>
                 <option value="care">관리법</option>
+                <option value="stores">매장 안내</option>
             </select>
             <div class="link-section-sub" style="margin-top:10px">특정 제품 상세 바로 열기</div>
             <select class="link-select" id="linkStartProduct" style="margin-top:6px">
@@ -2692,6 +2770,13 @@ OOO 고객님, 오늘 방문 예정입니다.
 
 </div><!-- page-wrapper -->
 
+<!-- ══ 매장 안내 섹션 (고객용 — URL 파라미터 stores= 있을 때 표시) ══ -->
+<div id="stores" class="section stores-section" style="display:none">
+    <div class="section-title">더 프로그레시브 매장 안내</div>
+    <div class="section-desc">시디즈 공식 플래그십 매장에서 직접 앉아보고 체험하세요.</div>
+    <div class="stores-grid" id="storesGrid"></div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════
 //  관리자 모드 시스템
@@ -3023,7 +3108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ══════════════════════════════════════════════
 function applyGuestParams() {
     const params = new URLSearchParams(location.search);
-    if (!params.has('s') && !params.has('p') && !params.has('detail')) return;
+    if (!params.has('s') && !params.has('p') && !params.has('detail') && !params.has('st')) return;
 
     // 게스트 배너 표시
     document.getElementById('guestBanner').classList.add('show');
@@ -3031,10 +3116,10 @@ function applyGuestParams() {
 
     const nav = document.getElementById('headerNav');
 
-    // 허용된 섹션 파싱 (s=products,posture,care)
+    // 허용된 섹션 파싱
     const allowedSections = params.get('s') ? params.get('s').split(',') : null;
 
-    // 허용된 제품 파싱 (p=t50,t80)
+    // 허용된 제품 파싱
     const allowedProducts = params.get('p') ? params.get('p').split(',') : null;
 
     // 네비게이션 필터링
@@ -3057,23 +3142,33 @@ function applyGuestParams() {
         });
     }
 
+    // 매장 파라미터 처리
+    const storeParam = params.get('st');
+    if (storeParam) {
+        const storeIds = storeParam === 'all' ? null : storeParam.split(',');
+        renderStoresSection(storeIds);
+    }
+
     // 시작 섹션 이동
     const detail = params.get('detail');
     if (detail) {
-        // 제품 상세 바로 열기
         setTimeout(() => showDetail(detail), 100);
     } else if (allowedSections && allowedSections.length > 0) {
         const first = allowedSections[0];
-        const navLink = [...nav.querySelectorAll('a')].find(a =>
-            a.getAttribute('onclick')?.includes(`'${first}'`)
-        );
-        if (navLink) navigate(first, navLink);
+        if (first === 'stores') {
+            // 매장 섹션으로 스크롤
+            setTimeout(() => {
+                const el = document.getElementById('stores');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 150);
+        } else {
+            const navLink = [...nav.querySelectorAll('a')].find(a =>
+                a.getAttribute('onclick')?.includes(`'${first}'`)
+            );
+            if (navLink) navigate(first, navLink);
+        }
     }
 }
-
-// ══════════════════════════════════════════════
-//  배포 모드
-// ══════════════════════════════════════════════
 let generatedUrl = '';
 
 function enterDeployMode() {
@@ -3100,6 +3195,8 @@ function enterDeployMode() {
     document.getElementById('linkResult').style.display = 'none';
     // 메뉴 체크박스 전체 초기화 후 모두 체크
     document.querySelectorAll('.link-section-grid input').forEach(cb => cb.checked = true);
+    // 매장 칩 초기화
+    renderStoreChips();
 }
 
 function exitDeployMode() {
@@ -3141,6 +3238,17 @@ function generateLink() {
         }
     }
 
+    // 선택된 매장
+    const selectedStores = [...document.querySelectorAll('.store-chip.on')].map(c => c.dataset.id);
+    const allStores = storeData.map(s => s.id);
+    if (selectedStores.length > 0) {
+        if (selectedStores.length === allStores.length) {
+            params.set('st', 'all');
+        } else {
+            params.set('st', selectedStores.join(','));
+        }
+    }
+
     generatedUrl = params.toString() ? `${base}?${params.toString()}` : base;
 
     document.getElementById('linkUrlBox').textContent = generatedUrl;
@@ -3172,6 +3280,172 @@ function shareKakao() {
 }
 
 // ── COMPARE DATA ──
+// ══════════════════════════════════════════════
+//  더 프로그레시브 매장 데이터
+// ══════════════════════════════════════════════
+const storeData = [
+    {
+        id: 'nonhyeon', name: '논현 플래그십', region: '서울',
+        address: '서울 강남구 학동로 126 2층',
+        hours: '매일 10:30 – 19:30',
+        phone: '02-466-7999',
+        mapUrl: 'https://maps.google.com/?q=37.5117665,127.0256121',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+논현'
+    },
+    {
+        id: 'hapjeong', name: '합정점', region: '서울',
+        address: '서울 마포구 양화로 78 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '02-338-8322',
+        mapUrl: 'https://maps.google.com/?q=37.5514128,126.9168645',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+합정'
+    },
+    {
+        id: 'seongsu', name: '성수점', region: '서울',
+        address: '서울 성동구 아차산로 78 에코넷센터 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '02-543-5515',
+        mapUrl: 'https://maps.google.com/?q=37.5453621,127.0525753',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+성수'
+    },
+    {
+        id: 'magok', name: '마곡점', region: '서울',
+        address: '서울 강서구 공항대로 236 쿠쿠마곡빌딩 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '02-2064-7711',
+        mapUrl: 'https://maps.google.com/?q=37.5585421,126.8336917',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+마곡'
+    },
+    {
+        id: 'songpa', name: '송파점', region: '서울',
+        address: '서울 송파구 오금로 235 젤스빌딩 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '02-422-7651',
+        mapUrl: 'https://maps.google.com/?q=37.5067432,127.1199643',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+송파'
+    },
+    {
+        id: 'pyeongtaek', name: '평택점', region: '경기',
+        address: '경기 평택시 소사 5길 114',
+        hours: '매일 10:30 – 20:00',
+        phone: '031-654-8989',
+        mapUrl: 'https://maps.google.com/?q=36.9919321,127.1266725',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+평택'
+    },
+    {
+        id: 'suwon', name: '스타필드 수원점', region: '경기',
+        address: '경기 수원시 장안구 수성로 175 스타필드 수원 6층',
+        hours: '매일 10:00 – 22:00',
+        phone: '031-690-1650',
+        mapUrl: 'https://maps.google.com/?q=37.2876394,126.9920648',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+스타필드+수원'
+    },
+    {
+        id: 'goyang', name: '스타필드 고양점', region: '경기',
+        address: '경기 고양시 덕양구 고양대로 1955 지하 1층',
+        hours: '매일 10:00 – 22:00',
+        phone: '031-5173-0524',
+        mapUrl: 'https://maps.google.com/?q=37.6476611,126.8964189',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+스타필드+고양'
+    },
+    {
+        id: 'daejeon', name: '대전점', region: '대전',
+        address: '대전 서구 대덕대로 222',
+        hours: '매일 10:30 – 20:00',
+        phone: '042-484-4315',
+        mapUrl: 'https://maps.google.com/?q=36.3524085,127.3797514',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+대전'
+    },
+    {
+        id: 'daegu', name: '대구점', region: '대구',
+        address: '대구 수성구 무학로 113 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '053-763-7678',
+        mapUrl: 'https://maps.google.com/?q=35.8303525,128.6210661',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+대구'
+    },
+    {
+        id: 'centum', name: '센텀점', region: '부산',
+        address: '부산 해운대구 해운대로 195 1층',
+        hours: '매일 10:30 – 20:00',
+        phone: '051-782-3651',
+        mapUrl: 'https://maps.google.com/?q=35.1806383,129.1247335',
+        naverUrl: 'https://map.naver.com/v5/search/시디즈+센텀'
+    },
+];
+
+function renderStoreChips() {
+    const grid = document.getElementById('storeChipGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    // 지역별 그룹
+    const regions = [...new Set(storeData.map(s => s.region))];
+    regions.forEach(region => {
+        const regionStores = storeData.filter(s => s.region === region);
+        regionStores.forEach(store => {
+            const chip = document.createElement('div');
+            chip.className = 'store-chip';
+            chip.dataset.id = store.id;
+            chip.innerHTML = `${store.name} <span class="chip-region">${store.region}</span>`;
+            chip.addEventListener('click', () => chip.classList.toggle('on'));
+            grid.appendChild(chip);
+        });
+    });
+}
+
+function renderStoresSection(storeIds) {
+    const section = document.getElementById('stores');
+    const grid = document.getElementById('storesGrid');
+    if (!section || !grid) return;
+
+    const filtered = storeIds
+        ? storeData.filter(s => storeIds.includes(s.id))
+        : storeData;
+
+    if (filtered.length === 0) { section.style.display = 'none'; return; }
+
+    section.style.display = 'block';
+    grid.innerHTML = filtered.map(s => `
+        <div class="store-card">
+            <div class="store-card-header">
+                <div class="store-card-name">${s.name}</div>
+                <div class="store-card-region">${s.region}</div>
+            </div>
+            <div class="store-card-addr">📍 ${s.address}</div>
+            <div class="store-card-hours">${s.hours}</div>
+            <div class="store-card-actions">
+                <a class="store-card-btn store-btn-map" href="${s.naverUrl}" target="_blank">🗺️ 지도 보기</a>
+                <a class="store-card-btn store-btn-call" href="tel:${s.phone}">📞 ${s.phone}</a>
+            </div>
+        </div>
+    `).join('');
+
+    // 네비에 매장 탭 추가 (없으면)
+    const nav = document.getElementById('headerNav');
+    if (!nav.querySelector('[data-nav="stores"]')) {
+        const a = document.createElement('a');
+        a.setAttribute('data-nav', 'stores');
+        a.textContent = '매장 안내';
+        a.setAttribute('onclick', "navigate('stores', this)");
+        // deploy-trigger 바로 앞에 삽입
+        const trigger = nav.querySelector('#deployTrigger');
+        if (trigger) nav.insertBefore(a, trigger);
+        else nav.appendChild(a);
+    }
+}
+
+const _origApplyGuestParams = applyGuestParams;
+function applyGuestParams() {
+    // stores 파라미터 처리
+    const params = new URLSearchParams(location.search);
+    const storeParam = params.get('st');
+    if (storeParam) {
+        const storeIds = storeParam === 'all' ? null : storeParam.split(',');
+        renderStoresSection(storeIds);
+    }
+    _origApplyGuestParams();
+}
+
 const compareData = {
     ringo2: {
         label: 'RINGO 2', badge: '',
