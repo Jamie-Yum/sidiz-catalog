@@ -1249,6 +1249,157 @@
         }
         .save-toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* ══ 링크 생성 모달 ══ */
+        .link-modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+            z-index: 8500;
+        }
+        .link-modal-overlay.open { display: block; }
+        .link-modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(560px, 94vw);
+            max-height: 88vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+            z-index: 8600;
+            padding: 28px;
+        }
+        .link-modal.open { display: block; animation: fadeUp 0.22s ease; }
+        .link-modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .link-modal-header h3 {
+            font-size: 1.05rem; font-weight: 700; color: var(--sidiz-dark);
+        }
+        .link-section { margin-bottom: 20px; }
+        .link-section-label {
+            font-size: 0.8rem; font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            margin-bottom: 4px;
+        }
+        .link-section-sub {
+            font-size: 0.75rem; color: #aaa; margin-bottom: 10px;
+        }
+        /* 제품 그리드 */
+        .link-product-grid {
+            display: flex; flex-wrap: wrap; gap: 7px;
+        }
+        .link-prod-chip {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 13px;
+            border-radius: 30px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            font-size: 0.8rem; font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .link-prod-chip:hover { border-color: var(--sidiz-accent); color: var(--sidiz-dark); }
+        .link-prod-chip.on {
+            border-color: var(--sidiz-navy);
+            background: var(--sidiz-navy);
+            color: white;
+        }
+        /* 섹션 토글 */
+        .link-section-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+        }
+        .link-toggle {
+            display: flex; align-items: center; gap: 8px;
+            padding: 9px 12px;
+            background: #f7f8fc;
+            border-radius: 10px;
+            font-size: 0.82rem; font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .link-toggle input { accent-color: var(--sidiz-navy); width: 15px; height: 15px; }
+        .link-select {
+            width: 100%; padding: 10px 12px;
+            border: 1.5px solid #e5e7eb; border-radius: 10px;
+            font-size: 0.85rem; color: var(--text-primary);
+            background: white; outline: none;
+        }
+        .link-select:focus { border-color: var(--sidiz-navy); }
+        /* 생성 버튼 */
+        .link-generate-btn {
+            width: 100%; padding: 14px;
+            background: var(--sidiz-navy); color: white;
+            border: none; border-radius: 12px;
+            font-size: 0.92rem; font-weight: 700;
+            cursor: pointer; margin-top: 4px;
+            transition: background 0.15s;
+        }
+        .link-generate-btn:hover { background: var(--sidiz-blue); }
+        /* 결과 영역 */
+        .link-result {
+            background: #f7f8fc; border-radius: 14px;
+            padding: 18px; margin-bottom: 16px;
+        }
+        .link-url-wrap { margin-bottom: 16px; }
+        .link-url-label {
+            font-size: 0.72rem; font-weight: 700;
+            color: var(--text-secondary); margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .link-url-box {
+            background: white; border: 1px solid #e5e7eb;
+            border-radius: 8px; padding: 10px 12px;
+            font-size: 0.72rem; color: #555;
+            word-break: break-all; line-height: 1.5;
+            max-height: 64px; overflow-y: auto;
+            margin-bottom: 8px;
+        }
+        .link-copy-btn {
+            padding: 7px 16px;
+            background: var(--sidiz-navy); color: white;
+            border: none; border-radius: 8px;
+            font-size: 0.78rem; font-weight: 600;
+            cursor: pointer;
+        }
+        .link-qr-wrap {
+            margin-bottom: 14px;
+        }
+        .link-qr-wrap canvas,
+        .link-qr-wrap img { border-radius: 8px; }
+        .link-share-row { display: flex; gap: 8px; }
+        .link-kakao-btn {
+            flex: 1; padding: 11px;
+            background: #FEE500; color: #3A1D1D;
+            border: none; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 700;
+            cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 6px;
+            transition: background 0.15s;
+        }
+        .link-kakao-btn:hover { background: #f0d800; }
+
+        /* ══ URL 파라미터 모드 배너 ══ */
+        .guest-banner {
+            display: none;
+            position: fixed; top: 64px; left: 0; right: 0;
+            background: linear-gradient(90deg, var(--sidiz-navy), var(--sidiz-accent));
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.8rem; font-weight: 600;
+            text-align: center;
+            z-index: 400;
+        }
+        .guest-banner.show { display: block; }
+        body.guest-mode .page-wrapper { padding-top: calc(64px + 36px); }
+
         /* 초기화 확인 모달 */
         .reset-modal {
             display: none;
@@ -1719,6 +1870,7 @@
         <span>관리자 편집 모드 — 텍스트를 클릭해 바로 수정하세요</span>
     </div>
     <div class="admin-bar-right">
+        <button class="admin-bar-btn" onclick="openLinkBuilder()">🔗 링크 생성</button>
         <button class="admin-bar-btn" onclick="saveAllEdits()">💾 저장</button>
         <button class="admin-bar-btn danger" onclick="openResetModal()">↺ 초기화</button>
         <button class="admin-bar-btn" onclick="exitAdminMode()">✕ 나가기</button>
@@ -1801,7 +1953,80 @@
     </div>
 </div>
 
+<!-- ══ 링크 생성 모달 ══ -->
+<div class="link-modal-overlay" id="linkModalOverlay" onclick="closeLinkBuilder()"></div>
+<div class="link-modal" id="linkModal">
+    <div class="link-modal-header">
+        <h3>🔗 고객 링크 생성</h3>
+        <button class="panel-close" onclick="closeLinkBuilder()">✕</button>
+    </div>
+
+    <!-- 제품 선택 -->
+    <div class="link-section">
+        <div class="link-section-label">보여줄 제품 선택</div>
+        <div class="link-section-sub">체크한 제품만 제품 라인업에 표시됩니다</div>
+        <div class="link-product-grid" id="linkProductGrid"></div>
+    </div>
+
+    <!-- 섹션 선택 -->
+    <div class="link-section">
+        <div class="link-section-label">보여줄 메뉴 선택</div>
+        <div class="link-section-sub">체크 해제한 메뉴는 고객 화면에서 숨겨집니다</div>
+        <div class="link-section-grid">
+            <label class="link-toggle"><input type="checkbox" value="products" checked> 제품 라인업</label>
+            <label class="link-toggle"><input type="checkbox" value="compare"> 모델 비교</label>
+            <label class="link-toggle"><input type="checkbox" value="recommend"> 나에게 맞는 의자</label>
+            <label class="link-toggle"><input type="checkbox" value="posture"> 올바른 사용법</label>
+            <label class="link-toggle"><input type="checkbox" value="process"> 구매 후 안내</label>
+            <label class="link-toggle"><input type="checkbox" value="care"> 관리법</label>
+        </div>
+    </div>
+
+    <!-- 시작 화면 -->
+    <div class="link-section">
+        <div class="link-section-label">처음 열릴 화면</div>
+        <select class="link-select" id="linkStartSection">
+            <option value="">기본 (제품 라인업)</option>
+            <option value="products">제품 라인업</option>
+            <option value="compare">모델 비교</option>
+            <option value="posture">올바른 사용법</option>
+            <option value="process">구매 후 안내</option>
+            <option value="care">관리법</option>
+        </select>
+        <div class="link-section-sub" style="margin-top:8px">특정 제품 상세를 바로 열려면</div>
+        <select class="link-select" id="linkStartProduct" style="margin-top:6px">
+            <option value="">선택 안 함</option>
+        </select>
+    </div>
+
+    <!-- 생성된 링크 -->
+    <div class="link-result" id="linkResult" style="display:none">
+        <div class="link-url-wrap">
+            <div class="link-url-label">생성된 링크</div>
+            <div class="link-url-box" id="linkUrlBox"></div>
+            <button class="link-copy-btn" onclick="copyLink()">📋 복사</button>
+        </div>
+        <div class="link-qr-wrap">
+            <div class="link-url-label">QR 코드</div>
+            <div id="linkQrCode"></div>
+        </div>
+        <div class="link-share-row">
+            <button class="link-kakao-btn" onclick="shareKakao()">
+                <span style="font-size:1.1em">💬</span> 카카오톡으로 공유
+            </button>
+        </div>
+    </div>
+
+    <button class="link-generate-btn" onclick="generateLink()">링크 생성하기 →</button>
+</div>
+
+<!-- ══ 게스트 모드 배너 ══ -->
+<div class="guest-banner" id="guestBanner">
+    📎 시디즈 매장에서 맞춤 안내 링크를 보내드렸습니다
+</div>
+
 <!-- HEADER -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <header>
     <div class="header-logo" id="adminTrigger"
         onmousedown="startAdminPress()" onmouseup="cancelAdminPress()" onmouseleave="cancelAdminPress()"
@@ -2752,7 +2977,172 @@ function rebuildProductGrid() {
 document.addEventListener('DOMContentLoaded', () => {
     applyStoredEdits();
     initComparePicker();
+    applyGuestParams();
 });
+
+// ══════════════════════════════════════════════
+//  게스트 모드 — URL 파라미터 처리
+// ══════════════════════════════════════════════
+function applyGuestParams() {
+    const params = new URLSearchParams(location.search);
+    if (!params.has('s') && !params.has('p') && !params.has('detail')) return;
+
+    // 게스트 배너 표시
+    document.getElementById('guestBanner').classList.add('show');
+    document.body.classList.add('guest-mode');
+
+    const nav = document.getElementById('headerNav');
+
+    // 허용된 섹션 파싱 (s=products,posture,care)
+    const allowedSections = params.get('s') ? params.get('s').split(',') : null;
+
+    // 허용된 제품 파싱 (p=t50,t80)
+    const allowedProducts = params.get('p') ? params.get('p').split(',') : null;
+
+    // 네비게이션 필터링
+    if (allowedSections) {
+        nav.querySelectorAll('a').forEach(a => {
+            const sec = a.getAttribute('onclick')?.match(/navigate\('(\w+)'/)?.[1];
+            if (sec && !allowedSections.includes(sec)) {
+                a.style.display = 'none';
+            }
+        });
+    }
+
+    // 제품 카드 필터링
+    if (allowedProducts) {
+        document.querySelectorAll('.product-card').forEach(card => {
+            const id = card.getAttribute('onclick')?.match(/showDetail\('(\w+)'/)?.[1];
+            if (id && !allowedProducts.includes(id)) {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // 시작 섹션 이동
+    const detail = params.get('detail');
+    if (detail) {
+        // 제품 상세 바로 열기
+        setTimeout(() => showDetail(detail), 100);
+    } else if (allowedSections && allowedSections.length > 0) {
+        const first = allowedSections[0];
+        const navLink = [...nav.querySelectorAll('a')].find(a =>
+            a.getAttribute('onclick')?.includes(`'${first}'`)
+        );
+        if (navLink) navigate(first, navLink);
+    }
+}
+
+// ══════════════════════════════════════════════
+//  링크 빌더
+// ══════════════════════════════════════════════
+let generatedUrl = '';
+
+function openLinkBuilder() {
+    // 제품 칩 렌더링
+    const grid = document.getElementById('linkProductGrid');
+    grid.innerHTML = '';
+    Object.entries(products).forEach(([id, p]) => {
+        const chip = document.createElement('div');
+        chip.className = 'link-prod-chip on';
+        chip.dataset.id = id;
+        chip.textContent = p.name;
+        chip.addEventListener('click', () => chip.classList.toggle('on'));
+        grid.appendChild(chip);
+    });
+
+    // 제품 상세 select 채우기
+    const sel = document.getElementById('linkStartProduct');
+    sel.innerHTML = '<option value="">선택 안 함</option>';
+    Object.entries(products).forEach(([id, p]) => {
+        sel.innerHTML += `<option value="${id}">${p.name}</option>`;
+    });
+
+    document.getElementById('linkResult').style.display = 'none';
+    document.getElementById('linkModalOverlay').classList.add('open');
+    document.getElementById('linkModal').classList.add('open');
+}
+
+function closeLinkBuilder() {
+    document.getElementById('linkModalOverlay').classList.remove('open');
+    document.getElementById('linkModal').classList.remove('open');
+}
+
+function generateLink() {
+    const base = location.href.split('?')[0];
+    const params = new URLSearchParams();
+
+    // 선택된 제품
+    const selectedProds = [...document.querySelectorAll('.link-prod-chip.on')]
+        .map(c => c.dataset.id);
+    const allProds = Object.keys(products);
+    // 전체 선택이면 파라미터 생략
+    if (selectedProds.length > 0 && selectedProds.length < allProds.length) {
+        params.set('p', selectedProds.join(','));
+    }
+
+    // 선택된 섹션
+    const allSections = ['products','compare','recommend','posture','process','care'];
+    const checkedSections = [...document.querySelectorAll('.link-section-grid input:checked')]
+        .map(i => i.value);
+    if (checkedSections.length < allSections.length) {
+        params.set('s', checkedSections.join(','));
+    }
+
+    // 시작 제품 상세
+    const detailVal = document.getElementById('linkStartProduct').value;
+    if (detailVal) {
+        params.set('detail', detailVal);
+        // detail이 있으면 s에 products 포함
+        if (!checkedSections.includes('products')) {
+            const s = params.get('s') || '';
+            params.set('s', s ? `products,${s}` : 'products');
+        }
+    } else {
+        // 시작 섹션
+        const startSec = document.getElementById('linkStartSection').value;
+        if (startSec) {
+            const current = params.get('s');
+            if (!current) {
+                params.set('s', allSections.join(','));
+            }
+            // 시작 섹션을 맨 앞으로 재정렬
+            const sArr = (params.get('s') || '').split(',').filter(Boolean);
+            const reordered = [startSec, ...sArr.filter(s => s !== startSec)];
+            params.set('s', reordered.join(','));
+        }
+    }
+
+    generatedUrl = params.toString() ? `${base}?${params.toString()}` : base;
+
+    // URL 표시
+    document.getElementById('linkUrlBox').textContent = generatedUrl;
+    document.getElementById('linkResult').style.display = 'block';
+
+    // QR 생성
+    const qrWrap = document.getElementById('linkQrCode');
+    qrWrap.innerHTML = '';
+    new QRCode(qrWrap, {
+        text: generatedUrl,
+        width: 140, height: 140,
+        colorDark: '#0D3BFF', colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+    });
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(generatedUrl).then(() => showToast('🔗 링크가 복사되었습니다!'));
+}
+
+function shareKakao() {
+    // 카카오 SDK가 없는 환경은 SMS 딥링크로 fallback
+    const msg = encodeURIComponent(`시디즈 맞춤 안내 링크를 보내드립니다.\n\n${generatedUrl}`);
+    if (navigator.share) {
+        navigator.share({ title: '시디즈 맞춤 안내', url: generatedUrl });
+    } else {
+        window.open(`https://open.kakao.com/o/share?text=${msg}`, '_blank');
+    }
+}
 
 // ── COMPARE DATA ──
 const compareData = {
