@@ -3122,17 +3122,44 @@ function applyGuestParams() {
     // 허용된 제품 파싱
     const allowedProducts = params.get('p') ? params.get('p').split(',') : null;
 
-    // 네비게이션 필터링
+    // ── 섹션 표시 제어 ──
     if (allowedSections) {
+        // 모든 섹션 숨김 처리 후 허용된 것만 유지
+        document.querySelectorAll('.section').forEach(sec => {
+            if (!allowedSections.includes(sec.id)) {
+                sec.classList.remove('active');
+                sec.style.display = 'none'; // active 못 받게도 차단
+            }
+        });
+        // heroSection: products가 허용됐을 때만 표시
+        const hero = document.getElementById('heroSection');
+        if (hero) hero.style.display = allowedSections.includes('products') ? 'block' : 'none';
+
+        // 네비게이션 탭 필터링
         nav.querySelectorAll('a').forEach(a => {
             const sec = a.getAttribute('onclick')?.match(/navigate\('(\w+)'/)?.[1];
             if (sec && !allowedSections.includes(sec)) {
                 a.style.display = 'none';
             }
         });
+
+        // 허용된 첫 섹션 활성화
+        const firstSec = allowedSections.find(s => s !== 'stores');
+        if (firstSec) {
+            const el = document.getElementById(firstSec);
+            if (el) {
+                el.style.display = ''; // 차단 해제
+                el.classList.add('active');
+            }
+            // 네비 active 표시
+            const navLink = [...nav.querySelectorAll('a')].find(a =>
+                a.getAttribute('onclick')?.includes(`'${firstSec}'`)
+            );
+            if (navLink) navLink.classList.add('active');
+        }
     }
 
-    // 제품 카드 필터링
+    // ── 제품 카드 필터링 ──
     if (allowedProducts) {
         document.querySelectorAll('.product-card').forEach(card => {
             const id = card.getAttribute('onclick')?.match(/showDetail\('(\w+)'/)?.[1];
@@ -3142,21 +3169,20 @@ function applyGuestParams() {
         });
     }
 
-    // 매장 파라미터 처리
+    // ── 매장 파라미터 처리 ──
     const storeParam = params.get('st');
     if (storeParam) {
         const storeIds = storeParam === 'all' ? null : storeParam.split(',');
         renderStoresSection(storeIds);
     }
 
-    // 시작 섹션 이동
+    // ── 시작 섹션/제품 상세 오버라이드 ──
     const detail = params.get('detail');
     if (detail) {
         setTimeout(() => showDetail(detail), 100);
-    } else if (allowedSections && allowedSections.length > 0) {
+    } else if (allowedSections) {
         const first = allowedSections[0];
         if (first === 'stores') {
-            // 매장 섹션으로 스크롤
             setTimeout(() => {
                 const el = document.getElementById('stores');
                 if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -3925,6 +3951,10 @@ function getRecommendation(answers) {
 
 // ── NAVIGATION ──
 function navigate(sectionId, navEl) {
+    // 게스트 모드에서 차단된 섹션은 이동 불가
+    const el = document.getElementById(sectionId);
+    if (el && el.style.display === 'none' && document.body.classList.contains('guest-mode')) return;
+
     // Show hero only on products page
     document.getElementById('heroSection').style.display = sectionId === 'products' ? 'block' : 'none';
     
