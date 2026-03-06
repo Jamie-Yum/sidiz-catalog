@@ -262,12 +262,41 @@
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--text-primary);
+            display: flex; align-items: center; flex-wrap: wrap; gap: 7px;
         }
         .product-card-body .price span {
             font-size: 0.8rem;
             font-weight: 400;
             color: var(--text-secondary);
         }
+        /* 프로모션 뱃지 */
+        .promo-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b35, #f7c59f);
+            color: white;
+            font-size: 0.7rem; font-weight: 800;
+            padding: 3px 9px; border-radius: 20px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .detail-info .promo-badge {
+            font-size: 0.8rem; padding: 4px 12px;
+        }
+        /* 편집 패널 프로모션 필드 */
+        .promo-field-row {
+            display: flex; gap: 8px; align-items: center;
+        }
+        .promo-field-row input[type="text"] {
+            flex: 1;
+        }
+        .promo-toggle-label {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.78rem; font-weight: 600; color: var(--sidiz-navy);
+            cursor: pointer; white-space: nowrap;
+            padding: 7px 10px; background: #f0f4ff;
+            border-radius: 8px; border: 1.5px solid var(--sidiz-light);
+        }
+        .promo-toggle-label input { accent-color: var(--sidiz-navy); }
 
         /* ── PRODUCT DETAIL ── */
         .detail-hero {
@@ -1249,6 +1278,111 @@
         }
         .save-toast.show { transform: translateX(-50%) translateY(0); }
 
+        /* ── 배포 페이지 프로모션 행 ── */
+        .promo-deploy-row {
+            margin-top: 14px; padding-top: 14px;
+            border-top: 1px solid #f0f0f5;
+        }
+        .promo-deploy-toggle {
+            display: flex; align-items: center; gap: 8px;
+            cursor: pointer; user-select: none;
+        }
+        .promo-deploy-toggle input { accent-color: var(--sidiz-navy); width: 16px; height: 16px; }
+        .promo-deploy-label-text { font-size: 0.83rem; font-weight: 600; color: var(--sidiz-dark); }
+        .promo-deploy-preview {
+            margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .promo-deploy-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.76rem; color: var(--text-secondary);
+        }
+        .promo-deploy-item .promo-badge { font-size: 0.72rem; }
+
+        .link-preview-btn {
+            padding: 9px 16px; background: #f0f4ff; color: var(--sidiz-navy);
+            border: 1.5px solid var(--sidiz-navy); border-radius: 8px;
+            font-size: 0.8rem; font-weight: 700; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .link-preview-btn:hover { background: var(--sidiz-navy); color: white; }
+
+        /* ══ 미리보기 모달 ══ */
+        .preview-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+            z-index: 9000;
+        }
+        .preview-overlay.open { display: block; }
+        .preview-modal {
+            display: none; position: fixed; inset: 0;
+            z-index: 9100;
+            flex-direction: column;
+        }
+        .preview-modal.open { display: flex; animation: fadeUp 0.2s ease; }
+
+        /* 상단 바 */
+        .preview-modal-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #1a1a2e; color: white;
+            padding: 10px 20px; gap: 16px; flex-shrink: 0;
+            height: 52px;
+        }
+        .preview-modal-bar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .preview-device-btns { display: flex; gap: 4px; }
+        .preview-device-btn {
+            background: rgba(255,255,255,0.1); border: none;
+            border-radius: 7px; padding: 5px 9px;
+            font-size: 1rem; cursor: pointer; transition: background 0.15s;
+            line-height: 1;
+        }
+        .preview-device-btn:hover { background: rgba(255,255,255,0.2); }
+        .preview-device-btn.active { background: var(--sidiz-blue); }
+        .preview-url-badge {
+            font-size: 0.68rem; color: rgba(255,255,255,0.5);
+            font-family: monospace; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; max-width: 480px;
+        }
+        .preview-close-btn {
+            background: rgba(255,255,255,0.1); border: none; color: white;
+            padding: 6px 14px; border-radius: 8px;
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .preview-close-btn:hover { background: rgba(239,68,68,0.4); }
+
+        /* 프레임 영역 */
+        .preview-frame-wrap {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            background: #0f0f1a; overflow: auto; padding: 20px;
+        }
+        .preview-device-frame {
+            background: white; border-radius: 12px;
+            overflow: hidden; transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        /* 모바일 */
+        .preview-device-frame.mobile {
+            width: 390px; height: 844px;
+            border-radius: 40px;
+            border: 10px solid #1a1a2e;
+            box-shadow: 0 0 0 2px #333, 0 20px 60px rgba(0,0,0,0.6);
+        }
+        /* 태블릿 */
+        .preview-device-frame.tablet {
+            width: 768px; height: 1024px;
+            border-radius: 20px;
+            border: 8px solid #1a1a2e;
+        }
+        /* 데스크톱 — 전체 */
+        .preview-device-frame.desktop {
+            width: calc(100vw - 40px);
+            height: calc(100vh - 52px - 40px);
+            border-radius: 8px;
+        }
+        .preview-device-frame iframe {
+            width: 100%; height: 100%; border: none; display: block;
+        }
+
         /* ══ 매장 칩 (배포 페이지) ══ */
         .store-chip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
         .store-chip {
@@ -1970,7 +2104,7 @@
     </h4>
     <div class="edit-field">
         <label>제품명</label>
-        <input type="text" id="ef-name" placeholder="예: T50 시리즈">
+        <input type="text" id="ef-name" placeholder="예: T50">
     </div>
     <div class="edit-field">
         <label>태그라인 (부제)</label>
@@ -1986,7 +2120,17 @@
     </div>
     <div class="edit-field">
         <label>가격</label>
-        <input type="text" id="ef-price" placeholder="예: 449,000원~">
+        <input type="text" id="ef-price" placeholder="예: 449,000원">
+    </div>
+    <div class="edit-field">
+        <label>프로모션 문구 <span style="font-weight:400;color:#aaa;font-size:0.75rem">— 입력 시 가격 옆에 표시됩니다</span></label>
+        <div class="promo-field-row">
+            <input type="text" id="ef-promo" placeholder="예: 봄 한정 10% 할인">
+            <label class="promo-toggle-label">
+                <input type="checkbox" id="ef-promo-on" onchange="togglePromoPreview()">
+                <span>표시</span>
+            </label>
+        </div>
     </div>
     <div class="edit-field">
         <label>뱃지 텍스트</label>
@@ -2047,63 +2191,64 @@
         <div class="deploy-title">📤 고객 링크 생성</div>
         <div class="deploy-desc">보여줄 내용을 선택하고 링크를 만들어 고객에게 전달하세요.</div>
 
-        <!-- 제품 선택 -->
+        <!-- ① 보여줄 메뉴 -->
         <div class="link-section">
-            <div class="link-section-label">보여줄 제품</div>
-            <div class="link-section-sub">선택한 제품만 제품 라인업에 표시됩니다</div>
-            <div class="link-product-grid" id="linkProductGrid"></div>
-        </div>
-
-        <!-- 섹션 선택 -->
-        <div class="link-section">
-            <div class="link-section-label">보여줄 메뉴</div>
-            <div class="link-section-sub">선택 해제한 메뉴는 고객 화면에서 숨겨집니다</div>
-            <div class="link-section-grid">
-                <label class="link-toggle"><input type="checkbox" value="products" checked> 제품 라인업</label>
-                <label class="link-toggle"><input type="checkbox" value="compare"> 모델 비교</label>
-                <label class="link-toggle"><input type="checkbox" value="recommend"> 나에게 맞는 의자</label>
-                <label class="link-toggle"><input type="checkbox" value="process"> 구매 후 안내</label>
-                <label class="link-toggle"><input type="checkbox" value="posture"> 올바른 사용법</label>
-                <label class="link-toggle"><input type="checkbox" value="care"> 관리법</label>
-                <label class="link-toggle"><input type="checkbox" value="stores"> 매장 안내</label>
+            <div class="link-section-label">① 보여줄 메뉴</div>
+            <div class="link-section-sub">체크한 메뉴만 고객 화면에 표시됩니다</div>
+            <div class="link-section-grid" id="menuCheckGrid">
+                <label class="link-toggle"><input type="checkbox" name="menu" value="products" onchange="onMenuChange()"> 제품 라인업</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="compare"  onchange="onMenuChange()"> 모델 비교</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="recommend" onchange="onMenuChange()"> 나에게 맞는 의자</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="process"  onchange="onMenuChange()"> 구매 후 안내</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="posture"  onchange="onMenuChange()"> 올바른 사용법</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="care"     onchange="onMenuChange()"> 관리법</label>
+                <label class="link-toggle"><input type="checkbox" name="menu" value="stores"   onchange="onMenuChange()"> 매장 안내</label>
             </div>
         </div>
 
-        <!-- 매장 선택 -->
+        <!-- ② 처음 열릴 화면 - 체크된 메뉴와 연동 -->
         <div class="link-section">
-            <div class="link-section-label">함께 보낼 매장 안내</div>
-            <div class="link-section-sub">선택한 매장 정보가 고객 링크에 포함됩니다</div>
-            <div class="store-chip-grid" id="storeChipGrid"></div>
+            <div class="link-section-label">② 처음 열릴 화면</div>
+            <div class="link-section-sub">고객이 링크를 열었을 때 가장 먼저 보이는 화면입니다</div>
+            <select class="link-select" id="linkStartSection">
+                <option value="">— 메뉴를 먼저 선택하세요 —</option>
+            </select>
         </div>
 
-        <!-- 시작 화면 -->
-        <div class="link-section">
-            <div class="link-section-label">처음 열릴 화면</div>
-            <select class="link-select" id="linkStartSection">
-                <option value="">기본 (제품 라인업)</option>
-                <option value="products">제품 라인업</option>
-                <option value="compare">모델 비교</option>
-                <option value="process">구매 후 안내</option>
-                <option value="posture">올바른 사용법</option>
-                <option value="care">관리법</option>
-                <option value="stores">매장 안내</option>
-            </select>
-            <div class="link-section-sub" style="margin-top:10px">특정 제품 상세 바로 열기</div>
-            <select class="link-select" id="linkStartProduct" style="margin-top:6px">
-                <option value="">선택 안 함</option>
-            </select>
+        <!-- ③ 보여줄 제품 - 제품 라인업 체크 시에만 활성화 -->
+        <div class="link-section" id="productSection" style="opacity:.4;pointer-events:none">
+            <div class="link-section-label">③ 보여줄 제품</div>
+            <div class="link-section-sub" id="productSectionSub">제품 라인업 메뉴를 체크하면 활성화됩니다</div>
+            <div class="link-product-grid" id="linkProductGrid"></div>
+
+            <!-- 프로모션 표시 여부 -->
+            <div class="promo-deploy-row" id="promoDeployRow" style="display:none">
+                <label class="promo-deploy-toggle">
+                    <input type="checkbox" id="deployPromoOn" onchange="onPromoDeployChange()">
+                    <span class="promo-deploy-label-text">프로모션 문구 고객에게 표시</span>
+                </label>
+                <div class="promo-deploy-preview" id="promoDeployPreview"></div>
+            </div>
+        </div>
+
+        <!-- ④ 매장 선택 - 매장 안내 체크 시에만 활성화 -->
+        <div class="link-section" id="storeSection" style="opacity:.4;pointer-events:none">
+            <div class="link-section-label">④ 보여줄 매장</div>
+            <div class="link-section-sub" id="storeSectionSub">매장 안내 메뉴를 체크하면 활성화됩니다</div>
+            <div class="store-chip-grid" id="storeChipGrid"></div>
         </div>
 
         <!-- 생성 버튼 -->
         <button class="link-generate-btn" onclick="generateLink()">🔗 링크 생성하기</button>
 
-        <!-- 결과 — 버튼 바로 아래 인라인 -->
+        <!-- 결과 -->
         <div class="link-result" id="linkResult" style="display:none">
             <div class="link-result-row">
                 <div class="link-result-col">
                     <div class="link-url-label">생성된 링크</div>
                     <div class="link-url-box" id="linkUrlBox"></div>
                     <div class="link-action-row">
+                        <button class="link-preview-btn" onclick="openPreview()">👁️ 미리보기</button>
                         <button class="link-copy-btn" onclick="copyLink()">📋 링크 복사</button>
                         <button class="link-kakao-btn" onclick="shareKakao()">💬 카카오톡 공유</button>
                     </div>
@@ -2113,6 +2258,27 @@
                     <div id="linkQrCode"></div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ 미리보기 모달 ══ -->
+<div class="preview-overlay" id="previewOverlay" onclick="closePreview()"></div>
+<div class="preview-modal" id="previewModal">
+    <div class="preview-modal-bar">
+        <div class="preview-modal-bar-left">
+            <div class="preview-device-btns">
+                <button class="preview-device-btn active" onclick="setPreviewDevice('mobile', this)" title="모바일">📱</button>
+                <button class="preview-device-btn" onclick="setPreviewDevice('tablet', this)" title="태블릿">📟</button>
+                <button class="preview-device-btn" onclick="setPreviewDevice('desktop', this)" title="전체화면">🖥️</button>
+            </div>
+            <div class="preview-url-badge" id="previewUrlBadge"></div>
+        </div>
+        <button class="preview-close-btn" onclick="closePreview()">✕ 닫기</button>
+    </div>
+    <div class="preview-frame-wrap" id="previewFrameWrap">
+        <div class="preview-device-frame" id="previewDeviceFrame">
+            <iframe id="previewIframe" src="" frameborder="0"></iframe>
         </div>
     </div>
 </div>
@@ -2170,10 +2336,10 @@
                 <div class="badge">BEST SELLER</div>
             </div>
             <div class="product-card-body">
-                <h3>T50 시리즈</h3>
+                <h3>T50</h3>
                 <div class="subtitle">국가대표 의자</div>
                 <p>10년 이상 사랑받아 온 시디즈의 시그니처. 검증된 인체공학 설계로 모든 체형에 맞는 편안함을 제공합니다.</p>
-                <div class="price">449,000원~ <span>부터</span></div>
+                <div class="price">449,000원</div>
             </div>
         </div>
         <!-- T60 -->
@@ -2186,7 +2352,7 @@
                 <h3>T60</h3>
                 <div class="subtitle">퍼스널 피팅 시스템 체어</div>
                 <p>모든 체형에 맞춰 세밀하게 조절되는 인피니핏 헤드레스트 탑재. 홈라이크 디자인으로 집·사무실 어디서나 어울립니다.</p>
-                <div class="price">599,000원~ <span>부터</span></div>
+                <div class="price">599,000원</div>
             </div>
         </div>
         <!-- T90 -->
@@ -2196,10 +2362,10 @@
                 <div class="badge">NEW 플래그십</div>
             </div>
             <div class="product-card-body">
-                <h3>T90 시리즈</h3>
+                <h3>T90</h3>
                 <div class="subtitle">퍼포먼스 인체공학 체어</div>
                 <p>2025년 출시된 시디즈 최상위 모델. 4D 팔걸이·퍼펙트 피팅 럼버서포트·플렉서블 등판으로 체형에 정밀하게 대응합니다.</p>
-                <div class="price">1,290,000원~ <span>부터</span></div>
+                <div class="price">1,290,000원</div>
             </div>
         </div>
         <!-- T80 -->
@@ -2209,10 +2375,10 @@
                 <div class="badge">PREMIUM</div>
             </div>
             <div class="product-card-body">
-                <h3>T80 시리즈</h3>
+                <h3>T80</h3>
                 <div class="subtitle">Ultimate Comfort</div>
                 <p>프리미엄 소재와 최상급 틸팅 메커니즘으로 완성한 시디즈의 프리미엄 모델입니다.</p>
-                <div class="price">899,000원~ <span>부터</span></div>
+                <div class="price">899,000원</div>
             </div>
         </div>
         <!-- GC PRO -->
@@ -2225,7 +2391,7 @@
                 <h3>GC PRO</h3>
                 <div class="subtitle">프로 게이밍 체어</div>
                 <p>장시간 게임 플레이를 위해 설계된 프로 게이밍 의자. 쿨링시트·천연가죽 옵션으로 몰입 환경을 완성합니다.</p>
-                <div class="price">690,000원~ <span>부터</span></div>
+                <div class="price">690,000원</div>
             </div>
         </div>
         <!-- RINGO 2 -->
@@ -2238,7 +2404,7 @@
                 <h3>RINGO 2</h3>
                 <div class="subtitle">어린이 성장 맞춤 의자</div>
                 <p>4단계 그로잉 기능으로 성장하는 아이 체형에 맞게 조절되는 키즈 학습 의자. 발받침 기본 포함.</p>
-                <div class="price">189,000원~ <span>부터</span></div>
+                <div class="price">189,000원</div>
             </div>
         </div>
         <!-- T20 -->
@@ -2251,7 +2417,7 @@
                 <h3>T20</h3>
                 <div class="subtitle">합리적인 인체공학</div>
                 <p>핵심 인체공학 기능을 합리적인 가격에 담았습니다. 처음 시디즈를 만나는 분들에게 추천합니다.</p>
-                <div class="price">279,000원~ <span>부터</span></div>
+                <div class="price">279,000원</div>
             </div>
         </div>
         <!-- GX 게이밍 -->
@@ -2264,7 +2430,7 @@
                 <h3>GX</h3>
                 <div class="subtitle">게이밍 퍼포먼스 체어</div>
                 <p>게이밍 디자인과 시디즈 인체공학의 만남. 쿨링시트와 조절형 팔걸이로 장시간 플레이를 지원합니다.</p>
-                <div class="price">393,000원~ <span>부터</span></div>
+                <div class="price">393,000원</div>
             </div>
         </div>
         <!-- LINIE -->
@@ -2277,7 +2443,7 @@
                 <h3>LINIE</h3>
                 <div class="subtitle">디자인 오피스 체어</div>
                 <p>미니멀한 디자인과 인체공학의 균형. 오피스 인테리어와 자연스럽게 어우러지는 의자입니다.</p>
-                <div class="price">599,000원~ <span>부터</span></div>
+                <div class="price">599,000원</div>
             </div>
         </div>
         <!-- ible -->
@@ -2290,7 +2456,7 @@
                 <h3>IBLE</h3>
                 
                 <p>집중력을 높이는 최적의 자세를 만들어 줍니다.</p>
-                <div class="price">349,000원~ <span>부터</span></div>
+                <div class="price">349,000원</div>
             </div>
         </div>
     </div>
@@ -2996,6 +3162,28 @@ function resetImage(e) {
     document.getElementById('imgFileInput').value = '';
 }
 
+// ── 프로모션 토글 즉각 미리보기 (편집 패널) ──
+function togglePromoPreview() {
+    // 편집 패널이 열려 있는 제품에 실시간 반영
+    if (!currentEditId) return;
+    const promoText = document.getElementById('ef-promo').value.trim();
+    const promoOn   = document.getElementById('ef-promo-on').checked;
+    const cardEl = document.querySelector(`.product-card[onclick="showDetail('${currentEditId}')"]`);
+    if (cardEl) {
+        const priceEl = cardEl.querySelector('.product-card-body .price');
+        const price = document.getElementById('ef-price').value.trim() || products[currentEditId].price;
+        const promo = (promoOn && promoText) ? ` <span class="promo-badge">${promoText}</span>` : '';
+        if (priceEl) priceEl.innerHTML = `${price}${promo}`;
+    }
+}
+
+// ── 가격 + 프로모션 뱃지 렌더링 ──
+function renderPrice(p) {
+    const promo = (p.promo && p.promoOn)
+        ? ` <span class="promo-badge">${p.promo}</span>` : '';
+    return `${p.price}${promo}`;
+}
+
 function openCardEdit(productId) {
     if (!isAdminMode) return;
     const p = products[productId];
@@ -3015,6 +3203,8 @@ function openCardEdit(productId) {
     document.getElementById('ef-desc').value = p.desc;
     document.getElementById('ef-price').value = p.price;
     document.getElementById('ef-badge').value = badge;
+    document.getElementById('ef-promo').value = p.promo || '';
+    document.getElementById('ef-promo-on').checked = !!(p.promo && p.promoOn);
 
     // 이미지 미리보기 초기화 후 현재 이미지 표시
     resetImage({ stopPropagation: () => {} });
@@ -3045,12 +3235,16 @@ function applyCardEdit() {
     const newDesc     = document.getElementById('ef-desc').value.trim();
     const newPrice    = document.getElementById('ef-price').value.trim();
     const newBadge    = document.getElementById('ef-badge').value.trim();
+    const newPromo    = document.getElementById('ef-promo').value.trim();
+    const promoOn     = document.getElementById('ef-promo-on').checked;
 
     // products 데이터 업데이트
     if (newName)    p.name    = newName;
     if (newTagline) p.tagline = newTagline;
     if (newDesc)    p.desc    = newDesc;
     if (newPrice)   p.price   = newPrice;
+    p.promo   = newPromo;
+    p.promoOn = promoOn;
     if (pendingImgData) p.img = pendingImgData;
 
     // 카드 DOM 즉시 반영
@@ -3059,11 +3253,11 @@ function applyCardEdit() {
         if (newName)    cardEl.querySelector('.product-card-body h3').textContent = newName;
         if (newTagline) cardEl.querySelector('.product-card-body .subtitle').textContent = newTagline;
         if (newCardDesc) cardEl.querySelector('.product-card-body p').textContent = newCardDesc;
-        if (newPrice)   cardEl.querySelector('.product-card-body .price').innerHTML = `${newPrice} <span>부터</span>`;
+        const priceEl = cardEl.querySelector('.product-card-body .price');
+        if (priceEl) priceEl.innerHTML = renderPrice(p);
         if (newBadge)   cardEl.querySelector('.badge').textContent = newBadge;
         if (pendingImgData) {
-            const imgEl = cardEl.querySelector('.product-card-img');
-            imgEl.style.backgroundImage = `url('${pendingImgData}')`;
+            cardEl.querySelector('.product-card-img').style.backgroundImage = `url('${pendingImgData}')`;
         }
     }
 
@@ -3087,7 +3281,7 @@ function rebuildProductGrid() {
             body.querySelector('h3').textContent = p.name;
             if (body.querySelector('.subtitle')) body.querySelector('.subtitle').textContent = p.tagline;
             body.querySelector('p').textContent = p.desc;
-            body.querySelector('.price').innerHTML = `${p.price} <span>부터</span>`;
+            body.querySelector('.price').innerHTML = `${p.price}${(p.promo && p.promoOn) ? ' <span class="promo-badge">' + p.promo + '</span>' : ''}`;
         }
         if (p.img) {
             const imgEl = card.querySelector('.product-card-img');
@@ -3116,8 +3310,9 @@ function applyGuestParams() {
 
     const nav = document.getElementById('headerNav');
 
-    // 허용된 섹션 파싱
-    const allowedSections = params.get('s') ? params.get('s').split(',') : null;
+    // 허용된 섹션 파싱 — s= 파라미터가 있으면 반드시 적용 (빈 값이면 빈 배열)
+    const sParam = params.get('s');
+    const allowedSections = sParam !== null ? sParam.split(',').filter(Boolean) : null;
 
     // 허용된 제품 파싱
     const allowedProducts = params.get('p') ? params.get('p').split(',') : null;
@@ -3176,6 +3371,23 @@ function applyGuestParams() {
         renderStoresSection(storeIds);
     }
 
+    // ── 프로모션 표시 ──
+    if (params.get('promo') === '1') {
+        // rebuildProductGrid가 이미 돌았으므로 카드 DOM에 직접 반영
+        document.querySelectorAll('.product-card').forEach(card => {
+            const id = card.getAttribute('onclick')?.match(/showDetail\('(\w+)'/)?.[1];
+            const p = id && products[id];
+            if (p && p.promo) {
+                const priceEl = card.querySelector('.price');
+                if (priceEl && !priceEl.querySelector('.promo-badge')) {
+                    priceEl.innerHTML = `${p.price} <span class="promo-badge">${p.promo}</span>`;
+                }
+            }
+        });
+        // products 데이터에도 promoOn 강제 활성화 (상세 페이지용)
+        Object.values(products).forEach(p => { if (p.promo) p.promoOn = true; });
+    }
+
     // ── 시작 섹션/제품 상세 오버라이드 ──
     const detail = params.get('detail');
     if (detail) {
@@ -3197,11 +3409,28 @@ function applyGuestParams() {
 }
 let generatedUrl = '';
 
+// ── 배포 프로모션 토글 미리보기 ──
+function onPromoDeployChange() {
+    const isOn = document.getElementById('deployPromoOn').checked;
+    const preview = document.getElementById('promoDeployPreview');
+    if (!isOn) { preview.innerHTML = ''; return; }
+    const promoProducts = Object.entries(products).filter(([,p]) => p.promo);
+    preview.innerHTML = promoProducts.map(([id, p]) =>
+        `<div class="promo-deploy-item">${p.name} <span class="promo-badge">${p.promo}</span></div>`
+    ).join('');
+}
+
+// ── 배포 모드 진입/퇴장 ──
 function enterDeployMode() {
     document.body.classList.add('deploy-mode');
     document.getElementById('deployBar').classList.add('open');
     document.getElementById('deployPage').style.display = 'block';
-    // 제품 칩 초기화
+    document.getElementById('linkResult').style.display = 'none';
+
+    // 메뉴 체크박스 전부 해제 상태로 초기화
+    document.querySelectorAll('#menuCheckGrid input[name="menu"]').forEach(cb => cb.checked = false);
+
+    // 제품 칩 초기화 (비활성 상태)
     const grid = document.getElementById('linkProductGrid');
     grid.innerHTML = '';
     Object.entries(products).forEach(([id, p]) => {
@@ -3212,17 +3441,15 @@ function enterDeployMode() {
         chip.addEventListener('click', () => chip.classList.toggle('on'));
         grid.appendChild(chip);
     });
-    // 제품 상세 select
-    const sel = document.getElementById('linkStartProduct');
-    sel.innerHTML = '<option value="">선택 안 함</option>';
-    Object.entries(products).forEach(([id, p]) => {
-        sel.innerHTML += `<option value="${id}">${p.name}</option>`;
-    });
-    document.getElementById('linkResult').style.display = 'none';
-    // 메뉴 체크박스 전체 초기화 후 모두 체크
-    document.querySelectorAll('.link-section-grid input').forEach(cb => cb.checked = true);
-    // 매장 칩 초기화
+
+    // 매장 칩 초기화 (비활성 상태)
     renderStoreChips();
+
+    // 처음 열릴 화면 select 초기화
+    document.getElementById('linkStartSection').innerHTML = '<option value="">— 메뉴를 먼저 선택하세요 —</option>';
+
+    // 연동 UI 상태 업데이트
+    onMenuChange();
 }
 
 function exitDeployMode() {
@@ -3231,46 +3458,110 @@ function exitDeployMode() {
     document.getElementById('deployPage').style.display = 'none';
 }
 
+// ── 메뉴 체크 변경 시 연동 ──
+const MENU_LABELS = {
+    products: '제품 라인업', compare: '모델 비교', recommend: '나에게 맞는 의자',
+    process: '구매 후 안내', posture: '올바른 사용법', care: '관리법', stores: '매장 안내'
+};
+
+function onMenuChange() {
+    const checked = [...document.querySelectorAll('#menuCheckGrid input[name="menu"]:checked')].map(i => i.value);
+    const hasProducts = checked.includes('products');
+    const hasStores   = checked.includes('stores');
+
+    // 제품 섹션 활성/비활성
+    const prodSec = document.getElementById('productSection');
+    prodSec.style.opacity = hasProducts ? '1' : '0.4';
+    prodSec.style.pointerEvents = hasProducts ? 'auto' : 'none';
+    document.getElementById('productSectionSub').textContent = hasProducts
+        ? '선택한 제품만 제품 라인업에 표시됩니다'
+        : '제품 라인업 메뉴를 체크하면 활성화됩니다';
+
+    // 프로모션 행: 제품 섹션 활성 + 프로모션 있는 제품 존재 시 표시
+    if (hasProducts) {
+        const promoProducts = Object.values(products).filter(p => p.promo);
+        const promoRow = document.getElementById('promoDeployRow');
+        if (promoProducts.length > 0) {
+            promoRow.style.display = 'block';
+            onPromoDeployChange();
+        } else {
+            promoRow.style.display = 'none';
+        }
+    } else {
+        document.getElementById('promoDeployRow').style.display = 'none';
+    }
+
+    // 매장 섹션 활성/비활성
+    const storeSec = document.getElementById('storeSection');
+    storeSec.style.opacity = hasStores ? '1' : '0.4';
+    storeSec.style.pointerEvents = hasStores ? 'auto' : 'none';
+    document.getElementById('storeSectionSub').textContent = hasStores
+        ? '선택한 매장만 고객에게 안내됩니다'
+        : '매장 안내 메뉴를 체크하면 활성화됩니다';
+
+    // 처음 열릴 화면 select — 체크된 메뉴만 표시
+    const sel = document.getElementById('linkStartSection');
+    const prevVal = sel.value;
+    sel.innerHTML = '';
+    if (checked.length === 0) {
+        sel.innerHTML = '<option value="">— 메뉴를 먼저 선택하세요 —</option>';
+    } else {
+        checked.forEach((v, i) => {
+            const opt = document.createElement('option');
+            opt.value = v;
+            opt.textContent = MENU_LABELS[v] || v;
+            if (i === 0) opt.selected = true; // 첫 번째 메뉴를 기본 선택
+            sel.appendChild(opt);
+        });
+        // 이전 선택값 유지 (아직 체크된 경우)
+        if (checked.includes(prevVal)) sel.value = prevVal;
+    }
+}
+
+// ── 링크 생성 ──
 function generateLink() {
     const base = location.href.split('?')[0].replace(/[?#].*/, '');
     const params = new URLSearchParams();
 
-    // 선택된 제품
-    const selectedProds = [...document.querySelectorAll('.link-prod-chip.on')].map(c => c.dataset.id);
-    const allProds = Object.keys(products);
-    if (selectedProds.length > 0 && selectedProds.length < allProds.length) {
-        params.set('p', selectedProds.join(','));
+    // 체크된 메뉴 (stores 제외한 섹션 목록)
+    const checkedMenus = [...document.querySelectorAll('#menuCheckGrid input[name="menu"]:checked')].map(i => i.value);
+    const checkedSections = checkedMenus.filter(v => v !== 'stores');
+
+    if (checkedSections.length === 0 && !checkedMenus.includes('stores')) {
+        showToast('⚠️ 보여줄 메뉴를 하나 이상 선택하세요'); return;
     }
 
-    // 선택된 섹션 — stores는 별도 파라미터(st)로 처리하므로 제외
-    const allSections = ['products','compare','recommend','process','posture','care'];
-    const checkedSections = [...document.querySelectorAll('.link-section-grid input:checked')]
-        .map(i => i.value)
-        .filter(v => allSections.includes(v)); // stores 값 제거
-
-    // 항상 s 파라미터를 명시 (없으면 applyGuestParams가 전체를 보여줌)
+    // s= 항상 명시 (비어있어도 기록해서 "전체 보기" 방지)
     params.set('s', checkedSections.join(','));
 
-    // 시작 제품 상세
-    const detailVal = document.getElementById('linkStartProduct').value;
-    if (detailVal) {
-        params.set('detail', detailVal);
-        if (!checkedSections.includes('products')) {
-            params.set('s', checkedSections.length ? `products,${checkedSections.join(',')}` : 'products');
-        }
-    } else {
-        const startSec = document.getElementById('linkStartSection').value;
-        if (startSec && startSec !== 'stores') {
-            const sArr = checkedSections.filter(Boolean);
-            params.set('s', [startSec, ...sArr.filter(s => s !== startSec)].join(','));
+    // 처음 열릴 화면 → s= 앞에 해당 섹션 배치
+    const startSec = document.getElementById('linkStartSection').value;
+    if (startSec && startSec !== 'stores' && checkedSections.includes(startSec)) {
+        const reordered = [startSec, ...checkedSections.filter(s => s !== startSec)];
+        params.set('s', reordered.join(','));
+    }
+
+    // 선택된 제품 (제품 라인업 체크된 경우만)
+    if (checkedMenus.includes('products')) {
+        const selectedProds = [...document.querySelectorAll('.link-prod-chip.on')].map(c => c.dataset.id);
+        const allProds = Object.keys(products);
+        if (selectedProds.length > 0 && selectedProds.length < allProds.length) {
+            params.set('p', selectedProds.join(','));
         }
     }
 
-    // 선택된 매장
-    const selectedStores = [...document.querySelectorAll('.store-chip.on')].map(c => c.dataset.id);
-    const allStores = storeData.map(s => s.id);
-    if (selectedStores.length > 0) {
-        params.set('st', selectedStores.length === allStores.length ? 'all' : selectedStores.join(','));
+    // 선택된 매장 (매장 안내 체크된 경우만)
+    if (checkedMenus.includes('stores')) {
+        const selectedStores = [...document.querySelectorAll('.store-chip.on')].map(c => c.dataset.id);
+        if (selectedStores.length > 0) {
+            params.set('st', selectedStores.length === storeData.length ? 'all' : selectedStores.join(','));
+        }
+    }
+
+    // 프로모션 표시 여부
+    const promoOn = document.getElementById('deployPromoOn')?.checked;
+    if (checkedMenus.includes('products') && promoOn) {
+        params.set('promo', '1');
     }
 
     generatedUrl = `${base}?${params.toString()}`;
@@ -3279,12 +3570,10 @@ function generateLink() {
     document.getElementById('linkResult').style.display = 'block';
     document.getElementById('linkResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-    // QR 생성
     const qrWrap = document.getElementById('linkQrCode');
     qrWrap.innerHTML = '';
     new QRCode(qrWrap, {
-        text: generatedUrl,
-        width: 148, height: 148,
+        text: generatedUrl, width: 148, height: 148,
         colorDark: '#0D3BFF', colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.M
     });
@@ -3292,6 +3581,34 @@ function generateLink() {
 
 function copyLink() {
     navigator.clipboard.writeText(generatedUrl).then(() => showToast('🔗 링크가 복사되었습니다!'));
+}
+
+// ── 미리보기 ──
+let currentDevice = 'mobile';
+
+function openPreview() {
+    if (!generatedUrl) return;
+    const iframe = document.getElementById('previewIframe');
+    iframe.src = generatedUrl;
+    document.getElementById('previewUrlBadge').textContent = generatedUrl;
+    setPreviewDevice(currentDevice, document.querySelector(`.preview-device-btn[onclick*="${currentDevice}"]`));
+    document.getElementById('previewOverlay').classList.add('open');
+    document.getElementById('previewModal').classList.add('open');
+}
+
+function closePreview() {
+    document.getElementById('previewOverlay').classList.remove('open');
+    document.getElementById('previewModal').classList.remove('open');
+    // iframe src 비워서 메모리 해제
+    setTimeout(() => { document.getElementById('previewIframe').src = ''; }, 300);
+}
+
+function setPreviewDevice(device, btn) {
+    currentDevice = device;
+    const frame = document.getElementById('previewDeviceFrame');
+    frame.className = `preview-device-frame ${device}`;
+    document.querySelectorAll('.preview-device-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
 }
 
 function shareKakao() {
@@ -3309,7 +3626,7 @@ function shareKakao() {
 // ══════════════════════════════════════════════
 const storeData = [
     {
-        id: 'nonhyeon', name: '논현 플래그십', region: '서울',
+        id: 'nonhyeon', name: '시디즈 더 프로그레시브 논현', region: '서울',
         address: '서울 강남구 학동로 126 2층',
         hours: '매일 10:30 – 19:30',
         phone: '02-466-7999',
@@ -3317,7 +3634,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+논현'
     },
     {
-        id: 'hapjeong', name: '합정점', region: '서울',
+        id: 'hapjeong', name: '시디즈 더 프로그레시브 합정', region: '서울',
         address: '서울 마포구 양화로 78 1층',
         hours: '매일 10:30 – 20:00',
         phone: '02-338-8322',
@@ -3325,7 +3642,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+합정'
     },
     {
-        id: 'seongsu', name: '성수점', region: '서울',
+        id: 'seongsu', name: '시디즈 더 프로그레시브 성수', region: '서울',
         address: '서울 성동구 아차산로 78 에코넷센터 1층',
         hours: '매일 10:30 – 20:00',
         phone: '02-543-5515',
@@ -3333,7 +3650,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+성수'
     },
     {
-        id: 'magok', name: '마곡점', region: '서울',
+        id: 'magok', name: '시디즈 더 프로그레시브 마곡', region: '서울',
         address: '서울 강서구 공항대로 236 쿠쿠마곡빌딩 1층',
         hours: '매일 10:30 – 20:00',
         phone: '02-2064-7711',
@@ -3341,7 +3658,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+마곡'
     },
     {
-        id: 'songpa', name: '송파점', region: '서울',
+        id: 'songpa', name: '시디즈 더 프로그레시브 송파', region: '서울',
         address: '서울 송파구 오금로 235 젤스빌딩 1층',
         hours: '매일 10:30 – 20:00',
         phone: '02-422-7651',
@@ -3349,7 +3666,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+송파'
     },
     {
-        id: 'pyeongtaek', name: '평택점', region: '경기',
+        id: 'pyeongtaek', name: '시디즈 더 프로그레시브 평택', region: '경기',
         address: '경기 평택시 소사 5길 114',
         hours: '매일 10:30 – 20:00',
         phone: '031-654-8989',
@@ -3373,7 +3690,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+스타필드+고양'
     },
     {
-        id: 'daejeon', name: '대전점', region: '대전',
+        id: 'daejeon', name: '시디즈 더 프로그레시브 대전', region: '대전',
         address: '대전 서구 대덕대로 222',
         hours: '매일 10:30 – 20:00',
         phone: '042-484-4315',
@@ -3381,7 +3698,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+대전'
     },
     {
-        id: 'daegu', name: '대구점', region: '대구',
+        id: 'daegu', name: '시디즈 더 프로그레시브 대구', region: '대구',
         address: '대구 수성구 무학로 113 1층',
         hours: '매일 10:30 – 20:00',
         phone: '053-763-7678',
@@ -3389,7 +3706,7 @@ const storeData = [
         naverUrl: 'https://map.naver.com/v5/search/시디즈+대구'
     },
     {
-        id: 'centum', name: '센텀점', region: '부산',
+        id: 'centum', name: '시디즈 더 프로그레시브 부산', region: '부산',
         address: '부산 해운대구 해운대로 195 1층',
         hours: '매일 10:30 – 20:00',
         phone: '051-782-3651',
@@ -3458,76 +3775,64 @@ function renderStoresSection(storeIds) {
     }
 }
 
-const _origApplyGuestParams = applyGuestParams;
-function applyGuestParams() {
-    // stores 파라미터 처리
-    const params = new URLSearchParams(location.search);
-    const storeParam = params.get('st');
-    if (storeParam) {
-        const storeIds = storeParam === 'all' ? null : storeParam.split(',');
-        renderStoresSection(storeIds);
-    }
-    _origApplyGuestParams();
-}
-
 const compareData = {
     ringo2: {
         label: 'RINGO 2', badge: '',
-        포지셔닝: '어린이 성장의자', 가격대: '18만원~', 틸팅방식: '고정형',
+        포지셔닝: '어린이 성장의자', 가격대: '18만원', 틸팅방식: '고정형',
         요추지지대: false, 좌판깊이조절: false, '4D암레스트': false,
         헤드레스트: false, 특수기능: '그로잉·발받침', 추천대상: '초등학생',
     },
     t20: {
         label: 'T20', badge: '',
-        포지셔닝: '입문/가성비', 가격대: '27만원~', 틸팅방식: '싱크 틸팅',
+        포지셔닝: '입문/가성비', 가격대: '27만원', 틸팅방식: '싱크 틸팅',
         요추지지대: true, 좌판깊이조절: false, '4D암레스트': false,
         헤드레스트: '별도 옵션', 특수기능: '—', 추천대상: '입문자',
     },
     ible: {
         label: 'IBLE', badge: '',
-        포지셔닝: '학습 전용', 가격대: '34만원~', 틸팅방식: '틸팅 잠금',
+        포지셔닝: '학습 전용', 가격대: '34만원', 틸팅방식: '틸팅 잠금',
         요추지지대: true, 좌판깊이조절: false, '4D암레스트': false,
         헤드레스트: false, 특수기능: '전방 틸팅', 추천대상: '수험생·대학생',
     },
     gx: {
         label: 'GX', badge: '',
-        포지셔닝: '게이밍', 가격대: '39만원~', 틸팅방식: '리미티드 틸팅',
+        포지셔닝: '게이밍', 가격대: '39만원', 틸팅방식: '리미티드 틸팅',
         요추지지대: false, 좌판깊이조절: true, '4D암레스트': false,
         헤드레스트: true, 특수기능: '쿨링시트', 추천대상: '게이머',
     },
     gcpro: {
         label: 'GC PRO', badge: '',
-        포지셔닝: '프로 게이밍', 가격대: '69만원~', 틸팅방식: '리클라이닝',
+        포지셔닝: '프로 게이밍', 가격대: '69만원', 틸팅방식: '리클라이닝',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
         헤드레스트: true, 특수기능: '쿨링시트·천연가죽', 추천대상: '프로·헤비 게이머',
     },
     t50: {
         label: 'T50', badge: '',
-        포지셔닝: '올라운더', 가격대: '44만원~', 틸팅방식: '멀티 싱크',
+        포지셔닝: '올라운더', 가격대: '44만원', 틸팅방식: '멀티 싱크',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
         헤드레스트: true, 특수기능: '멀티 리미티드', 추천대상: '직장인·범용',
     },
     t60: {
         label: 'T60', badge: 'NEW',
-        포지셔닝: '퍼스널 피팅', 가격대: '59만원~', 틸팅방식: '리미티드 싱크',
+        포지셔닝: '퍼스널 피팅', 가격대: '59만원', 틸팅방식: '리미티드 싱크',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': false,
         헤드레스트: true, 특수기능: '인피니핏 헤드레스트', 추천대상: '재택·사무 직장인',
     },
     linie: {
         label: 'LINIE', badge: '',
-        포지셔닝: '디자인', 가격대: '59만원~', 틸팅방식: '멀티 싱크',
+        포지셔닝: '디자인', 가격대: '59만원', 틸팅방식: '멀티 싱크',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
         헤드레스트: true, 특수기능: '다양한 컬러', 추천대상: '디자인 중시',
     },
     t80: {
         label: 'T80', badge: '',
-        포지셔닝: '프리미엄', 가격대: '89만원~', 틸팅방식: '얼티메이트 싱크',
+        포지셔닝: '프리미엄', 가격대: '89만원', 틸팅방식: '얼티메이트 싱크',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
         헤드레스트: true, 특수기능: '천연가죽 옵션', 추천대상: '프리미엄 추구',
     },
     t90: {
         label: 'T90', badge: '플래그십',
-        포지셔닝: '최상위 플래그십', 가격대: '129만원~', 틸팅방식: '플렉서블 싱크',
+        포지셔닝: '최상위 플래그십', 가격대: '129만원', 틸팅방식: '플렉서블 싱크',
         요추지지대: true, 좌판깊이조절: true, '4D암레스트': true,
         헤드레스트: true, 특수기능: '퍼펙트 피팅 럼버', 추천대상: '최고를 원하는 분',
     },
@@ -3729,10 +4034,10 @@ function renderCompareTable() {
 // ── PRODUCT DATA ──
 const products = {
     t50: {
-        name: 'T50 시리즈',
+        name: 'T50',
         tagline: '전 세계가 선택한 시디즈의 국가대표 의자',
         desc: '10년 이상 사랑받아 온 시디즈의 스테디셀러. 멀티 싱크 틸팅과 요추 지지대, 좌판 깊이 조절까지 — 검증된 인체공학 설계로 장시간 편안한 착석감을 제공합니다. 다양한 체형과 업무 환경에 맞게 세밀한 커스터마이징이 가능합니다.',
-        price: '449,000원~',
+        price: '449,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T50_HLDA_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '🔄', title: '멀티 싱크 틸팅', desc: '등판과 좌판이 독립적으로 움직여 자연스러운 기대기 동작을 지원합니다.' },
@@ -3746,7 +4051,7 @@ const products = {
         name: 'T60',
         tagline: '나에게 꼭 맞는 퍼스널 피팅 체어',
         desc: '실제 사용자 데이터를 바탕으로 설계된 시디즈의 신형 퍼스널 피팅 의자입니다. 높이·각도·깊이를 세밀하게 조절할 수 있는 인피니핏 헤드레스트와 요추 지지대로 소형 체형부터 대형 체형까지 모두 편안하게 맞춰집니다. 홈라이크 디자인으로 집·사무실 어디에도 자연스럽게 어울립니다.',
-        price: '599,000원~',
+        price: '599,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T60_HLDA_gray_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '🎯', title: '인피니핏 헤드레스트', desc: '높이 125mm·각도 100도·깊이 35mm까지 조절 가능한 정밀 헤드레스트로 목과 어깨 부담을 최소화합니다.' },
@@ -3757,10 +4062,10 @@ const products = {
         tags: ['재택근무', '직장인', '개발자', '홈오피스'],
     },
     t80: {
-        name: 'T80 시리즈',
+        name: 'T80',
         tagline: '최상의 편안함, Ultimate Comfort',
         desc: '독일 디자인 스튜디오와 협업한 시디즈의 플래그십 라인. 얼티메이트 싱크 틸팅과 메모리폼 좌판, 4D 조절형 암레스트까지 — 프리미엄 소재와 기술의 집약체입니다. 최고의 앉음 경험을 추구하는 분들을 위한 의자입니다.',
-        price: '899,000원~',
+        price: '899,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T80_HLDA_charcoal_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '💎', title: '얼티메이트 싱크 틸팅', desc: '시디즈 최상위 틸팅 기술로, 어떤 자세에서도 균형 잡힌 지지력을 제공합니다.' },
@@ -3774,7 +4079,7 @@ const products = {
         name: 'T20',
         tagline: '합리적인 가격, 핵심 인체공학',
         desc: '시디즈의 인체공학 노하우를 합리적인 가격대에 담았습니다. 싱크 틸팅과 요추 지지대 등 핵심 기능은 그대로 — 처음 인체공학 의자를 경험하는 분들에게 최적의 선택입니다.',
-        price: '279,000원~',
+        price: '279,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T20_TABPLUS_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '🔄', title: '싱크 틸팅', desc: '자연스러운 기대기 동작을 지원하는 기본 틸팅 시스템입니다.' },
@@ -3788,7 +4093,7 @@ const products = {
         name: 'LINIE',
         tagline: '디자인과 인체공학의 균형',
         desc: '미니멀한 외관 속에 시디즈의 인체공학 기술을 담았습니다. 오피스 인테리어와 자연스럽게 어우러지면서도 멀티 싱크 틸팅, 좌판 깊이 조절, 4D 암레스트 등 본질적인 기능은 타협하지 않았습니다.',
-        price: '599,000원~',
+        price: '599,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/LINIE_ivory_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '🎨', title: '미니멀 디자인', desc: '군더더기 없는 라인으로 어떤 오피스 공간에도 조화롭게 어울립니다.' },
@@ -3802,7 +4107,7 @@ const products = {
         name: 'IBLE',
         tagline: '집중과 학습을 위한 체어',
         desc: '집중력을 높이는 약간의 전방 틸팅과, 안정적인 착석감을 위한 틸팅 잠금 기능이 특징입니다. 공부할 때 최적의 자세를 유지할 수 있도록 설계되었습니다.',
-        price: '349,000원~',
+        price: '349,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/IBLE_gray_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '📚', title: '학습 최적화 설계', desc: '집중 자세를 유도하는 전방 틸팅과 안정적인 잠금 기능을 제공합니다.' },
@@ -3813,10 +4118,10 @@ const products = {
         tags: ['수험생', '대학생', '집중력', '학습용'],
     },
     t90: {
-        name: 'T90 시리즈',
+        name: 'T90',
         tagline: '퍼포먼스 인체공학의 정점',
         desc: '2025년 출시된 시디즈 최상위 플래그십 모델입니다. 4D 암레스트, 퍼펙트 피팅 럼버서포트, 플렉서블 등판을 통해 사용자 체형과 작업 자세에 정밀하게 대응합니다. 사무실·재택·멀티 디바이스 업무 환경 모두에서 최상의 퍼포먼스를 유지하도록 설계되었습니다.',
-        price: '1,290,000원~',
+        price: '1,290,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T90_HLDA_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '🎯', title: '퍼펙트 피팅 럼버서포트', desc: '사용자 체형에 맞춰 정밀하게 조절되는 요추 지지 시스템입니다.' },
@@ -3827,10 +4132,10 @@ const products = {
         tags: ['프리미엄', '장시간 업무', '재택근무', '사무실'],
     },
     t40: {
-        name: 'T40 시리즈',
+        name: 'T40',
         tagline: '시디즈 품질을 합리적인 가격에',
         desc: '시디즈의 내구성과 인체공학 설계를 보다 합리적인 가격에 경험할 수 있는 모델입니다. 헤드레스트, 요추 지지대를 기본 탑재했으며, 다양한 컬러 프레임 옵션으로 공간에 맞게 연출할 수 있습니다.',
-        price: '299,000원~',
+        price: '299,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/T40_HLDA_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '💰', title: '합리적인 가격', desc: 'T50의 핵심 설계를 계승하면서 가격 부담을 낮춘 가성비 모델입니다.' },
@@ -3844,7 +4149,7 @@ const products = {
         name: 'GX',
         tagline: '게이밍 디자인 × 시디즈 인체공학',
         desc: '게이밍 감성과 시디즈의 인체공학 기술을 결합한 모델입니다. 쿨링시트로 장시간 플레이에도 쾌적함을 유지하고, 조절형 팔걸이와 좌판 깊이 조절로 게임에 최적화된 자세를 잡을 수 있습니다.',
-        price: '393,000원~',
+        price: '393,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/GX_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '❄️', title: '쿨링시트', desc: '통기성이 뛰어난 쿨링시트로 장시간 게임 중에도 쾌적한 착석감을 유지합니다.' },
@@ -3858,7 +4163,7 @@ const products = {
         name: 'GC PRO',
         tagline: 'FOR ALL GAME CHANGERS',
         desc: '장시간 게임 플레이를 고려해 설계된 시디즈 공식 프로 게이밍 의자입니다. 3단계 바람 세기 조절이 가능한 쿨링시트로 쾌적한 플레이 환경을 만들고, 천연가죽 옵션과 15년 품질보증으로 게이밍과 작업 모두를 만족시킵니다.',
-        price: '690,000원~',
+        price: '690,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/GC_PRO_black_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '❄️', title: '3단계 쿨링시트', desc: '바람 세기를 3단계로 조절해 장시간 플레이에도 땀 없는 쾌적한 착석감을 유지합니다.' },
@@ -3872,7 +4177,7 @@ const products = {
         name: 'RINGO 2',
         tagline: '성장하는 아이를 위한 맞춤 의자',
         desc: '초등 입학부터 졸업까지, 성장하는 아이의 체형에 맞게 함께 자라는 의자입니다. 25도 사선으로 등판 높이와 좌판 깊이가 동시에 조절되는 4단계 그로잉 기능과 발받침이 기본 포함됩니다. KC인증으로 안전성도 검증되었습니다.',
-        price: '189,000원~',
+        price: '189,000원',
         img: 'https://kr.sidiz.com/cdn/shop/files/RINGO_gen2_green_01.jpg?v=1744697809&width=800',
         features: [
             { icon: '📏', title: '4단계 그로잉 조절', desc: '110~160cm 신장에 맞춰 등판과 좌판이 동시에 조절되어 성장 단계별 최적 자세를 지원합니다.' },
@@ -3983,7 +4288,7 @@ function showDetail(productId) {
             <div class="name">${p.name}</div>
             <div class="tagline">${p.tagline}</div>
             <div class="desc">${p.desc}</div>
-            <div class="price-tag">${p.price} <small>부터</small></div>
+            <div class="price-tag">${renderPrice(p)}</div>
             <div>${p.tags.map(t => `<span class="rec-tag">${t}</span>`).join('')}</div>
             <div class="cta-row">
                 <a class="btn-primary" href="https://kr.sidiz.com/" target="_blank">🛒 온라인 구매하기</a>
