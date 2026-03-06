@@ -3242,24 +3242,26 @@ function generateLink() {
         params.set('p', selectedProds.join(','));
     }
 
-    // 선택된 섹션
+    // 선택된 섹션 — stores는 별도 파라미터(st)로 처리하므로 제외
     const allSections = ['products','compare','recommend','process','posture','care'];
-    const checkedSections = [...document.querySelectorAll('.link-section-grid input:checked')].map(i => i.value);
-    if (checkedSections.length < allSections.length) {
-        params.set('s', checkedSections.join(','));
-    }
+    const checkedSections = [...document.querySelectorAll('.link-section-grid input:checked')]
+        .map(i => i.value)
+        .filter(v => allSections.includes(v)); // stores 값 제거
+
+    // 항상 s 파라미터를 명시 (없으면 applyGuestParams가 전체를 보여줌)
+    params.set('s', checkedSections.join(','));
 
     // 시작 제품 상세
     const detailVal = document.getElementById('linkStartProduct').value;
     if (detailVal) {
         params.set('detail', detailVal);
         if (!checkedSections.includes('products')) {
-            params.set('s', params.get('s') ? `products,${params.get('s')}` : 'products');
+            params.set('s', checkedSections.length ? `products,${checkedSections.join(',')}` : 'products');
         }
     } else {
         const startSec = document.getElementById('linkStartSection').value;
-        if (startSec) {
-            const sArr = (params.get('s') || allSections.join(',')).split(',').filter(Boolean);
+        if (startSec && startSec !== 'stores') {
+            const sArr = checkedSections.filter(Boolean);
             params.set('s', [startSec, ...sArr.filter(s => s !== startSec)].join(','));
         }
     }
@@ -3268,14 +3270,10 @@ function generateLink() {
     const selectedStores = [...document.querySelectorAll('.store-chip.on')].map(c => c.dataset.id);
     const allStores = storeData.map(s => s.id);
     if (selectedStores.length > 0) {
-        if (selectedStores.length === allStores.length) {
-            params.set('st', 'all');
-        } else {
-            params.set('st', selectedStores.join(','));
-        }
+        params.set('st', selectedStores.length === allStores.length ? 'all' : selectedStores.join(','));
     }
 
-    generatedUrl = params.toString() ? `${base}?${params.toString()}` : base;
+    generatedUrl = `${base}?${params.toString()}`;
 
     document.getElementById('linkUrlBox').textContent = generatedUrl;
     document.getElementById('linkResult').style.display = 'block';
