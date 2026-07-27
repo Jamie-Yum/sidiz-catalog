@@ -9755,7 +9755,7 @@ function renderCartItems() {
                 <div class="cart-item-variant">${item.variantName}</div>
                 ${item.sku ? `<div style="font-size:0.7rem;color:#9ca3af;font-family:'Outfit',monospace;letter-spacing:0.3px;">${item.sku}</div>` : ''}
                 <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
-                ${tierRate ? `<div style="font-size:0.75rem;color:#0D3BFF;margin-top:3px;">↳ 할인 후 ${fmt(Math.round(item.price * (1 - tierRate)) * item.qty)}</div>` : ''}
+                ${tierRate ? `<div style="font-size:0.85rem;color:#16a34a;margin-top:4px;font-weight:600;">최종 개별 할인가 ${fmt(Math.round(item.price * (1 - tierRate)) * item.qty)}</div>` : ''}
             </div>
             <div class="cart-item-actions">
                 <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
@@ -10197,9 +10197,9 @@ async function _doPrintQuote(customerName, storeName, staffName, insertToDB = tr
             <td class="tc">${idx + 1}</td>
             <td>${item.name}<br><span class="sub">${item.variantName}</span>${decodeOptionCode(item.variantName) ? `<span style="font-size:10px;color:#9ca3af;display:block;margin-top:2px;">${decodeOptionCode(item.variantName)}</span>` : ''}${item.sku ? `<span style="font-size:10px;color:#0D3BFF;font-family:monospace;display:block;margin-top:1px;letter-spacing:0.3px;">${item.sku}</span>` : ''}</td>
             <td class="tr" style="font-size:11px;">${item.comparePrice ? (item.comparePrice > item.price ? `<span style="color:#9ca3af;text-decoration:line-through;">${f(item.comparePrice)}</span>` : f(item.comparePrice)) : '—'}</td>
-            <td class="tr">${f(item.price)}${tierRate ? `<span style="font-size:9px;color:#0D3BFF;display:block;margin-top:2px;">↓ ${f(Math.round(item.price*(1-tierRate)))}</span>` : ''}</td>
+            <td class="tr">${f(item.price)}</td>
             <td class="tc">${item.qty}</td>
-            <td class="tr bold">${f(item.price * item.qty)}</td>
+            <td class="tr bold">${tierRate ? `<span style="color:#16a34a;font-size:13px;">${f(Math.round(item.price * (1 - tierRate)) * item.qty)}</span>` : f(item.price * item.qty)}</td>
         </tr>`).join('');
 
     // 메타 박스: 고객 / 매장 / 담당자 / 견적일
@@ -10278,7 +10278,7 @@ async function _doPrintQuote(customerName, storeName, staffName, insertToDB = tr
             <th class="tr" style="width:100px">소비자가(정가)</th>
             <th class="tr" style="width:100px">회원할인가${tierRate ? '<br><span style="font-size:9px;font-weight:500;opacity:0.85;">↓ 할인가</span>' : ''}</th>
             <th class="tc" style="width:40px">수량</th>
-            <th class="tr" style="width:110px">금액</th>
+            <th class="tr" style="width:110px">최종 금액</th>
         </tr>
     </thead>
     <tbody>${rowsHtml}</tbody>
