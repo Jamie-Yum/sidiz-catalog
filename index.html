@@ -9744,6 +9744,10 @@ function renderCartItems() {
     }
     if (quoteBar) quoteBar.style.display = 'flex';
 
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const best = getBestDiscount(cart);
+    const tierRate = (best && best.type === 'tier') ? (DISCOUNT_TIERS.find(t => subtotal >= t.min)?.rate ?? null) : null;
+
     el.innerHTML = cart.map(item => `
         <div class="cart-item">
             <div class="cart-item-info">
@@ -9751,6 +9755,7 @@ function renderCartItems() {
                 <div class="cart-item-variant">${item.variantName}</div>
                 ${item.sku ? `<div style="font-size:0.7rem;color:#9ca3af;font-family:'Outfit',monospace;letter-spacing:0.3px;">${item.sku}</div>` : ''}
                 <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
+                ${tierRate ? `<div style="font-size:0.75rem;color:#0D3BFF;margin-top:3px;">↳ 할인 후 ${fmt(Math.round(item.price * (1 - tierRate)) * item.qty)}</div>` : ''}
             </div>
             <div class="cart-item-actions">
                 <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
@@ -9761,10 +9766,6 @@ function renderCartItems() {
         </div>
     `).join('');
 
-    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    // T50 오프라인 쿠폰 적용 시 → tier 할인은 T50 제외 나머지 상품에만 적용
-    const tierCart = cart;
-    const best = getBestDiscount(tierCart);
     const discAmt = best ? best.amt : 0;
 
     const milCartAmt = 0;
@@ -10190,12 +10191,13 @@ async function _doPrintQuote(customerName, storeName, staffName, insertToDB = tr
     const f = n => n.toLocaleString('ko-KR') + '원';
 
     const compareTotalAmt = cart.reduce((s, i) => s + (i.comparePrice || i.price) * i.qty, 0);
+    const tierRate = (best && best.type === 'tier') ? (DISCOUNT_TIERS.find(t => subtotal >= t.min)?.rate ?? null) : null;
     const rowsHtml = cart.map((item, idx) => `
         <tr>
             <td class="tc">${idx + 1}</td>
             <td>${item.name}<br><span class="sub">${item.variantName}</span>${decodeOptionCode(item.variantName) ? `<span style="font-size:10px;color:#9ca3af;display:block;margin-top:2px;">${decodeOptionCode(item.variantName)}</span>` : ''}${item.sku ? `<span style="font-size:10px;color:#0D3BFF;font-family:monospace;display:block;margin-top:1px;letter-spacing:0.3px;">${item.sku}</span>` : ''}</td>
             <td class="tr" style="font-size:11px;">${item.comparePrice ? (item.comparePrice > item.price ? `<span style="color:#9ca3af;text-decoration:line-through;">${f(item.comparePrice)}</span>` : f(item.comparePrice)) : '—'}</td>
-            <td class="tr">${f(item.price)}</td>
+            <td class="tr">${f(item.price)}${tierRate ? `<span style="font-size:9px;color:#0D3BFF;display:block;margin-top:2px;">↓ ${f(Math.round(item.price*(1-tierRate)))}</span>` : ''}</td>
             <td class="tc">${item.qty}</td>
             <td class="tr bold">${f(item.price * item.qty)}</td>
         </tr>`).join('');
@@ -10274,7 +10276,7 @@ async function _doPrintQuote(customerName, storeName, staffName, insertToDB = tr
             <th class="tc" style="width:36px">No.</th>
             <th>제품명 / 옵션</th>
             <th class="tr" style="width:100px">소비자가(정가)</th>
-            <th class="tr" style="width:100px">회원할인가</th>
+            <th class="tr" style="width:100px">회원할인가${tierRate ? '<br><span style="font-size:9px;font-weight:500;opacity:0.85;">↓ 할인가</span>' : ''}</th>
             <th class="tc" style="width:40px">수량</th>
             <th class="tr" style="width:110px">금액</th>
         </tr>
