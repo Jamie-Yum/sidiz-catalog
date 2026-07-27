@@ -9755,7 +9755,7 @@ function renderCartItems() {
                 <div class="cart-item-variant">${item.variantName}</div>
                 ${item.sku ? `<div style="font-size:0.7rem;color:#9ca3af;font-family:'Outfit',monospace;letter-spacing:0.3px;">${item.sku}</div>` : ''}
                 <div class="cart-item-price">${fmt(item.price * item.qty)}</div>
-                ${tierRate ? `<div style="font-size:0.85rem;color:#0D3BFF;margin-top:4px;font-weight:600;">최종 개별 할인가 ${fmt(Math.round(item.price * (1 - tierRate)) * item.qty)}</div><div style="font-size:0.78rem;color:#16a34a;margin-top:1px;font-weight:500;">−${fmt(item.price * item.qty - Math.round(item.price * (1 - tierRate)) * item.qty)} 추가할인</div>` : ''}
+                ${tierRate ? `<div style="font-size:0.85rem;color:#0D3BFF;margin-top:4px;font-weight:600;">최종 개별 할인가 ${fmt(Math.round(item.price * (1 - tierRate)) * item.qty)}${item.qty > 1 ? `<span style="font-size:0.72rem;font-weight:400;opacity:0.75;margin-left:5px;">(제품당 ${fmt(Math.round(item.price * (1 - tierRate)))})</span>` : ''}</div><div style="font-size:0.78rem;color:#16a34a;margin-top:1px;font-weight:500;">−${fmt(item.price * item.qty - Math.round(item.price * (1 - tierRate)) * item.qty)} 추가할인${item.qty > 1 ? `<span style="font-size:0.72rem;font-weight:400;opacity:0.8;margin-left:5px;">(제품당 −${fmt(item.price - Math.round(item.price * (1 - tierRate)))})</span>` : ''}</div>` : ''}
             </div>
             <div class="cart-item-actions">
                 <button class="qty-btn" onclick="updateQty(${item.id}, -1)">−</button>
@@ -10199,7 +10199,7 @@ async function _doPrintQuote(customerName, storeName, staffName, insertToDB = tr
             <td class="tr" style="font-size:11px;">${item.comparePrice ? (item.comparePrice > item.price ? `<span style="color:#9ca3af;text-decoration:line-through;">${f(item.comparePrice)}</span>` : f(item.comparePrice)) : '—'}</td>
             <td class="tr">${f(item.price)}</td>
             <td class="tc">${item.qty}</td>
-            <td class="tr bold">${tierRate ? `<span style="color:#0D3BFF;">${f(Math.round(item.price * (1 - tierRate)) * item.qty)}</span><span style="color:#16a34a;font-size:10px;display:block;margin-top:3px;">−${f(item.price * item.qty - Math.round(item.price * (1 - tierRate)) * item.qty)} 추가할인</span>` : f(item.price * item.qty)}</td>
+            <td class="tr bold">${tierRate ? `<span style="color:#0D3BFF;">${f(Math.round(item.price * (1 - tierRate)) * item.qty)}</span>${item.qty > 1 ? `<span style="color:#0D3BFF;font-size:9.5px;font-weight:400;display:block;margin-top:1px;opacity:0.8;">제품당 ${f(Math.round(item.price * (1 - tierRate)))}</span>` : ''}<span style="color:#16a34a;font-size:10px;display:block;margin-top:3px;">−${f(item.price * item.qty - Math.round(item.price * (1 - tierRate)) * item.qty)} 추가할인</span>${item.qty > 1 ? `<span style="color:#16a34a;font-size:9.5px;display:block;margin-top:1px;">제품당 −${f(item.price - Math.round(item.price * (1 - tierRate)))}</span>` : ''}` : f(item.price * item.qty)}</td>
         </tr>`).join('');
 
     // 메타 박스: 고객 / 매장 / 담당자 / 견적일
