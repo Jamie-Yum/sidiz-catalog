@@ -3367,6 +3367,21 @@
         .ref-accordion.open .ref-acc-body { display: block; }
 
         .ref-spec-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; border: 1.5px solid #e5e7eb; }
+        /* 부품별 현장 대응 가이드 */
+        .guide-item { font-size: 0.85rem; color: #374151; line-height: 1.7; }
+        .guide-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e5e7eb; }
+        .guide-tag { background: #0D3BFF; color: white; font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 20px; flex-shrink: 0; }
+        .guide-item-title { font-size: 0.95rem; font-weight: 800; color: #001499; }
+        .guide-section { margin-bottom: 14px; }
+        .guide-section-title { font-size: 0.82rem; font-weight: 800; color: #374151; background: #f3f4f6; padding: 6px 10px; border-radius: 8px; margin-bottom: 8px; }
+        .guide-sub-title { font-size: 0.8rem; font-weight: 700; color: #6b7280; margin: 8px 0 4px; }
+        .guide-points { display: flex; flex-direction: column; gap: 4px; padding-left: 8px; }
+        .guide-flow { background: #eff6ff; border-left: 3px solid #0D3BFF; padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: 0.82rem; margin-bottom: 8px; color: #1e3a8a; }
+        .guide-conclusion { padding: 8px 12px; border-radius: 8px; font-size: 0.82rem; margin-top: 6px; }
+        .guide-conclusion.normal { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .guide-conclusion.defect { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+        .guide-as-cards { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+        .guide-as-card { background: #f3f4f6; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-family: 'Outfit', monospace; color: #6b7280; }
         .ref-spec-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 700px; }
         .ref-spec-table th { background: var(--sidiz-navy); color: white; font-weight: 700; padding: 10px 12px; text-align: center; white-space: nowrap; font-size: 0.75rem; letter-spacing: 0.3px; }
         .ref-spec-table th:first-child { text-align: left; border-radius: 10px 0 0 0; }
@@ -5541,6 +5556,96 @@ OOO 고객님, 오늘 방문 예정입니다.
             </button>
             <div class="ref-acc-body">
                 <div id="refAsTable"></div>
+            </div>
+        </div>
+
+        <!-- 3. 부품별 현장 대응 가이드 -->
+        <div class="ref-accordion">
+            <button class="ref-acc-btn" onclick="toggleRefAcc(this)">
+                <span class="ref-acc-icon">🔩</span>
+                <span class="ref-acc-title-wrap">
+                    <span class="ref-acc-title">부품별 현장 대응 가이드</span>
+                    <span class="ref-acc-sub">가스압·높낮이·소음 등 부품 이슈 판별 및 대응 매뉴얼</span>
+                </span>
+                <span class="ref-acc-arrow">▾</span>
+            </button>
+            <div class="ref-acc-body">
+                <div class="guide-item">
+                    <!-- 중심봉 가스압 -->
+                    <div class="guide-item-header">
+                        <span class="guide-tag">2026.05</span>
+                        <span class="guide-item-title">중심봉 — 가스압 / 높낮이 / 흔들림 / 기름</span>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-section-title">📚 부품 기본 지식</div>
+                        <div style="font-size:0.8rem;color:#6b7280;margin-bottom:6px;">착석 시 꿀렁거리는 현상 / 앉았을 때 내려가는 현상</div>
+                        <div class="guide-points">
+                            <div>① <b>하중에 반응하는 압력 설정</b> — 중심봉은 의자 자체의 무게와 사람의 몸무게가 가해졌을 때 자연스럽게 압축되도록 설계됨</div>
+                            <div>② <b>몸무게에 따른 깊이 차이</b> — 착석 시 꿀렁하며 들어가는 깊이가 몸무게에 따라 더 깊어질 수 있음</div>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-section-title">💡 꿀렁거림이 필요한 이유</div>
+                        <div class="guide-points">
+                            <div>① <b>신체 충격 완화</b> — 꿀렁거림이 없으면 앉는 순간 충격이 그대로 전해짐. 일종의 '에어백' 역할</div>
+                        </div>
+                        <div class="guide-conclusion normal">✅ 꿀렁거림은 제품 불량이 아닌, 신체 충격 흡수를 위해 중심봉이 정밀하게 압축되도록 설계된 기능</div>
+                        <div class="guide-conclusion defect">⚠️ 앉을 때 내려가거나 기립 시 올라가지 않는 현상 → 가스압 빠짐 (외부샘·내부샘) = 중심봉 불량</div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-section-title">🔧 AS 엔지니어팀 조치 방법</div>
+                        <div class="guide-sub-title">1. 기본 처리 원칙</div>
+                        <div class="guide-flow">기능 이상 여부 확인 → 윤활 작업으로 개선 가능 시 현장 조치 → 개선 불가·기능 이상 시 중심봉 교체</div>
+                        <div class="guide-sub-title">2. 교체 기준</div>
+                        <div class="guide-points">
+                            <div>① 중심봉 유격 과다 발생</div>
+                            <div>② 틸트(메커니즘) 탈착 작업 필요</div>
+                            <div>③ 중심봉 검정 가루 지속 발생</div>
+                            <div>④ 기능 상실로 정상 사용 불가</div>
+                            <div>⑤ 높이 조절 후 다음날 최저 높이로 내려가는 현상 (현장 확인 불가)</div>
+                        </div>
+                        <div class="guide-sub-title">3. 소음 발생 시 조치</div>
+                        <div class="guide-points">
+                            <div>• 틸팅 시 '딱딱' 소음 → 윤활제 도포 후 개선 여부 확인</div>
+                            <div>• 회전 시 중심봉 하부 소음 → 하부 클립 부위에 윤활제 도포</div>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-section-title">🔍 품질관리팀 검수 방법</div>
+                        <div class="guide-sub-title">1. 기본 원칙</div>
+                        <div class="guide-points">
+                            <div>평택공장 AS 접수 회수품 실물 확인 → 지그로 가스압 확인 → 높낮이 기능 이상 없으면 고객불만으로 판정</div>
+                            <div style="font-size:0.78rem;color:#9ca3af;">제품으로 회수 시 판정 수월 / 부품만 회수 시 동일 방법 적용</div>
+                        </div>
+                        <div class="guide-sub-title">2. 추가 기준</div>
+                        <div class="guide-points">
+                            <div>고객 증빙 자료가 있으면 고객불만으로 판정하지 않음</div>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="guide-section-title">📊 AS 카드 현황 — 2026.05 · 13건 · 375,140원</div>
+                        <div class="guide-as-cards">
+                            <span class="guide-as-card">P202604140038 · T50</span>
+                            <span class="guide-as-card">P202603270026 · T50</span>
+                            <span class="guide-as-card">P202604240043 · T50</span>
+                            <span class="guide-as-card">P202604060071 · T50</span>
+                            <span class="guide-as-card">P202604140074 · T50</span>
+                            <span class="guide-as-card">P202604220055 · T50</span>
+                            <span class="guide-as-card">P202604070042 · T50</span>
+                            <span class="guide-as-card">P202604140058 · T50 AIR</span>
+                            <span class="guide-as-card">P202603250037 · T80</span>
+                            <span class="guide-as-card">P202604080014 · 탭스퀘어</span>
+                            <span class="guide-as-card">P202604240033 · T80</span>
+                            <span class="guide-as-card">P202604050018 · GX</span>
+                            <span class="guide-as-card">P202604240072 · T50</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
