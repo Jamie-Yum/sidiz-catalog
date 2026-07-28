@@ -11444,7 +11444,7 @@ function closeRefPw() {
 }
 function checkRefPw() {
     if (document.getElementById('refPwInput').value === _SE_PW) {
-        _refUnlocked = true;
+        _refUnlocked = true; _faqUnlocked = true;
         document.getElementById('refPwOverlay').classList.remove('open');
         navigate('reference', _pendingRefNavEl);
         _pendingRefNavEl = null;
@@ -11477,7 +11477,7 @@ function closeFAQPw() {
 }
 function checkFAQPw() {
     if (document.getElementById('faqPwInput').value === _SE_PW) {
-        _faqUnlocked = true;
+        _faqUnlocked = true; _refUnlocked = true;
         document.getElementById('faqPwOverlay').classList.remove('open');
         _doNavigateFAQ(_pendingFaqNavEl);
         _pendingFaqNavEl = null;
