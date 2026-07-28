@@ -3849,8 +3849,7 @@
         <a onclick="navigate('process', this)">구매 후 안내</a>
         <a onclick="navigate('posture', this)">올바른 사용법</a>
         <a onclick="navigate('care', this)">관리법</a>
-        <a class="faq-nav-link" onclick="openFAQSection(this)">FAQ</a>
-        <a class="faq-nav-link" onclick="openReferenceSection(this)">응대 참고 자료</a>
+        <a class="faq-nav-link" onclick="openJaryo(this)">자료실</a>
         <div class="nav-deploy-trigger" id="deployTrigger"
             onmousedown="startDeployPress()" onmouseup="cancelDeployPress()" onmouseleave="cancelDeployPress()"
             ontouchstart="startDeployPress(event)" ontouchend="cancelDeployPress()"
@@ -5574,6 +5573,29 @@ OOO 고객님, 오늘 방문 예정입니다.
             <button class="se-pw-cancel" onclick="closeRefPw()">취소</button>
             <button class="se-pw-confirm" onclick="checkRefPw()">확인</button>
         </div>
+    </div>
+</div>
+
+<!-- ══ 자료실 통합 모달 (비밀번호 → 섹션 선택) ══ -->
+<div class="faq-pw-overlay" id="jaryoOverlay" onclick="if(event.target===this)closeJaryo()">
+    <div class="se-pw-box" id="jaryoPwBox">
+        <div class="se-pw-logo">🗂 자료실</div>
+        <p class="se-pw-sub">SIDIZ 매장 직원 전용</p>
+        <input type="password" id="jaryoPwInput" placeholder="비밀번호 입력"
+            onkeydown="if(event.key==='Enter')checkJaryoPw()">
+        <div id="jaryoPwError" style="display:none" class="se-pw-error">비밀번호가 틀렸습니다</div>
+        <div class="se-pw-btns">
+            <button class="se-pw-cancel" onclick="closeJaryo()">취소</button>
+            <button class="se-pw-confirm" onclick="checkJaryoPw()">확인</button>
+        </div>
+    </div>
+    <div class="se-pw-box" id="jaryoPickerBox" style="display:none">
+        <div class="se-pw-logo">🗂 자료실</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:18px;width:100%;">
+            <button style="width:100%;padding:14px;border-radius:12px;background:#0D3BFF;color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;" onclick="pickJaryo('faq')">📋 FAQ</button>
+            <button style="width:100%;padding:14px;border-radius:12px;background:#374151;color:#fff;border:none;font-size:1rem;font-weight:700;cursor:pointer;" onclick="pickJaryo('ref')">📌 응대 참고 자료</button>
+        </div>
+        <button class="se-pw-cancel" style="margin-top:12px;width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;" onclick="closeJaryo()">닫기</button>
     </div>
 </div>
 
@@ -11421,6 +11443,42 @@ const FAQ_DATA = [
       q:'의자 사용법 알림을 제품 구매 후 고객이 못 받았다는 경우?',
       a:'시디즈에서는 의자 구매 고객에게 시공 및 택배 일주일 후 의자 사용법에 대한 알림톡(카카오톡 또는 문자)을 자동 발송하고 있습니다. 고객이 미확인한 경우 직접 안내드리거나, 필요시 문자로 제품 정보와 정품등록 안내를 추가로 발송해 드릴 수도 있습니다.' },
 ];
+
+let _jaryoUnlocked = false;
+let _pendingJaryoNavEl = null;
+
+function openJaryo(navEl) {
+    _pendingJaryoNavEl = navEl;
+    if (_jaryoUnlocked) {
+        document.getElementById('jaryoPwBox').style.display = 'none';
+        document.getElementById('jaryoPickerBox').style.display = '';
+    } else {
+        document.getElementById('jaryoPwBox').style.display = '';
+        document.getElementById('jaryoPickerBox').style.display = 'none';
+        const inp = document.getElementById('jaryoPwInput');
+        inp.value = '';
+        document.getElementById('jaryoPwError').style.display = 'none';
+        setTimeout(() => inp.focus(), 150);
+    }
+    document.getElementById('jaryoOverlay').classList.add('open');
+}
+function checkJaryoPw() {
+    if (document.getElementById('jaryoPwInput').value === _SE_PW) {
+        _jaryoUnlocked = true; _faqUnlocked = true; _refUnlocked = true;
+        document.getElementById('jaryoPwBox').style.display = 'none';
+        document.getElementById('jaryoPickerBox').style.display = '';
+    } else {
+        document.getElementById('jaryoPwInput').value = '';
+        document.getElementById('jaryoPwError').style.display = 'block';
+    }
+}
+function closeJaryo() { document.getElementById('jaryoOverlay').classList.remove('open'); }
+function pickJaryo(type) {
+    closeJaryo();
+    if (type === 'faq') _doNavigateFAQ(_pendingJaryoNavEl);
+    else navigate('reference', _pendingJaryoNavEl);
+    _pendingJaryoNavEl = null;
+}
 
 let _refUnlocked = false;
 let _pendingRefNavEl = null;
