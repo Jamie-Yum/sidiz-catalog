@@ -3849,13 +3849,8 @@
         <a onclick="navigate('process', this)">구매 후 안내</a>
         <a onclick="navigate('posture', this)">올바른 사용법</a>
         <a onclick="navigate('care', this)">관리법</a>
-        <div class="nav-dropdown faq-nav-link">
-            <a class="nav-dropdown-toggle" onclick="toggleNavDropdown(this)">자료실 <span style="font-size:0.7em;opacity:0.7">▾</span></a>
-            <div class="nav-dropdown-menu">
-                <a onclick="openFAQSection(this)">FAQ</a>
-                <a onclick="openReferenceSection(this)">응대 참고 자료</a>
-            </div>
-        </div>
+        <a class="faq-nav-link" onclick="openFAQSection(this)">FAQ</a>
+        <a class="faq-nav-link" onclick="openReferenceSection(this)">응대 참고 자료</a>
         <div class="nav-deploy-trigger" id="deployTrigger"
             onmousedown="startDeployPress()" onmouseup="cancelDeployPress()" onmouseleave="cancelDeployPress()"
             ontouchstart="startDeployPress(event)" ontouchend="cancelDeployPress()"
