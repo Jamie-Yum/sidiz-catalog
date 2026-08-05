@@ -3576,6 +3576,20 @@
 
         @media print { .se-panel, .se-pw-overlay, .tour-dim, .tour-highlight, .tour-card { display: none !important; } }
 
+        /* ── 프로모션 달력 ── */
+        .promo-cal-wrap { background:#f0f4ff; border-radius:14px; padding:14px 16px; margin-bottom:16px; }
+        .promo-cal-title { font-size:0.85rem; font-weight:700; color:#1e3a8a; margin-bottom:8px; }
+        .promo-cal-legend { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:10px; }
+        .promo-cal-legend span { display:flex; align-items:center; gap:5px; font-size:0.72rem; color:#374151; }
+        .pcl-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; display:inline-block; }
+        .promo-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; }
+        .pcd { font-size:0.75rem; padding:5px 2px; border-radius:6px; color:#374151; }
+        .pcd-hd { font-size:0.7rem; font-weight:700; padding:3px 0; color:#6b7280; }
+        .pcd-hd.sun { color:#ef4444; } .pcd-hd.sat { color:#4361ee; }
+        .pcd.hak { background:#fff4ed; color:#c2410c; font-weight:600; }
+        .pcd.liv { background:#dcfce7; color:#166534; font-weight:600; }
+        .pcd.both { background:linear-gradient(135deg,#fff4ed 50%,#dcfce7 50%); font-weight:600; color:#374151; }
+
         /* ── 이달의 행사 & 쿠폰 ── */
         .ev-list { display: flex; flex-direction: column; gap: 20px; margin-top: 24px; }
         .ev-card { background: #fff; border-radius: 20px; box-shadow: 0 2px 16px rgba(13,59,255,0.08); overflow: hidden; }
@@ -3912,6 +3926,23 @@
             <span class="promo-banner-toggle-icon">▼</span>
         </div>
         <div class="promo-banner-body">
+        <!-- 프로모션 달력 -->
+        <div class="promo-cal-wrap">
+            <div class="promo-cal-title">📅 2026년 8월 행사 일정</div>
+            <div class="promo-cal-legend">
+                <span><span class="pcl-dot" style="background:#f97316;"></span>후학기 프로모션 (8/10~8/31)</span>
+                <span><span class="pcl-dot" style="background:#059669;"></span>시디즈 리빙 클럽 (8/17~8/30)</span>
+            </div>
+            <div class="promo-cal-grid">
+                <div class="pcd-hd sun">일</div><div class="pcd-hd">월</div><div class="pcd-hd">화</div><div class="pcd-hd">수</div><div class="pcd-hd">목</div><div class="pcd-hd">금</div><div class="pcd-hd sat">토</div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div class="pcd">1</div>
+                <div class="pcd">2</div><div class="pcd">3</div><div class="pcd">4</div><div class="pcd">5</div><div class="pcd">6</div><div class="pcd">7</div><div class="pcd">8</div>
+                <div class="pcd">9</div><div class="pcd hak">10</div><div class="pcd hak">11</div><div class="pcd hak">12</div><div class="pcd hak">13</div><div class="pcd hak">14</div><div class="pcd hak">15</div>
+                <div class="pcd hak">16</div><div class="pcd both">17</div><div class="pcd both">18</div><div class="pcd both">19</div><div class="pcd both">20</div><div class="pcd both">21</div><div class="pcd both">22</div>
+                <div class="pcd both">23</div><div class="pcd both">24</div><div class="pcd both">25</div><div class="pcd both">26</div><div class="pcd both">27</div><div class="pcd both">28</div><div class="pcd both">29</div>
+                <div class="pcd both">30</div><div class="pcd hak">31</div>
+            </div>
+        </div>
         <div class="promo-rules-strip">
             <span class="promo-rule-pill">📌 쿠폰 기준가: 온라인 행사가</span>
             <span class="promo-rule-pill">⚡ 중복 적용 불가 · 최대 혜택 자동 선택</span>
