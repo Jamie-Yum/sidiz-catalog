@@ -10887,6 +10887,8 @@ async function loadReports() {
         });
     }
 
+    document.getElementById('copyReportsBtn').style.display = (_reportTab === 'new' && data.length) ? '' : 'none';
+
     if (!data.length) {
         listEl.innerHTML = `<div class="report-empty">${_reportTab === 'new' ? '신규 신고가 없습니다 🎉' : '처리 완료된 항목이 없습니다'}</div>`;
         return;
@@ -10910,6 +10912,20 @@ async function loadReports() {
             </div>
         </div>`;
     }).join('');
+}
+
+function copyAllReports() {
+    const items = document.querySelectorAll('#reportList .report-item');
+    if (!items.length) return;
+    const lines = [...items].map((el, i) => {
+        const cat  = el.querySelector('.report-item-cat')?.textContent.trim() || '';
+        const date = el.querySelector('.report-item-date')?.textContent.trim() || '';
+        const prod = el.querySelector('.report-item-product')?.textContent.trim() || '';
+        const desc = el.querySelector('.report-item-desc')?.textContent.trim() || '';
+        const ctx  = el.querySelector('.report-item-context')?.textContent.trim() || '';
+        return `[${i+1}] ${date}  ${cat}${prod ? '  ' + prod : ''}\n${desc}${ctx ? '\n' + ctx : ''}`;
+    });
+    navigator.clipboard.writeText(lines.join('\n\n')).then(() => showToast('📋 전체 복사 완료!'));
 }
 
 async function resolveReport(id) {
@@ -12205,9 +12221,10 @@ function _highlight(text, query) {
             <h3>🚩 오류 신고 내역<span class="report-badge" id="reportBadge" style="display:none"></span></h3>
             <button onclick="closeReportPanel()">✕</button>
         </div>
-        <div class="report-panel-tabs">
+        <div class="report-panel-tabs" style="display:flex;align-items:center;">
             <div class="report-tab active" id="tabNew" onclick="switchReportTab('new')">신규</div>
             <div class="report-tab" id="tabResolved" onclick="switchReportTab('resolved')">처리 완료</div>
+            <button id="copyReportsBtn" onclick="copyAllReports()" style="display:none;margin-left:auto;font-size:0.75rem;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;padding:4px 10px;cursor:pointer;color:#374151;">📋 전체 복사</button>
         </div>
         <div class="report-list" id="reportList">
             <div class="report-empty">불러오는 중...</div>
