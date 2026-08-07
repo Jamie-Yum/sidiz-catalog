@@ -487,8 +487,10 @@
         .detail-color-info { margin-top: 10px; padding-left: 14px; border-left: 2px solid #dde3f0; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
         .detail-color-info #detailColorPrice { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--sidiz-coral); display: none; flex-shrink: 0; gap: 10px; align-items: center; }
         .detail-price-active #detailColorPrice { display: flex !important; }
-        #detailSkuDisplay { cursor: pointer; transition: color 0.2s; }
-        #detailSkuDisplay:hover { color: var(--sidiz-navy) !important; }
+        #detailSkuDisplay { font-size:0.72rem; color:#9ca3af; font-family:'Outfit',monospace; letter-spacing:0.5px; }
+        .detail-sku-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+        .sku-copy-btn { background:none; border:1px solid #d1d5db; border-radius:4px; padding:2px 7px; font-size:0.63rem; color:#6b7280; cursor:pointer; transition:all 0.15s; line-height:1.4; }
+        .sku-copy-btn:hover { border-color:var(--sidiz-navy); color:var(--sidiz-navy); }
         .color-cart-row { margin: 8px 0 16px; }
         .btn-color-cart {
             display: inline-flex; align-items: center; gap: 6px;
@@ -9490,6 +9492,18 @@ function buildColorChips(colors, productId, activeIdx = 0) {
         </div>`).join('');
 }
 
+function copySku(part) {
+    const sku = document.getElementById('detailSkuDisplay')?.textContent?.trim() || '';
+    if (!sku) return;
+    const dashIdx = sku.lastIndexOf('-');
+    const text = part === 'base'
+        ? (dashIdx > 0 ? sku.substring(0, dashIdx) : sku)
+        : (dashIdx > 0 ? sku.substring(dashIdx + 1) : sku);
+    navigator.clipboard.writeText(text).then(() =>
+        showToast(`📋 ${part === 'base' ? '제품코드' : '색상코드'} 복사됨`)
+    );
+}
+
 // ── DETAIL COLOR SWITCH ──
 function switchDetailColor(productId, idx) {
     const colors = _currentSpecColors[productId] || productColors[productId];
@@ -9738,8 +9752,11 @@ function showDetail(productId) {
             </div>
         </div>
         <div class="detail-color-info">
-            <div id="detailSkuDisplay" style="font-size:0.72rem;color:#9ca3af;font-family:'Outfit',monospace;letter-spacing:0.5px;" title="클릭하여 복사"
-                onclick="const t=this.textContent;if(!t)return;const code=t.includes('-')?t.substring(0,t.lastIndexOf('-')):t;navigator.clipboard.writeText(code).then(()=>{const o=this.textContent;this.textContent='복사됨!';this.style.color='#22c55e';setTimeout(()=>{this.textContent=o;this.style.color='';},1200);})"></div>
+            <div class="detail-sku-row">
+                <span id="detailSkuDisplay"></span>
+                <button class="sku-copy-btn" onclick="copySku('base')">제품코드</button>
+                <button class="sku-copy-btn" onclick="copySku('color')">색상코드</button>
+            </div>
             <span id="detailColorPrice"></span>
         </div>
         <div class="color-cart-row">
