@@ -7414,6 +7414,17 @@ const DISCOUNT_TIERS = [
 
 const GROUP_PROMOS = {};
 
+// 후학기 프로모션 (2026-08-10 ~ 2026-08-31)
+const _huhakgiActive = (() => {
+    const today = new Date().toISOString().slice(0, 10);
+    return today >= '2026-08-10' && today <= '2026-08-31';
+})();
+const HUHAKGI_SETS = [
+    { main: 'ringo2', pair: 'coverRingo2' },
+    { main: 'ible',   pair: 'stepo' },
+    { main: 't20',    pair: 'stepo' },
+];
+
 // ── PRODUCT SPECS ──
 const productSpecs = {
     // ── WORK ──
@@ -10064,6 +10075,17 @@ function getBestDiscount(cart) {
         if (couponEligibleSubtotal > 0) candidates.push({ label: '신규가입 쿠폰', amt: 5000, type: 'coupon' });
     }
 
+    // 4) 후학기 프로모션: 단품 5,000 / 세트 15,000 (2026-08-10 ~ 2026-08-31)
+    if (_huhakgiActive) {
+        const cartIds = new Set(cart.map(i => i.productId));
+        let huhakgiAmt = 0;
+        for (const { main, pair } of HUHAKGI_SETS) {
+            if (!cartIds.has(main)) continue;
+            huhakgiAmt += cartIds.has(pair) ? 15000 : 5000;
+        }
+        if (huhakgiAmt > 0) candidates.push({ label: '후학기 프로모션', amt: huhakgiAmt, type: 'huhakgi' });
+    }
+
     if (candidates.length === 0) return null;
     // 가장 할인 금액이 큰 것 선택
     return candidates.reduce((best, c) => c.amt > best.amt ? c : best);
@@ -10105,6 +10127,17 @@ function getAllDiscountCandidates(cart) {
     // 3) 신규가입 쿠폰 (toggle 무관하게 항상 후보로)
     const couponEligibleSubtotal = cart.filter(i => !COUPON_NEVER.has(i.productId)).reduce((s, i) => s + i.price * i.qty, 0);
     if (couponEligibleSubtotal > 0) candidates.push({ label: '신규가입 쿠폰', amt: 5000, type: 'coupon' });
+
+    // 4) 후학기 프로모션
+    if (_huhakgiActive) {
+        const cartIds = new Set(cart.map(i => i.productId));
+        let huhakgiAmt = 0;
+        for (const { main, pair } of HUHAKGI_SETS) {
+            if (!cartIds.has(main)) continue;
+            huhakgiAmt += cartIds.has(pair) ? 15000 : 5000;
+        }
+        if (huhakgiAmt > 0) candidates.push({ label: '후학기 프로모션', amt: huhakgiAmt, type: 'huhakgi' });
+    }
 
     if (candidates.length === 0) return { best: null, candidates: [] };
     const best = candidates.reduce((b, c) => c.amt > b.amt ? c : b);
