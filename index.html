@@ -10267,7 +10267,7 @@ function renderCartItems() {
         <div class="cart-summary-row">
             <span>소계</span><span>${fmt(subtotal)}</span>
         </div>
-        ${best ? `<div class="cart-summary-row discount">
+        ${best ? `<div class="cart-summary-row discount"${best.type === 'huhakgi' ? ' style="color:#f97316;"' : ''}>
             <span>할인 (${best.label})</span>
             <span>−${fmt(discAmt)}</span>
         </div>` : ''}
