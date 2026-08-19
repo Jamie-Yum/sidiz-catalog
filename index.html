@@ -439,6 +439,16 @@
             background-color: white;
             box-shadow: var(--card-shadow);
         }
+        .color-thumb-strip { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+        .color-thumb {
+            width:68px; height:68px; border-radius:10px;
+            border:2px solid var(--border); cursor:pointer;
+            background-size:cover; background-position:center;
+            background-color:#f0f2f5; flex-shrink:0;
+            transition:border-color .15s, transform .1s;
+        }
+        .color-thumb.active { border-color:var(--sidiz-navy); box-shadow:0 0 0 2px var(--sidiz-navy); }
+        .color-thumb:hover:not(.active) { border-color:#93c5fd; transform:scale(1.05); }
         .detail-info .name {
             font-family: 'Outfit', sans-serif;
             font-size: 2.2rem;
@@ -9660,6 +9670,16 @@ function buildColorChips(colors, productId, activeIdx = 0) {
         </div>`).join('');
 }
 
+function buildThumbStrip(colors, productId) {
+    if (!colors || colors.length <= 1) return '';
+    return colors.map((c, i) => `
+        <div class="color-thumb ${i === 0 ? 'active' : ''}"
+             style="background-image:url('${c.img || ''}');${!c.img ? `background-color:${c.code||'#ccc'};` : ''}"
+             title="${c.name}"
+             onclick="switchDetailColor('${productId}', ${i})"></div>`
+    ).join('');
+}
+
 function copySku(part) {
     const sku = document.getElementById('detailSkuDisplay')?.textContent?.trim() || '';
     if (!sku) return;
@@ -9682,6 +9702,9 @@ function switchDetailColor(productId, idx) {
     if (imgEl) imgEl.style.backgroundImage = `url('${c.img || products[productId].img}')`;
     // 활성 칩 변경
     document.querySelectorAll('.detail-color-chip').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+    });
+    document.querySelectorAll('.color-thumb').forEach((el, i) => {
         el.classList.toggle('active', i === idx);
     });
     // 색상별 가격 업데이트
@@ -9754,6 +9777,11 @@ function switchDetailSpec(productId, specIdx) {
     const colorBarEl = document.querySelector('.detail-color-bar');
     if (colorBarEl) {
         colorBarEl.innerHTML = buildColorChips(specColors, productId);
+    }
+    // 썸네일 스트립 재생성
+    const thumbStrip = document.getElementById('detailThumbStrip');
+    if (thumbStrip) {
+        thumbStrip.innerHTML = buildThumbStrip(specColors, productId);
     }
 
     // color-cart-row 재생성
@@ -9940,8 +9968,13 @@ function showDetail(productId) {
     const militaryUi = '';
 
     document.getElementById('detailContent').innerHTML = `
-        <div class="detail-img" id="detailMainImg" style="background-image: url('${p.img}'); background-color: #eef2f7;">
-            <img src="${p.img}" alt="" style="display:none" onerror="this.parentElement.style.backgroundImage='none'">
+        <div>
+            <div class="detail-img" id="detailMainImg" style="background-image: url('${p.img}'); background-color: #eef2f7;">
+                <img src="${p.img}" alt="" style="display:none" onerror="this.parentElement.style.backgroundImage='none'">
+            </div>
+            <div class="color-thumb-strip" id="detailThumbStrip">
+                ${buildThumbStrip(colors, productId)}
+            </div>
         </div>
         <div class="detail-info">
             <div class="name">${p.name}</div>
