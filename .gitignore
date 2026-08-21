@@ -2,6 +2,9 @@
 *.csv
 *.jpg
 *.jpeg
+!assets/**/*.png
+!assets/**/*.jpg
+!assets/**/*.jpeg
 .env
 node_modules/
 .fursys-deploy-hub/
