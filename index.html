@@ -440,6 +440,14 @@
             box-shadow: var(--card-shadow);
         }
         .color-thumb-strip { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+
+        /* ── 단종 제품 ── */
+        .disc-cat-btn { color: #9ca3af !important; border-color: #d1d5db !important; }
+        .disc-cat-btn.active { background: #6b7280 !important; color: #fff !important; border-color: #6b7280 !important; }
+        .badge-disc { background: #6b7280 !important; color: #fff; }
+        .product-card.disc-card { opacity: 0.82; }
+        .product-card.disc-card .price { color: #9ca3af; font-size: 0.8rem; font-weight: 500; }
+        .disc-note { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; }
         .color-thumb {
             width:68px; height:68px; border-radius:10px;
             border:2px solid var(--border); cursor:pointer;
@@ -4120,6 +4128,7 @@
         <button class="cat-filter-btn"         data-cat="그로잉"   onclick="filterProducts('그로잉')">그로잉</button>
         <button class="cat-filter-btn"         data-cat="P굿즈"    onclick="filterProducts('P굿즈')">P굿즈</button>
         <button class="cat-filter-btn"         data-cat="이지리페어" onclick="filterProducts('이지리페어')">이지리페어</button>
+        <button class="cat-filter-btn disc-cat-btn" data-cat="단종 제품" onclick="filterProducts('단종 제품')">단종 제품</button>
     </div>
 
     <div id="repairSubFilter" style="display:none; margin-bottom:4px;">
@@ -5160,6 +5169,90 @@
                 <div class="price">99,000원</div>
             </div>
         </div>
+
+        <!-- ════════════════════════════════════
+             단종 제품
+        ════════════════════════════════════ -->
+        <div class="product-category-header" data-parent="단종 제품">
+            <h2>단종 제품</h2>
+            <p class="category-desc">현재는 판매 종료된 제품입니다. 고객 문의 시 후속 모델을 안내해 주세요.</p>
+        </div>
+
+        <!-- T40 -->
+        <div class="product-card disc-card" onclick="showDetail('disT40')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('disT40')">✏️ 편집</button>
+            <div class="product-card-img" style="background-color: #e8eaed;">
+                <div class="badge badge-disc">단종</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T40</h3>
+                <div class="subtitle">인체공학 메쉬 사무용 의자</div>
+                <p>프로텐션 메쉬 등판, 멀티 싱크 틸트 탑재 사무용 의자</p>
+                <div class="price">판매 종료</div>
+                <div class="disc-note">→ 후속: T50</div>
+            </div>
+        </div>
+
+        <!-- 셀리오스 E40 -->
+        <div class="product-card disc-card" onclick="showDetail('disCelios')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('disCelios')">✏️ 편집</button>
+            <div class="product-card-img" style="background-color: #e8e0d5;">
+                <div class="badge badge-disc">단종</div>
+            </div>
+            <div class="product-card-body">
+                <h3>셀리오스 (E40)</h3>
+                <div class="subtitle">천연가죽 중역 의자</div>
+                <p>천연 소가죽 소재의 중역 의자. 높은 등판(E400)·낮은 등판(E403) 2종</p>
+                <div class="price">판매 종료</div>
+                <div class="disc-note">퍼시스: CH5400</div>
+            </div>
+        </div>
+
+        <!-- T60 구형 / 에가 버전 -->
+        <div class="product-card disc-card" onclick="showDetail('disT60old')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('disT60old')">✏️ 편집</button>
+            <div class="product-card-img" style="background-color: #e0e4ea;">
+                <div class="badge badge-disc">단종</div>
+            </div>
+            <div class="product-card-body">
+                <h3>T60 구형 / 에가 버전</h3>
+                <div class="subtitle">구형 T60 시리즈</div>
+                <p>PU FOAM + 더블라셀 메쉬 등·좌판, 4000G 틸트 탑재 사무용 의자</p>
+                <div class="price">판매 종료</div>
+                <div class="disc-note">→ 후속: 현행 T60</div>
+            </div>
+        </div>
+
+        <!-- 탭플러스 (T20 1세대) -->
+        <div class="product-card disc-card" onclick="showDetail('disTabPlus')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('disTabPlus')">✏️ 편집</button>
+            <div class="product-card-img" style="background-color: #e0eae4;">
+                <div class="badge badge-disc">단종</div>
+            </div>
+            <div class="product-card-body">
+                <h3>탭플러스 (T20 1세대)</h3>
+                <div class="subtitle">성장기 학생용 높이조절 의자</div>
+                <p>아동·학생 전용 높이 조절 의자. 2023년부터 T20으로 리브랜딩</p>
+                <div class="price">판매 종료</div>
+                <div class="disc-note">→ 후속: T20 (2세대)</div>
+            </div>
+        </div>
+
+        <!-- 탭스퀘어 -->
+        <div class="product-card disc-card" onclick="showDetail('disTabSquare')">
+            <button class="card-edit-btn" onclick="event.stopPropagation(); openCardEdit('disTabSquare')">✏️ 편집</button>
+            <div class="product-card-img" style="background-color: #e4e0ea;">
+                <div class="badge badge-disc">단종</div>
+            </div>
+            <div class="product-card-body">
+                <h3>탭스퀘어</h3>
+                <div class="subtitle">성장기 학생용 의자</div>
+                <p>탭플러스 라인과 함께 운영된 아동·학생용 의자</p>
+                <div class="price">판매 종료</div>
+                <div class="disc-note">→ 후속: T20 (2세대)</div>
+            </div>
+        </div>
+
         </div>
 
     </div>
@@ -9160,6 +9253,64 @@ const products = {
         features: [{ icon: '🔧', title: '이지리페어', desc: '몰티 전용 교체 부품입니다.' }, { icon: '👶', title: '영유아 전용', desc: '허리 힘이 약한 6개월 미만 영유아를 위한 이너시트입니다.' }],
         tags: ['이너시트', '몰티', '이지리페어', '교체부품'],
     },
+    // ── 단종 제품 ──
+    disT40: {
+        name: 'T40', tagline: '인체공학 메쉬 사무용 의자 (단종)',
+        desc: '프로텐션 메쉬 등판과 멀티 싱크 틸트(최대 24°, 4단)를 적용한 사무용 의자입니다. 현재는 T50으로 대체되었습니다.',
+        price: '판매 종료', img: '',
+        features: [
+            { icon: '🔄', title: '후속 모델', desc: 'T50 (T50 2세대 권장)' },
+            { icon: '🎨', title: '색상', desc: '블랙쉘: 네이비·블랙·옐로우그린 / 화이트쉘: 카키쉬그레이·네이비·옐로우그린' },
+            { icon: '📋', title: '관계사 코드', desc: '퍼시스: CH6200 / 일룸: HCH3800H' },
+            { icon: '⚙️', title: '주요 사양', desc: '프로텐션 메쉬·멀티싱크 틸트·헤드레스트·요추지지대·3D 팔걸이 (HLDA 기준)' },
+        ],
+        tags: ['T40', '단종', '메쉬', '사무용'],
+    },
+    disCelios: {
+        name: '셀리오스 (E40)', tagline: '천연가죽 중역 의자 (단종)',
+        desc: '천연 소가죽(몸에 닿는 부분 전면 적용) 소재의 중역 의자입니다. 높은 등판(E400)·낮은 등판(E403) 두 가지 타입이 있었으며, 퍼시스에서는 CH5400으로 판매되었습니다.',
+        price: '판매 종료', img: '',
+        features: [
+            { icon: '🪑', title: '타입', desc: 'E400 (높은 등판) / E403 (낮은 등판)' },
+            { icon: '🎨', title: '색상', desc: '카멜 (L665L) / 클라우드 (L741C)' },
+            { icon: '📋', title: '관계사 코드', desc: '퍼시스: CH5400' },
+            { icon: '⚙️', title: '주요 사양', desc: '천연 소가죽·스마트 싱크 틸트(최대 25°)·알루미늄 700 플랫 베이스·65파이 크롬 폴리우레탄 캐스터' },
+        ],
+        tags: ['셀리오스', 'E40', '단종', '가죽', '중역'],
+    },
+    disT60old: {
+        name: 'T60 구형 / 에가 버전', tagline: '구형 T60 시리즈 (단종)',
+        desc: '현재 T60의 이전 세대 제품입니다. PU FOAM + 더블라셀 메쉬 등·좌판, 4000G 틸트를 탑재했습니다. 에가(EGA) 베이스 옵션 버전도 이 세대에 속합니다.',
+        price: '판매 종료', img: '',
+        features: [
+            { icon: '🔄', title: '후속 모델', desc: '현행 T60 (신형)' },
+            { icon: '⚙️', title: '틸트', desc: '4000G 틸트 (최대 25°, 4단) — T50과 공용 메커니즘' },
+            { icon: '🪑', title: '소재', desc: 'PU FOAM + 더블라셀 메쉬 (등판·좌판·헤드 동일)' },
+            { icon: '📐', title: '베이스', desc: '680 마운팅 라운드 베이스·하이콘 중심봉·65파이 우레탄 캐스터' },
+        ],
+        tags: ['T60', '에가', '단종', '구형'],
+    },
+    disTabPlus: {
+        name: '탭플러스 (T20 1세대)', tagline: '성장기 학생용 높이조절 의자 (단종)',
+        desc: '성장기 아동·학생을 위한 높이 조절 학생용 의자입니다. 2023년부터 T20으로 명칭이 변경되었습니다. 현재 고객이 탭플러스를 문의하면 T20 (2세대)을 안내해 주세요.',
+        price: '판매 종료', img: '',
+        features: [
+            { icon: '🔄', title: '후속 모델', desc: 'T20 (2세대) — 동일 컨셉 개선 모델' },
+            { icon: '📋', title: '브랜드 변경', desc: '2023년 탭플러스 → T20으로 리브랜딩. 현재 T20 1세대로 불림' },
+            { icon: '⚠️', title: '볼트 주의', desc: '2016년 10월 이전 제품은 등·좌판 연결 볼트 파손 가능성 있음 → 무상 AS 가능' },
+        ],
+        tags: ['탭플러스', 'Tab Plus', 'T20', '단종', '학생용'],
+    },
+    disTabSquare: {
+        name: '탭스퀘어', tagline: '성장기 학생용 의자 (단종)',
+        desc: '탭플러스 라인과 함께 운영되었던 아동·학생용 의자입니다. 현재 고객이 탭스퀘어를 문의하면 T20 (2세대)을 안내해 주세요.',
+        price: '판매 종료', img: '',
+        features: [
+            { icon: '🔄', title: '후속 모델', desc: 'T20 (2세대)' },
+            { icon: '📋', title: '참고', desc: '탭플러스(Tab Plus)와 함께 운영된 학생용 의자 라인' },
+        ],
+        tags: ['탭스퀘어', 'Tab Square', '단종', '학생용'],
+    },
 };
 
 // ── CATEGORY FILTER ──
@@ -9172,6 +9323,7 @@ const categoryMap = {
     싯부스터: ['fungus', 'stepo', 'pillo', 'olly'],
     그로잉:   ['molti', 'atti'],
     'P굿즈':  ['spray', 'pbag'],
+    '단종 제품': ['disT40','disCelios','disT60old','disTabPlus','disTabSquare'],
     이지리페어: [
         // T20
         't20OldHeadrest','t20Headrest','t20Seat','t20OldArm','armpadT20Tot',
@@ -9215,6 +9367,16 @@ function filterProducts(category) {
         const sf = document.getElementById('repairSubFilter');
         if (sf) sf.style.display = '';
         filterRepairCat('T20');
+    } else if (category === '단종 제품') {
+        const ids = categoryMap[category] || [];
+        cards.forEach(c => {
+            const m = (c.getAttribute('onclick') || '').match(/showDetail\('(\w+)'\)/);
+            c.style.display = (m && ids.includes(m[1])) ? '' : 'none';
+        });
+        headers.forEach(h => h.style.display = 'none');
+        const discHeader = [...document.querySelectorAll('#productGrid .product-category-header')]
+            .find(h => h.dataset.parent === '단종 제품');
+        if (discHeader) discHeader.style.display = '';
     } else {
         const ids = categoryMap[category] || [];
         cards.forEach(c => {
