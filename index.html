@@ -6014,7 +6014,7 @@ function exitAdminMode() {
 }
 
 // ── localStorage 저장/불러오기 ──
-function saveAllEdits() {
+async function saveAllEdits() {
     const edits = loadEdits();
 
     // contenteditable 요소들 저장
@@ -6025,15 +6025,16 @@ function saveAllEdits() {
     // products 데이터 저장 (카드 편집 반영)
     edits['__products__'] = JSON.stringify(products);
 
+    // localStorage 백업
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(edits)); } catch {}
+
+    // Supabase 저장
     try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(edits));
+        const { error } = await _sb.from('catalog_overrides').upsert({ id: 'main', data: edits, updated_at: new Date().toISOString() });
+        if (error) throw error;
         showToast('💾 저장 완료!');
     } catch (e) {
-        if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
-            showToast('⚠️ 저장 공간 부족 — 이미지 크기를 줄이거나 초기화 후 재시도 하세요');
-        } else {
-            showToast('❌ 저장 실패');
-        }
+        showToast('⚠️ Supabase 저장 실패 — 로컬에만 저장됨');
     }
 }
 
@@ -6042,8 +6043,17 @@ function loadEdits() {
     catch { return {}; }
 }
 
-function applyStoredEdits() {
-    const edits = loadEdits();
+async function applyStoredEdits() {
+    let edits = {};
+
+    // Supabase에서 먼저 로드
+    try {
+        const { data, error } = await _sb.from('catalog_overrides').select('data').eq('id', 'main').single();
+        if (!error && data?.data) edits = data.data;
+    } catch {}
+
+    // fallback: localStorage
+    if (!Object.keys(edits).length) edits = loadEdits();
 
     // contenteditable 텍스트 복원
     document.querySelectorAll('[data-editable][data-key]').forEach(el => {
@@ -6065,8 +6075,9 @@ function applyStoredEdits() {
 // ── 초기화 ──
 function openResetModal() { document.getElementById('resetModal').classList.add('open'); }
 function closeResetModal() { document.getElementById('resetModal').classList.remove('open'); }
-function confirmReset() {
+async function confirmReset() {
     localStorage.removeItem(STORAGE_KEY);
+    try { await _sb.from('catalog_overrides').delete().eq('id', 'main'); } catch {}
     closeResetModal();
     showToast('↺ 초기화 완료. 새로고침합니다...');
     setTimeout(() => location.reload(), 1200);
@@ -6282,7 +6293,7 @@ function rebuildProductGrid() {
 }
 
 // 페이지 로드 시 저장된 편집 내용 적용
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (!_baseDiscountActive) {
         const el = document.getElementById('promoBaseDiscount');
         if (el) el.style.display = 'none';
@@ -6293,7 +6304,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const t50off = document.getElementById('promoT50Offline');
         if (t50off) t50off.style.display = 'none';
     }
-    applyStoredEdits();
+    await applyStoredEdits();
     initComparePicker();
     applyGuestParams();
     updateCartBadge();
