@@ -13168,7 +13168,7 @@ const ZONE_TYPES = [
     { type:'custom',   label:'커스텀',          color:'#475569' },
 ];
 let _layoutStore = null, _layoutZones = [], _layoutDirty = false;
-let _lDrag = null, _lSelected = null, _lActiveType = ZONE_TYPES[0];
+let _lDrag = null, _lMove = null, _lSelected = null, _lActiveType = ZONE_TYPES[0];
 let _lCanvas = null, _lCtx = null, _lDpr = 1;
 
 function seLayoutInit() {
@@ -13219,17 +13219,36 @@ function seLayoutPos(e) {
 function seLayoutMouseDown(e) {
     if (e.button !== 0) return;
     const p = seLayoutPos(e);
-    const hit = _layoutZones.find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
-    if (hit) { _lSelected = hit; seLayoutDraw(); return; }
+    const hit = [..._layoutZones].reverse().find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
+    if (hit) {
+        _lSelected = hit;
+        _lMove = { zone: hit, ox: p.x - hit.x, oy: p.y - hit.y };
+        seLayoutDraw(); return;
+    }
     _lDrag = { sx: p.x, sy: p.y, ex: p.x, ey: p.y };
 }
 function seLayoutMouseMove(e) {
-    if (!_lDrag) return;
     const p = seLayoutPos(e);
-    _lDrag.ex = p.x; _lDrag.ey = p.y;
-    seLayoutDraw();
+    if (_lMove) {
+        _lMove.zone.x = p.x - _lMove.ox;
+        _lMove.zone.y = p.y - _lMove.oy;
+        _lCanvas.style.cursor = 'grabbing';
+        seLayoutDraw(); return;
+    }
+    if (_lDrag) {
+        _lDrag.ex = p.x; _lDrag.ey = p.y;
+        seLayoutDraw(); return;
+    }
+    const hover = [..._layoutZones].reverse().find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
+    _lCanvas.style.cursor = hover ? 'grab' : 'crosshair';
 }
 function seLayoutMouseUp(e) {
+    if (_lMove) {
+        _layoutDirty = true;
+        _lMove = null;
+        _lCanvas.style.cursor = 'grab';
+        seLayoutDraw(); return;
+    }
     if (!_lDrag) return;
     const x = Math.min(_lDrag.sx, _lDrag.ex), y = Math.min(_lDrag.sy, _lDrag.ey);
     const w = Math.abs(_lDrag.ex - _lDrag.sx), h = Math.abs(_lDrag.ey - _lDrag.sy);
