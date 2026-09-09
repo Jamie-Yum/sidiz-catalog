@@ -13202,12 +13202,16 @@ function seLayoutInit() {
     const pal = document.getElementById('seZonePalette');
     pal.innerHTML = '';
     ZONE_TYPES.forEach(zt => {
+        const placed = _layoutZones.some(z => z.type === zt.type);
+        const active  = _lActiveType.type === zt.type && !placed;
         const b = document.createElement('button');
-        b.textContent = zt.label;
-        b.style.cssText = `padding:4px 10px;border-radius:4px;border:2px solid ${zt.color};
-            background:${_lActiveType.type===zt.type ? zt.color : 'transparent'};
-            color:${_lActiveType.type===zt.type ? '#fff' : zt.color};cursor:pointer;font-size:12px;`;
-        b.onclick = () => { _lActiveType = zt; seLayoutInit(); };
+        b.textContent = placed ? '✓ ' + zt.label : zt.label;
+        b.disabled = placed;
+        b.style.cssText = `padding:4px 10px;border-radius:4px;border:2px solid ${placed ? '#334155' : zt.color};
+            background:${active ? zt.color : placed ? '#1e293b' : 'transparent'};
+            color:${active ? '#fff' : placed ? '#475569' : zt.color};
+            cursor:${placed ? 'default' : 'pointer'};font-size:12px;opacity:${placed ? 0.5 : 1};`;
+        if (!placed) b.onclick = () => { _lActiveType = zt; seLayoutInit(); };
         pal.appendChild(b);
     });
     seLayoutSetupCanvas();
@@ -13301,17 +13305,38 @@ function seLayoutMouseUp(e) {
     if (!_lDrag) return;
     const x = Math.min(_lDrag.sx, _lDrag.ex), y = Math.min(_lDrag.sy, _lDrag.ey);
     const w = Math.abs(_lDrag.ex - _lDrag.sx), h = Math.abs(_lDrag.ey - _lDrag.sy);
-    if (w > 20 && h > 20) {
+    if (w > 20 && h > 20 && !_layoutZones.some(z => z.type === _lActiveType.type)) {
         const z = { id: crypto.randomUUID(), type: _lActiveType.type,
             label: _lActiveType.label, color: _lActiveType.color, x, y, w, h };
         _layoutZones.push(z); _lSelected = z; _layoutDirty = true;
+        // refresh palette to mark this type as placed
+        seLayoutRefreshPalette();
     }
     _lDrag = null; seLayoutDraw();
+}
+function seLayoutRefreshPalette() {
+    // re-render palette without re-initializing canvas
+    const pal = document.getElementById('seZonePalette');
+    if (!pal) return;
+    pal.innerHTML = '';
+    ZONE_TYPES.forEach(zt => {
+        const placed = _layoutZones.some(z => z.type === zt.type);
+        const active  = _lActiveType.type === zt.type && !placed;
+        const b = document.createElement('button');
+        b.textContent = placed ? '✓ ' + zt.label : zt.label;
+        b.disabled = placed;
+        b.style.cssText = `padding:4px 10px;border-radius:4px;border:2px solid ${placed ? '#334155' : zt.color};
+            background:${active ? zt.color : placed ? '#1e293b' : 'transparent'};
+            color:${active ? '#fff' : placed ? '#475569' : zt.color};
+            cursor:${placed ? 'default' : 'pointer'};font-size:12px;opacity:${placed ? 0.5 : 1};`;
+        if (!placed) b.onclick = () => { _lActiveType = zt; seLayoutRefreshPalette(); };
+        pal.appendChild(b);
+    });
 }
 function seLayoutRightClick(e) {
     const p = seLayoutPos(e);
     const idx = _layoutZones.findIndex(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
-    if (idx >= 0) { _layoutZones.splice(idx, 1); _lSelected = null; _layoutDirty = true; seLayoutDraw(); }
+    if (idx >= 0) { _layoutZones.splice(idx, 1); _lSelected = null; _layoutDirty = true; seLayoutDraw(); seLayoutRefreshPalette(); }
 }
 
 function seLayoutDraw() {
