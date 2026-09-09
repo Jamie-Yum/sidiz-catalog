@@ -13070,25 +13070,49 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal
                 <select id="seLayoutStoreSelect" onchange="seLayoutLoadStore()" style="background:var(--se-surface);color:var(--se-text);border:1px solid var(--se-border);border-radius:4px;padding:6px 10px;font-size:13px;">
                     <option value="">-- 매장 선택 --</option>
                 </select>
+                <!-- 모드 토글 -->
+                <div style="display:flex;border:1px solid var(--se-border);border-radius:6px;overflow:hidden;margin-left:8px;">
+                    <button id="seModeBtnZone" onclick="seLayoutSetMode('zone')"
+                        style="padding:6px 14px;font-size:0.72rem;font-weight:600;border:none;cursor:pointer;background:var(--se-gold);color:#fff;letter-spacing:0.04em;">
+                        구역 편집
+                    </button>
+                    <button id="seModeBtnPlace" onclick="seLayoutSetMode('place')"
+                        style="padding:6px 14px;font-size:0.72rem;font-weight:600;border:none;cursor:pointer;background:var(--se-surface);color:var(--se-muted);letter-spacing:0.04em;">
+                        제품 배치
+                    </button>
+                </div>
                 <button class="se-save-btn" onclick="seLayoutSave()" style="margin-left:auto;">저장</button>
-                <button class="se-save-btn" onclick="seLayoutClear()" style="background:transparent;color:var(--se-danger);border:1px solid rgba(192,57,43,0.3);">초기화</button>
+                <button class="se-save-btn" onclick="seLayoutClear()" style="background:transparent;color:var(--se-danger);border:1px solid rgba(220,38,38,0.3);">초기화</button>
             </div>
-            <!-- 팔레트 + 설명 -->
-            <div style="display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;" id="seZonePalette"></div>
-            <div id="seZoneDesc" style="font-size:12px;color:#7a7068;background:#1a1a1a;border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:8px 14px;min-height:32px;flex-shrink:0;letter-spacing:0.04em;"></div>
+            <!-- 팔레트 + 설명 (구역 편집 모드에서만 표시) -->
+            <div id="seZoneModeControls">
+                <div style="display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;" id="seZonePalette"></div>
+                <div id="seZoneDesc" style="font-size:12px;color:var(--se-muted);background:var(--se-raised);border:1px solid var(--se-border);border-radius:4px;padding:8px 14px;min-height:32px;flex-shrink:0;letter-spacing:0.04em;"></div>
+            </div>
             <!-- 캔버스 + 사이드 패널 -->
             <div style="flex:1; display:flex; gap:12px; min-height:400px;">
                 <div style="flex:1; position:relative; background:#f0f2ff; border:1px solid rgba(13,59,255,0.12); border-radius:4px; overflow:hidden;">
                     <canvas id="seLayoutCanvas" style="display:block; width:100%; height:100%;"></canvas>
                 </div>
-                <!-- 전시품 할당 패널 -->
+                <!-- 사이드 패널 (모드별로 내용 전환) -->
                 <div id="seZoneAssignPanel" style="width:220px;flex-shrink:0;background:var(--se-surface);border:1px solid var(--se-border);border-radius:4px;display:flex;flex-direction:column;overflow:hidden;">
-                    <div style="padding:14px 16px;border-bottom:1px solid var(--se-border);flex-shrink:0;">
-                        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--se-muted);">구역 전시품</div>
-                        <div id="seAssignZoneName" style="font-size:0.82rem;color:var(--se-text);margin-top:4px;">구역을 선택하세요</div>
+                    <!-- 구역 편집 모드 패널 -->
+                    <div id="seSidePanelZone" style="display:flex;flex-direction:column;height:100%;">
+                        <div style="padding:14px 16px;border-bottom:1px solid var(--se-border);flex-shrink:0;">
+                            <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--se-muted);">구역 전시품 할당</div>
+                            <div id="seAssignZoneName" style="font-size:0.82rem;color:var(--se-text);margin-top:4px;">구역을 선택하세요</div>
+                        </div>
+                        <div id="seAssignList" style="flex:1;overflow-y:auto;padding:10px 0;">
+                            <div style="padding:12px 16px;color:var(--se-muted);font-size:0.75rem;">구역을 클릭하면<br>전시품을 할당할 수 있습니다.</div>
+                        </div>
                     </div>
-                    <div id="seAssignList" style="flex:1;overflow-y:auto;padding:10px 0;">
-                        <div style="padding:12px 16px;color:var(--se-muted);font-size:0.75rem;">구역을 클릭하면<br>전시품을 할당할 수 있습니다.</div>
+                    <!-- 제품 배치 모드 패널 -->
+                    <div id="seSidePanelPlace" style="display:none;flex-direction:column;height:100%;">
+                        <div style="padding:14px 16px;border-bottom:1px solid var(--se-border);flex-shrink:0;">
+                            <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--se-muted);">전시품 목록</div>
+                            <div style="font-size:0.72rem;color:var(--se-muted);margin-top:4px;">클릭 후 캔버스에 배치</div>
+                        </div>
+                        <div id="sePlaceList" style="flex:1;overflow-y:auto;padding:10px 0;"></div>
                     </div>
                 </div>
             </div>
@@ -13298,10 +13322,40 @@ function seLayoutPos(e) {
     const r = _lCanvas.getBoundingClientRect();
     return { x: e.clientX - r.left, y: e.clientY - r.top };
 }
+let _lPlaceDrag = null; // {display, ox, oy} 배치된 제품 드래그 이동
+
 function seLayoutMouseDown(e) {
     if (e.button !== 0) return;
     const p = seLayoutPos(e);
-    // check resize handle on selected zone first
+
+    // ── 제품 배치 모드 ──────────────────────────────
+    if (_lMode === 'place') {
+        const cW = _lCanvas.width / _lDpr, cH = _lCanvas.height / _lDpr;
+        // 이미 배치된 제품 칩 클릭 → 드래그 이동 시작
+        const hitD = [..._layoutDisplays].reverse().find(d => {
+            if (d.pos_x == null) return false;
+            const cx = d.pos_x / 1000 * cW, cy = d.pos_y / 1000 * cH;
+            return Math.abs(p.x - cx) < 36 && Math.abs(p.y - cy) < 14;
+        });
+        if (hitD) {
+            _lPlaceSelected = hitD;
+            _lPlaceDrag = { display: hitD, ox: p.x - hitD.pos_x/1000*cW, oy: p.y - hitD.pos_y/1000*cH };
+            seRenderPlaceList(); return;
+        }
+        // 빈 캔버스 클릭 → 선택된 전시품 배치
+        if (_lPlaceSelected) {
+            _lPlaceSelected.pos_x = Math.round(p.x / cW * 1000);
+            _lPlaceSelected.pos_y = Math.round(p.y / cH * 1000);
+            seLayoutDraw();
+            seRenderPlaceList();
+            // Supabase 즉시 저장
+            _sb.from('store_displays').update({ pos_x: _lPlaceSelected.pos_x, pos_y: _lPlaceSelected.pos_y })
+               .eq('id', _lPlaceSelected.id);
+        }
+        return;
+    }
+
+    // ── 구역 편집 모드 ──────────────────────────────
     if (_lSelected) {
         const h = _lGetHandle(p, _lSelected);
         if (h) {
@@ -13325,6 +13379,22 @@ function seLayoutMouseDown(e) {
 }
 function seLayoutMouseMove(e) {
     const p = seLayoutPos(e);
+
+    // 배치 모드 드래그 이동
+    if (_lPlaceDrag) {
+        const cW = _lCanvas.width / _lDpr, cH = _lCanvas.height / _lDpr;
+        _lPlaceDrag.display.pos_x = Math.round((p.x - _lPlaceDrag.ox + _lPlaceDrag.ox) / cW * 1000);
+        // 좀더 직관적으로: 현재 마우스 위치
+        _lPlaceDrag.display.pos_x = Math.round(p.x / cW * 1000);
+        _lPlaceDrag.display.pos_y = Math.round(p.y / cH * 1000);
+        _lCanvas.style.cursor = 'grabbing';
+        seLayoutDraw(); return;
+    }
+    if (_lMode === 'place') {
+        _lCanvas.style.cursor = _lPlaceSelected ? 'crosshair' : 'default';
+        return;
+    }
+
     if (_lResize) {
         const r = _lResize, dx = p.x - r.px, dy = p.y - r.py;
         const z = r.zone;
@@ -13348,7 +13418,6 @@ function seLayoutMouseMove(e) {
         _lDrag.ex = p.x; _lDrag.ey = p.y;
         seLayoutDraw(); return;
     }
-    // cursor hint
     if (_lSelected) {
         const h = _lGetHandle(p, _lSelected);
         if (h) { _lCanvas.style.cursor = _lHandleCursor[h.id]; return; }
@@ -13357,6 +13426,13 @@ function seLayoutMouseMove(e) {
     _lCanvas.style.cursor = hover ? 'grab' : 'crosshair';
 }
 function seLayoutMouseUp(e) {
+    if (_lPlaceDrag) {
+        const d = _lPlaceDrag.display;
+        _sb.from('store_displays').update({ pos_x: d.pos_x, pos_y: d.pos_y }).eq('id', d.id);
+        _lPlaceDrag = null;
+        _lCanvas.style.cursor = 'crosshair';
+        seLayoutDraw(); seRenderPlaceList(); return;
+    }
     if (_lResize) { _layoutDirty = true; _lResize = null; seLayoutDraw(); return; }
     if (_lMove) {
         _layoutDirty = true;
@@ -13381,6 +13457,66 @@ function seLayoutMouseUp(e) {
     }
     _lDrag = null; seLayoutDraw();
 }
+// ─── 모드 관리 ───────────────────────────────────────
+let _lMode = 'zone'; // 'zone' | 'place'
+let _lPlaceSelected = null; // 배치할 제품 display 객체
+
+function seLayoutSetMode(mode) {
+    _lMode = mode;
+    _lSelected = null; _lPlaceSelected = null;
+    const isZone = mode === 'zone';
+    document.getElementById('seModeBtnZone').style.cssText  = `padding:6px 14px;font-size:0.72rem;font-weight:600;border:none;cursor:pointer;letter-spacing:0.04em;background:${isZone  ? 'var(--se-gold)' : 'var(--se-surface)'};color:${isZone  ? '#fff' : 'var(--se-muted)'};`;
+    document.getElementById('seModeBtnPlace').style.cssText = `padding:6px 14px;font-size:0.72rem;font-weight:600;border:none;cursor:pointer;letter-spacing:0.04em;background:${!isZone ? 'var(--se-gold)' : 'var(--se-surface)'};color:${!isZone ? '#fff' : 'var(--se-muted)'};`;
+    document.getElementById('seZoneModeControls').style.display = isZone ? '' : 'none';
+    document.getElementById('seSidePanelZone').style.display  = isZone ? 'flex' : 'none';
+    document.getElementById('seSidePanelPlace').style.display = isZone ? 'none' : 'flex';
+    if (!isZone) seRenderPlaceList();
+    seLayoutDraw();
+}
+
+function seRenderPlaceList() {
+    const el = document.getElementById('sePlaceList');
+    if (!el) return;
+    if (!_layoutStore) { el.innerHTML = '<div style="padding:12px 16px;color:var(--se-muted);font-size:0.75rem;">매장을 먼저 선택하세요.</div>'; return; }
+    const assigned = _layoutDisplays.filter(d => d.zone_id);
+    if (!assigned.length) { el.innerHTML = '<div style="padding:12px 16px;color:var(--se-muted);font-size:0.75rem;">구역에 할당된 전시품이 없습니다.<br>먼저 구역 편집에서 할당하세요.</div>'; return; }
+
+    // 구역별 그룹
+    const byZone = {};
+    assigned.forEach(d => {
+        if (!byZone[d.zone_id]) byZone[d.zone_id] = [];
+        byZone[d.zone_id].push(d);
+    });
+    el.innerHTML = Object.entries(byZone).map(([zid, items]) => {
+        const zone = _layoutZones.find(z => z.id === zid);
+        const zName = zone ? zone.label : '알 수 없는 구역';
+        const zColor = zone ? zone.color : '#888';
+        const rows = items.map(d => {
+            const pName = (SE_PRODUCTS.find(p => p.id === d.product_id)||{name:d.product_id}).name;
+            const hasPos = d.pos_x != null && d.pos_y != null;
+            const sel = _lPlaceSelected && _lPlaceSelected.id === d.id;
+            return `<div onclick="seSelectPlaceItem('${d.id}')"
+                style="display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;
+                    background:${sel ? 'rgba(13,59,255,0.08)' : 'transparent'};
+                    border-left:3px solid ${sel ? 'var(--se-gold)' : 'transparent'};"
+                onmouseenter="this.style.background='rgba(13,59,255,0.04)'"
+                onmouseleave="this.style.background='${sel ? 'rgba(13,59,255,0.08)' : 'transparent'}'">
+                <span style="width:8px;height:8px;border-radius:50%;background:${hasPos ? zColor : '#d1d5db'};flex-shrink:0;"></span>
+                <span style="font-size:0.78rem;color:var(--se-text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${pName}</span>
+                ${hasPos ? `<span style="font-size:0.65rem;color:var(--se-muted);">배치됨</span>` : ''}
+            </div>`;
+        }).join('');
+        return `<div style="padding:8px 16px 4px;font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:${zColor};font-weight:700;">${zName}</div>${rows}`;
+    }).join('');
+}
+
+function seSelectPlaceItem(displayId) {
+    _lPlaceSelected = _layoutDisplays.find(d => d.id === displayId) || null;
+    seRenderPlaceList();
+    if (_lCanvas) _lCanvas.style.cursor = _lPlaceSelected ? 'crosshair' : 'default';
+}
+// ─────────────────────────────────────────────────────
+
 function seLayoutRefreshPalette() {
     const pal = document.getElementById('seZonePalette');
     const desc = document.getElementById('seZoneDesc');
@@ -13420,6 +13556,21 @@ function seLayoutDblClick(e) {
 }
 function seLayoutRightClick(e) {
     const p = seLayoutPos(e);
+    if (_lMode === 'place') {
+        // 배치 모드: 우클릭으로 제품 위치 제거
+        const cW = _lCanvas.width / _lDpr, cH = _lCanvas.height / _lDpr;
+        const hit = _layoutDisplays.find(d => {
+            if (d.pos_x == null) return false;
+            const cx = d.pos_x/1000*cW, cy = d.pos_y/1000*cH;
+            return Math.abs(p.x-cx)<36 && Math.abs(p.y-cy)<14;
+        });
+        if (hit) {
+            hit.pos_x = null; hit.pos_y = null;
+            _sb.from('store_displays').update({ pos_x: null, pos_y: null }).eq('id', hit.id);
+            seLayoutDraw(); seRenderPlaceList();
+        }
+        return;
+    }
     const idx = _layoutZones.findIndex(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
     if (idx >= 0) { _layoutZones.splice(idx, 1); _lSelected = null; _layoutDirty = true; seLayoutDraw(); seLayoutRefreshPalette(); }
 }
@@ -13485,7 +13636,7 @@ function seLayoutDraw() {
             });
         }
     });
-    // drag preview
+    // drag preview (구역 편집 모드)
     if (_lDrag) {
         const x = Math.min(_lDrag.sx, _lDrag.ex), y = Math.min(_lDrag.sy, _lDrag.ey);
         const w = Math.abs(_lDrag.ex - _lDrag.sx), h = Math.abs(_lDrag.ey - _lDrag.sy);
@@ -13499,6 +13650,46 @@ function seLayoutDraw() {
         _lCtx.strokeRect(x, y, w, h);
         _lCtx.setLineDash([]);
     }
+
+    // 제품 배치 칩 (배치 모드 + 구역 편집 모드 둘 다 표시)
+    const chipW = 70, chipH = 24, chipR = 4;
+    _layoutDisplays.forEach(d => {
+        if (d.pos_x == null || d.pos_y == null) return;
+        const zone = _layoutZones.find(z => z.id === d.zone_id);
+        const color = zone ? zone.color : '#0D3BFF';
+        const pName = (SE_PRODUCTS.find(p=>p.id===d.product_id)||{name:d.product_id}).name||'';
+        const shortName = pName.length > 7 ? pName.slice(0,7)+'…' : pName;
+        const cx = d.pos_x / 1000 * W, cy = d.pos_y / 1000 * H;
+        const sel = _lPlaceSelected && _lPlaceSelected.id === d.id;
+
+        // 칩 배경
+        _lCtx.globalAlpha = sel ? 1 : 0.88;
+        _lCtx.fillStyle = color;
+        const drawRR = (x,y,w,h,r) => {
+            _lCtx.beginPath();
+            _lCtx.moveTo(x+r,y); _lCtx.lineTo(x+w-r,y); _lCtx.arcTo(x+w,y,x+w,y+r,r);
+            _lCtx.lineTo(x+w,y+h-r); _lCtx.arcTo(x+w,y+h,x+w-r,y+h,r);
+            _lCtx.lineTo(x+r,y+h); _lCtx.arcTo(x,y+h,x,y+h-r,r);
+            _lCtx.lineTo(x,y+r); _lCtx.arcTo(x,y,x+r,y,r); _lCtx.closePath();
+        };
+        drawRR(cx-chipW/2, cy-chipH/2, chipW, chipH, chipR);
+        _lCtx.fill();
+
+        // 선택 테두리
+        if (sel) {
+            _lCtx.strokeStyle = '#fff';
+            _lCtx.lineWidth = 2;
+            drawRR(cx-chipW/2-1, cy-chipH/2-1, chipW+2, chipH+2, chipR+1);
+            _lCtx.stroke();
+        }
+
+        // 텍스트
+        _lCtx.globalAlpha = 1;
+        _lCtx.fillStyle = '#fff';
+        _lCtx.font = `${sel ? 'bold ' : ''}10px sans-serif`;
+        _lCtx.textAlign = 'center'; _lCtx.textBaseline = 'middle';
+        _lCtx.fillText(shortName, cx, cy);
+    });
 }
 
 let _layoutDisplays = []; // 해당 매장의 전시품 목록
