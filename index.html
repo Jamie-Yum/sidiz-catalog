@@ -13276,6 +13276,7 @@ function seLayoutSetupCanvas() {
     c.onmousedown = seLayoutMouseDown;
     c.onmousemove = seLayoutMouseMove;
     c.onmouseup   = seLayoutMouseUp;
+    c.ondblclick  = seLayoutDblClick;
     c.oncontextmenu = e => { e.preventDefault(); seLayoutRightClick(e); };
 }
 
@@ -13351,10 +13352,15 @@ function seLayoutMouseUp(e) {
     const x = Math.min(_lDrag.sx, _lDrag.ex), y = Math.min(_lDrag.sy, _lDrag.ey);
     const w = Math.abs(_lDrag.ex - _lDrag.sx), h = Math.abs(_lDrag.ey - _lDrag.sy);
     if (w > 20 && h > 20 && !_layoutZones.some(z => z.type === _lActiveType.type)) {
+        let label = _lActiveType.label;
+        if (_lActiveType.type === 'custom') {
+            const input = prompt('구역 이름을 입력하세요', '');
+            if (!input) { _lDrag = null; seLayoutDraw(); return; }
+            label = input.trim() || '커스텀';
+        }
         const z = { id: crypto.randomUUID(), type: _lActiveType.type,
-            label: _lActiveType.label, color: _lActiveType.color, x, y, w, h };
+            label, color: _lActiveType.color, x, y, w, h };
         _layoutZones.push(z); _lSelected = z; _layoutDirty = true;
-        // refresh palette to mark this type as placed
         seLayoutRefreshPalette();
     }
     _lDrag = null; seLayoutDraw();
@@ -13386,6 +13392,15 @@ function seLayoutRefreshPalette() {
         pal.appendChild(b);
     });
     if (desc) desc.textContent = _lActiveType ? '● ' + _lActiveType.label + '  —  ' + _lActiveType.desc : '';
+}
+function seLayoutDblClick(e) {
+    const p = seLayoutPos(e);
+    const hit = [..._layoutZones].reverse().find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
+    if (!hit) return;
+    const input = prompt('구역 이름 변경', hit.label);
+    if (input === null) return;
+    hit.label = input.trim() || hit.label;
+    _layoutDirty = true; seLayoutDraw();
 }
 function seLayoutRightClick(e) {
     const p = seLayoutPos(e);
