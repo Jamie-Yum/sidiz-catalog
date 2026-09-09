@@ -12855,5 +12855,308 @@ function closeQrModal() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal(); });
 </script>
+
+<!-- ══════════════════════════════════════════════
+     SE MANAGEMENT
+══════════════════════════════════════════════ -->
+<style>
+#seMgmtBtn {
+    position: fixed; bottom: 24px; left: 24px; z-index: 900;
+    background: #1e293b; color: #94a3b8;
+    border: none; border-radius: 10px;
+    padding: 8px 14px; font-size: 0.72rem; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.05em; opacity: 0.5;
+    transition: opacity 0.2s;
+}
+#seMgmtBtn:hover { opacity: 1; }
+.se-overlay {
+    display: none; position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center;
+}
+.se-overlay.open { display: flex; }
+#seLoginBox {
+    background: #0f172a; border-radius: 20px;
+    padding: 36px 32px; width: 320px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5); text-align: center;
+}
+#seLoginBox h3 { color: #f1f5f9; font-size: 1.1rem; margin-bottom: 6px; }
+#seLoginBox p  { color: #64748b; font-size: 0.8rem; margin-bottom: 20px; }
+#seLoginBox input {
+    width: 100%; padding: 12px 16px; border-radius: 10px;
+    border: 1.5px solid #334155; background: #1e293b;
+    color: #f1f5f9; font-size: 1rem; text-align: center;
+    letter-spacing: 0.15em; margin-bottom: 12px; box-sizing: border-box;
+}
+#seLoginBox input:focus { outline: none; border-color: #3b82f6; }
+#seLoginBox .se-btn-row { display: flex; gap: 8px; }
+#seLoginBox button { flex: 1; padding: 11px; border-radius: 10px; border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+.se-btn-confirm { background: #3b82f6; color: white; }
+.se-btn-cancel  { background: #1e293b; color: #94a3b8; border: 1.5px solid #334155!important; }
+#seLoginError { color: #f87171; font-size: 0.78rem; margin-top: 8px; min-height: 18px; }
+#seMgmtPanel {
+    display: none; position: fixed; inset: 0; z-index: 2100;
+    background: #0f172a; flex-direction: column; overflow: hidden;
+}
+#seMgmtPanel.open { display: flex; }
+.se-panel-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 24px; border-bottom: 1px solid #1e293b;
+    background: #0f172a; flex-shrink: 0;
+}
+.se-panel-header h2 { color: #f1f5f9; font-size: 1rem; font-weight: 800; flex: 1; }
+.se-panel-header .se-close { background: #1e293b; color: #94a3b8; border: none; border-radius: 8px; padding: 7px 14px; cursor: pointer; font-size: 0.8rem; }
+.se-tabs { display: flex; gap: 4px; padding: 0 24px; }
+.se-tab { padding: 10px 18px; border-radius: 8px 8px 0 0; font-size: 0.82rem; font-weight: 700; cursor: pointer; color: #64748b; background: transparent; border: none; border-bottom: 2px solid transparent; }
+.se-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+.se-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.se-store-row { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+.se-store-row select { flex: 1; padding: 10px 14px; border-radius: 10px; border: 1.5px solid #1e293b; background: #1e293b; color: #f1f5f9; font-size: 0.9rem; cursor: pointer; }
+.se-store-row select:focus { outline: none; border-color: #3b82f6; }
+.se-table-wrap { overflow-x: auto; }
+.se-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; color: #cbd5e1; }
+.se-table th { background: #1e293b; color: #94a3b8; font-weight: 700; padding: 10px 14px; text-align: left; white-space: nowrap; }
+.se-table td { padding: 10px 14px; border-bottom: 1px solid #1e293b; vertical-align: middle; }
+.se-table tr:hover td { background: rgba(30,41,59,0.3); }
+.se-tag { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; background: #1e3a5f; color: #60a5fa; }
+.se-del-btn { background: #450a0a; color: #f87171; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-size: 0.75rem; font-weight: 700; }
+.se-del-btn:hover { background: #7f1d1d; }
+.se-add-box { background: #1e293b; border-radius: 14px; padding: 18px 20px; margin-top: 20px; }
+.se-add-box h4 { color: #94a3b8; font-size: 0.8rem; font-weight: 700; margin-bottom: 14px; }
+.se-add-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.se-add-grid select, .se-add-grid input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #334155; background: #0f172a; color: #f1f5f9; font-size: 0.82rem; box-sizing: border-box; }
+.se-memo-row { margin-bottom: 10px; }
+.se-memo-row input, .se-add-row input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #334155; background: #0f172a; color: #f1f5f9; font-size: 0.82rem; box-sizing: border-box; }
+.se-add-row { display: flex; gap: 10px; align-items: center; }
+.se-add-row input { flex: 1; width: auto; }
+.se-save-btn { background: #1d4ed8; color: white; border: none; border-radius: 8px; padding: 9px 20px; cursor: pointer; font-size: 0.82rem; font-weight: 700; white-space: nowrap; }
+.se-save-btn:hover { background: #2563eb; }
+.se-msg { font-size: 0.78rem; margin-top: 8px; min-height: 18px; }
+.se-msg.ok  { color: #4ade80; }
+.se-msg.err { color: #f87171; }
+.se-overview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+.se-ov-card { background: #1e293b; border-radius: 14px; padding: 16px 18px; }
+.se-ov-card h4 { color: #f1f5f9; font-size: 0.88rem; font-weight: 800; margin-bottom: 10px; }
+.se-ov-chip { display: inline-block; padding: 3px 10px; margin: 3px 3px 3px 0; border-radius: 20px; background: #1e3a5f; color: #60a5fa; font-size: 0.72rem; font-weight: 700; }
+.se-ov-empty { color: #475569; font-size: 0.78rem; }
+</style>
+
+<button id="seMgmtBtn" onclick="openSELogin()">SE Management</button>
+
+<div class="se-overlay" id="seLoginOverlay">
+    <div id="seLoginBox">
+        <h3>🔒 SE Management</h3>
+        <p>전시 관리 시스템</p>
+        <input type="password" id="sePasswordInput" placeholder="비밀번호 입력"
+               onkeydown="if(event.key==='Enter') seConfirmLogin()">
+        <div id="seLoginError"></div>
+        <div class="se-btn-row" style="margin-top:12px;">
+            <button class="se-btn-cancel" onclick="closeSELogin()">취소</button>
+            <button class="se-btn-confirm" onclick="seConfirmLogin()">확인</button>
+        </div>
+    </div>
+</div>
+
+<div id="seMgmtPanel">
+    <div class="se-panel-header">
+        <h2>📊 SE Management — 전시 관리</h2>
+        <button class="se-close" onclick="closeSEPanel()">✕ 닫기</button>
+    </div>
+    <div style="padding: 0 24px; border-bottom: 1px solid #1e293b; background:#0f172a; flex-shrink:0;">
+        <div class="se-tabs">
+            <button class="se-tab active" onclick="seSwitchTab('store')">내 매장 관리</button>
+            <button class="se-tab" onclick="seSwitchTab('overview')">전체 현황</button>
+        </div>
+    </div>
+    <div class="se-panel-body">
+        <div id="seTabStore">
+            <div class="se-store-row">
+                <select id="seStoreSelect" onchange="seLoadStore()">
+                    <option value="">-- 매장 선택 --</option>
+                </select>
+            </div>
+            <div id="seStoreContent" style="display:none;">
+                <div class="se-table-wrap">
+                    <table class="se-table">
+                        <thead>
+                            <tr>
+                                <th>제품명</th><th>전시 시작일</th><th>메모</th><th>최종 수정</th><th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="seDisplayList"></tbody>
+                    </table>
+                </div>
+                <div class="se-add-box">
+                    <h4>+ 전시 제품 추가</h4>
+                    <div class="se-add-grid">
+                        <select id="seAddProduct"><option value="">제품 선택</option></select>
+                        <input type="date" id="seAddDate">
+                    </div>
+                    <div class="se-memo-row">
+                        <input type="text" id="seAddMemo" placeholder="메모 (선택)">
+                    </div>
+                    <div class="se-add-row">
+                        <input type="text" id="seAddUpdater" placeholder="수정자 이름">
+                        <button class="se-save-btn" onclick="seAddDisplay()">추가</button>
+                    </div>
+                    <div class="se-msg" id="seAddMsg"></div>
+                </div>
+            </div>
+            <div id="seStorePlaceholder" style="color:#475569; font-size:0.85rem; padding:40px 0 0;">
+                매장을 선택하면 전시 현황이 표시됩니다.
+            </div>
+        </div>
+        <div id="seTabOverview" style="display:none;">
+            <div style="margin-bottom:16px; display:flex; justify-content:flex-end;">
+                <button class="se-save-btn" onclick="seLoadOverview()">🔄 새로고침</button>
+            </div>
+            <div class="se-overview-grid" id="seOverviewGrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const SE_PW = 'SDZ2026';
+let seCurrentStore = null;
+const SE_PRODUCTS = Object.entries(products).map(([id, p]) => ({ id, name: p.name || id }));
+
+function openSELogin() {
+    document.getElementById('seLoginOverlay').classList.add('open');
+    document.getElementById('sePasswordInput').value = '';
+    document.getElementById('seLoginError').textContent = '';
+    setTimeout(() => document.getElementById('sePasswordInput').focus(), 100);
+}
+function closeSELogin() { document.getElementById('seLoginOverlay').classList.remove('open'); }
+function seConfirmLogin() {
+    if (document.getElementById('sePasswordInput').value === SE_PW) {
+        closeSELogin(); openSEPanel();
+    } else {
+        document.getElementById('seLoginError').textContent = '비밀번호가 올바르지 않습니다.';
+    }
+}
+function openSEPanel() {
+    document.getElementById('seMgmtPanel').classList.add('open');
+    // 매장 드롭다운
+    const sel = document.getElementById('seStoreSelect');
+    if (sel.options.length <= 1) {
+        storeData.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id; opt.textContent = `${s.name} (${s.region})`;
+            sel.appendChild(opt);
+        });
+    }
+    // 제품 드롭다운
+    const pSel = document.getElementById('seAddProduct');
+    if (pSel.options.length <= 1) {
+        SE_PRODUCTS.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id; opt.textContent = p.name;
+            pSel.appendChild(opt);
+        });
+    }
+    document.getElementById('seAddDate').value = new Date().toISOString().slice(0, 10);
+}
+function closeSEPanel() { document.getElementById('seMgmtPanel').classList.remove('open'); }
+
+function seSwitchTab(tab) {
+    document.querySelectorAll('.se-tab').forEach((t, i) =>
+        t.classList.toggle('active', (i===0&&tab==='store')||(i===1&&tab==='overview')));
+    document.getElementById('seTabStore').style.display    = tab==='store' ? '' : 'none';
+    document.getElementById('seTabOverview').style.display = tab==='overview' ? '' : 'none';
+    if (tab === 'overview') seLoadOverview();
+}
+
+async function seLoadStore() {
+    const storeId = document.getElementById('seStoreSelect').value;
+    if (!storeId) {
+        document.getElementById('seStoreContent').style.display = 'none';
+        document.getElementById('seStorePlaceholder').style.display = '';
+        return;
+    }
+    seCurrentStore = storeId;
+    document.getElementById('seStoreContent').style.display = '';
+    document.getElementById('seStorePlaceholder').style.display = 'none';
+    await seRenderList(storeId);
+}
+
+async function seRenderList(storeId) {
+    const tbody = document.getElementById('seDisplayList');
+    tbody.innerHTML = '<tr><td colspan="5" style="color:#475569;padding:20px;">불러오는 중...</td></tr>';
+    try {
+        const { data, error } = await _sb.from('store_displays').select('*')
+            .eq('store_id', storeId).order('display_since', { ascending: false });
+        if (error) throw error;
+        if (!data || !data.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="color:#475569;padding:20px;">등록된 전시 제품이 없습니다.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = data.map(row => {
+            const prod = SE_PRODUCTS.find(p => p.id === row.product_id);
+            const dt = new Date(row.updated_at).toLocaleDateString('ko-KR');
+            return `<tr>
+                <td><span class="se-tag">${prod ? prod.name : row.product_id}</span></td>
+                <td>${row.display_since || '-'}</td>
+                <td style="color:#94a3b8;">${row.memo || '-'}</td>
+                <td style="color:#64748b;font-size:0.75rem;">${row.updated_by || '-'} · ${dt}</td>
+                <td><button class="se-del-btn" onclick="seDeleteDisplay('${row.id}','${storeId}')">삭제</button></td>
+            </tr>`;
+        }).join('');
+    } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:#f87171;">오류: ${e.message}</td></tr>`;
+    }
+}
+
+async function seAddDisplay() {
+    const storeId   = seCurrentStore;
+    const productId = document.getElementById('seAddProduct').value;
+    const date      = document.getElementById('seAddDate').value;
+    const memo      = document.getElementById('seAddMemo').value.trim();
+    const updater   = document.getElementById('seAddUpdater').value.trim();
+    const msg       = document.getElementById('seAddMsg');
+    if (!productId) { msg.className='se-msg err'; msg.textContent='제품을 선택하세요.'; return; }
+    if (!updater)   { msg.className='se-msg err'; msg.textContent='수정자 이름을 입력하세요.'; return; }
+    msg.textContent='저장 중...'; msg.className='se-msg';
+    try {
+        const { error } = await _sb.from('store_displays').upsert(
+            { store_id: storeId, product_id: productId, display_since: date, memo, updated_by: updater, updated_at: new Date().toISOString() },
+            { onConflict: 'store_id,product_id' }
+        );
+        if (error) throw error;
+        msg.className='se-msg ok'; msg.textContent='✓ 저장되었습니다.';
+        document.getElementById('seAddProduct').value = '';
+        document.getElementById('seAddMemo').value = '';
+        await seRenderList(storeId);
+        setTimeout(() => msg.textContent='', 3000);
+    } catch(e) { msg.className='se-msg err'; msg.textContent='오류: '+e.message; }
+}
+
+async function seDeleteDisplay(id, storeId) {
+    if (!confirm('전시 제품을 삭제하시겠습니까?')) return;
+    try {
+        const { error } = await _sb.from('store_displays').delete().eq('id', id);
+        if (error) throw error;
+        await seRenderList(storeId);
+    } catch(e) { alert('삭제 오류: '+e.message); }
+}
+
+async function seLoadOverview() {
+    const grid = document.getElementById('seOverviewGrid');
+    grid.innerHTML = '<div style="color:#475569;">불러오는 중...</div>';
+    try {
+        const { data, error } = await _sb.from('store_displays').select('*');
+        if (error) throw error;
+        const byStore = {};
+        (data||[]).forEach(r => { if (!byStore[r.store_id]) byStore[r.store_id]=[]; byStore[r.store_id].push(r); });
+        grid.innerHTML = storeData.map(s => {
+            const rows = byStore[s.id] || [];
+            const chips = rows.length
+                ? rows.map(r => { const p=SE_PRODUCTS.find(x=>x.id===r.product_id); return `<span class="se-ov-chip">${p?p.name:r.product_id}</span>`; }).join('')
+                : '<span class="se-ov-empty">전시 없음</span>';
+            return `<div class="se-ov-card"><h4>${s.name} <span style="font-size:0.7rem;color:#475569;">${s.region}</span></h4><div>${chips}</div></div>`;
+        }).join('');
+    } catch(e) { grid.innerHTML=`<div style="color:#f87171;">오류: ${e.message}</div>`; }
+}
+</script>
+
 </body>
 </html>
