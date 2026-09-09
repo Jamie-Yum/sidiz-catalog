@@ -13016,6 +13016,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal
                 <button class="se-save-btn" onclick="seLayoutClear()" style="background:#dc2626;">🗑 초기화</button>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;" id="seZonePalette"></div>
+            <div id="seZoneDesc" style="font-size:12px;color:#94a3b8;background:#1e293b;border-radius:6px;padding:8px 12px;min-height:32px;flex-shrink:0;"></div>
             <div style="flex:1; position:relative; background:#0a1628; border:1px solid #1e293b; border-radius:8px; overflow:hidden; min-height:400px;">
                 <canvas id="seLayoutCanvas" style="display:block; width:100%; height:100%;"></canvas>
             </div>
@@ -13158,14 +13159,14 @@ async function seDeleteDisplay(id, storeId) {
 
 // ─── Layout Editor ───────────────────────────────────────────────
 const ZONE_TYPES = [
-    { type:'focus',    label:'포커스존',        color:'#1d4ed8' },
-    { type:'checkin',  label:'체크인존',        color:'#065f46' },
-    { type:'fitting',  label:'피팅존',          color:'#7c3aed' },
-    { type:'panorama', label:'시팅 파노라마',   color:'#b45309' },
-    { type:'repair',   label:'이지리페어존',    color:'#9f1239' },
-    { type:'sitting',  label:'다양한 앉음존',   color:'#0e7490' },
-    { type:'community',label:'오픈커뮤니티룸',  color:'#4d7c0f' },
-    { type:'custom',   label:'커스텀',          color:'#475569' },
+    { type:'focus',    label:'포커스존',        color:'#1d4ed8', desc:'집중 업무나 1:1 상담에 최적화된 조용한 공간. 개인 작업용 의자와 소형 테이블로 구성.' },
+    { type:'checkin',  label:'체크인존',        color:'#065f46', desc:'매장 입구 안내 및 방문 고객 응대 공간. 첫인상을 결정하는 리셉션 역할.' },
+    { type:'fitting',  label:'피팅존',          color:'#7c3aed', desc:'고객이 직접 제품을 체험하고 몸에 맞게 조절해볼 수 있는 체험 공간.' },
+    { type:'panorama', label:'시팅 파노라마',   color:'#b45309', desc:'다양한 의자를 한눈에 볼 수 있도록 탁 트인 전시 공간. 라인업 전체를 파노라마처럼 배치.' },
+    { type:'repair',   label:'이지리페어존',    color:'#9f1239', desc:'간단한 부품 교체·수리·AS를 현장에서 바로 처리하는 서비스 공간.' },
+    { type:'sitting',  label:'다양한 앉음존',   color:'#0e7490', desc:'다종의 의자를 자유롭게 앉아보며 비교 체험할 수 있는 열린 공간.' },
+    { type:'community',label:'오픈커뮤니티룸',  color:'#4d7c0f', desc:'그룹 미팅, 세미나, 워크숍 등 다목적으로 활용 가능한 개방형 공용 공간.' },
+    { type:'custom',   label:'커스텀',          color:'#475569', desc:'위 유형에 해당하지 않는 자유 구역. 직접 용도를 정의해서 사용.' },
 ];
 let _layoutStore = null, _layoutZones = [], _layoutDirty = false;
 let _lDrag = null, _lMove = null, _lResize = null, _lSelected = null, _lActiveType = ZONE_TYPES[0];
@@ -13199,21 +13200,7 @@ function seLayoutInit() {
         });
     }
     // palette
-    const pal = document.getElementById('seZonePalette');
-    pal.innerHTML = '';
-    ZONE_TYPES.forEach(zt => {
-        const placed = _layoutZones.some(z => z.type === zt.type);
-        const active  = _lActiveType.type === zt.type && !placed;
-        const b = document.createElement('button');
-        b.textContent = placed ? '✓ ' + zt.label : zt.label;
-        b.disabled = placed;
-        b.style.cssText = `padding:4px 10px;border-radius:4px;border:2px solid ${placed ? '#334155' : zt.color};
-            background:${active ? zt.color : placed ? '#1e293b' : 'transparent'};
-            color:${active ? '#fff' : placed ? '#475569' : zt.color};
-            cursor:${placed ? 'default' : 'pointer'};font-size:12px;opacity:${placed ? 0.5 : 1};`;
-        if (!placed) b.onclick = () => { _lActiveType = zt; seLayoutInit(); };
-        pal.appendChild(b);
-    });
+    seLayoutRefreshPalette();
     seLayoutSetupCanvas();
 }
 
@@ -13315,8 +13302,8 @@ function seLayoutMouseUp(e) {
     _lDrag = null; seLayoutDraw();
 }
 function seLayoutRefreshPalette() {
-    // re-render palette without re-initializing canvas
     const pal = document.getElementById('seZonePalette');
+    const desc = document.getElementById('seZoneDesc');
     if (!pal) return;
     pal.innerHTML = '';
     ZONE_TYPES.forEach(zt => {
@@ -13325,13 +13312,22 @@ function seLayoutRefreshPalette() {
         const b = document.createElement('button');
         b.textContent = placed ? '✓ ' + zt.label : zt.label;
         b.disabled = placed;
+        b.title = zt.desc;
         b.style.cssText = `padding:4px 10px;border-radius:4px;border:2px solid ${placed ? '#334155' : zt.color};
             background:${active ? zt.color : placed ? '#1e293b' : 'transparent'};
             color:${active ? '#fff' : placed ? '#475569' : zt.color};
             cursor:${placed ? 'default' : 'pointer'};font-size:12px;opacity:${placed ? 0.5 : 1};`;
-        if (!placed) b.onclick = () => { _lActiveType = zt; seLayoutRefreshPalette(); };
+        if (!placed) {
+            b.onclick = () => { _lActiveType = zt; seLayoutRefreshPalette(); };
+            b.onmouseenter = () => { if (desc) desc.textContent = '● ' + zt.label + '  —  ' + zt.desc; };
+            b.onmouseleave = () => { if (desc) desc.textContent = _lActiveType ? '● ' + _lActiveType.label + '  —  ' + _lActiveType.desc : ''; };
+        } else {
+            b.onmouseenter = () => { if (desc) desc.textContent = '✓ ' + zt.label + '  —  ' + zt.desc; };
+            b.onmouseleave = () => { if (desc) desc.textContent = _lActiveType ? '● ' + _lActiveType.label + '  —  ' + _lActiveType.desc : ''; };
+        }
         pal.appendChild(b);
     });
+    if (desc) desc.textContent = _lActiveType ? '● ' + _lActiveType.label + '  —  ' + _lActiveType.desc : '';
 }
 function seLayoutRightClick(e) {
     const p = seLayoutPos(e);
