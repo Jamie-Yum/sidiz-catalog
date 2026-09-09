@@ -12862,52 +12862,51 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal
 <style>
 #seMgmtBtn {
     position: fixed; bottom: 24px; left: 24px; z-index: 900;
-    background: transparent; color: #5a5048;
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
-    padding: 7px 14px; font-size: 0.65rem; font-weight: 400;
-    cursor: pointer; letter-spacing: 0.14em; text-transform: uppercase;
+    background: transparent; color: #9ca3af;
+    border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 7px 14px; font-size: 0.65rem; font-weight: 500;
+    cursor: pointer; letter-spacing: 0.1em; text-transform: uppercase;
     opacity: 0.6; transition: opacity 0.2s, color 0.2s, border-color 0.2s;
 }
-#seMgmtBtn:hover { opacity: 1; color: #b89b6a; border-color: rgba(184,155,106,0.4); }
+#seMgmtBtn:hover { opacity: 1; color: #0D3BFF; border-color: #0D3BFF; }
 .se-overlay {
     display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(0,0,0,0.75); backdrop-filter: blur(6px);
+    background: rgba(13,59,255,0.08); backdrop-filter: blur(6px);
     align-items: center; justify-content: center;
 }
 .se-overlay.open { display: flex; }
 #seLoginBox {
-    background: #111; border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 4px; padding: 40px 36px; width: 320px;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.7); text-align: center;
+    background: #fff; border: 1px solid rgba(13,59,255,0.15);
+    border-radius: 16px; padding: 40px 36px; width: 320px;
+    box-shadow: 0 8px 40px rgba(13,59,255,0.12); text-align: center;
 }
 #seLoginBox h3 {
-    color: #f0ede8; font-size: 0.72rem; font-weight: 400;
-    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px;
+    color: #1a1a1a; font-size: 1rem; font-weight: 800;
+    margin-bottom: 6px;
 }
-#seLoginBox p  { color: #5a5048; font-size: 0.75rem; margin-bottom: 24px; letter-spacing: 0.06em; }
+#seLoginBox p  { color: #6b7280; font-size: 0.8rem; margin-bottom: 24px; }
 #seLoginBox input {
-    width: 100%; padding: 12px 16px; border-radius: 3px;
-    border: 1px solid rgba(255,255,255,0.12); background: #1a1a1a;
-    color: #f0ede8; font-size: 1rem; text-align: center;
+    width: 100%; padding: 12px 16px; border-radius: 10px;
+    border: 1.5px solid #e5e7eb; background: #f4f5fb;
+    color: #1a1a1a; font-size: 1rem; text-align: center;
     letter-spacing: 0.2em; margin-bottom: 14px; box-sizing: border-box;
     transition: border-color 0.2s;
 }
-#seLoginBox input:focus { outline: none; border-color: #b89b6a; }
+#seLoginBox input:focus { outline: none; border-color: #0D3BFF; }
 #seLoginBox .se-btn-row { display: flex; gap: 8px; }
-#seLoginBox button { flex: 1; padding: 11px; border-radius: 3px; border: none; font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
-.se-btn-confirm { background: #b89b6a; color: #0e0e0e; }
-/* ── SE Management: SIDIZ The Progressive 톤 ── */
-/* 컬러 토큰: 차콜 블랙 + 크림 화이트 + 골드 포인트 */
+#seLoginBox button { flex: 1; padding: 11px; border-radius: 10px; border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+.se-btn-confirm { background: #0D3BFF; color: #fff; }
+/* ── SE Management: 카탈로그 동일 톤 ── */
 :root {
-    --se-bg:      #0e0e0e;
-    --se-surface: #1a1a1a;
-    --se-raised:  #242424;
-    --se-border:  rgba(255,255,255,0.08);
-    --se-text:    #f0ede8;
-    --se-muted:   #7a7068;
-    --se-gold:    #b89b6a;
-    --se-gold-lt: #d4b87e;
-    --se-danger:  #c0392b;
+    --se-bg:      #f4f5fb;
+    --se-surface: #ffffff;
+    --se-raised:  #eceef8;
+    --se-border:  rgba(13,59,255,0.1);
+    --se-text:    #1a1a1a;
+    --se-muted:   #6b7280;
+    --se-gold:    #0D3BFF;
+    --se-gold-lt: #4d6fff;
+    --se-danger:  #dc2626;
 }
 .se-btn-cancel  { background: var(--se-raised); color: var(--se-muted); border: 1px solid var(--se-border)!important; }
 #seLoginError { color: #e07060; font-size: 0.78rem; margin-top: 8px; min-height: 18px; }
@@ -13020,7 +13019,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal
         <h2>📊 SE Management — 전시 관리</h2>
         <button class="se-close" onclick="closeSEPanel()">✕ 닫기</button>
     </div>
-    <div style="padding: 0 28px; border-bottom: 1px solid rgba(255,255,255,0.08); background:#0e0e0e; flex-shrink:0;">
+    <div style="padding: 0 28px; border-bottom: 1px solid rgba(13,59,255,0.1); background:#fff; flex-shrink:0;">
         <div class="se-tabs">
             <button class="se-tab active" onclick="seSwitchTab('store')">내 매장 관리</button>
             <button class="se-tab" onclick="seSwitchTab('layout')">레이아웃 편집</button>
@@ -13079,7 +13078,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeQrModal
             <div id="seZoneDesc" style="font-size:12px;color:#7a7068;background:#1a1a1a;border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:8px 14px;min-height:32px;flex-shrink:0;letter-spacing:0.04em;"></div>
             <!-- 캔버스 + 사이드 패널 -->
             <div style="flex:1; display:flex; gap:12px; min-height:400px;">
-                <div style="flex:1; position:relative; background:#080808; border:1px solid rgba(255,255,255,0.07); border-radius:4px; overflow:hidden;">
+                <div style="flex:1; position:relative; background:#f0f2ff; border:1px solid rgba(13,59,255,0.12); border-radius:4px; overflow:hidden;">
                     <canvas id="seLayoutCanvas" style="display:block; width:100%; height:100%;"></canvas>
                 </div>
                 <!-- 전시품 할당 패널 -->
@@ -13430,7 +13429,7 @@ function seLayoutDraw() {
     const W = _lCanvas.width / _lDpr, H = _lCanvas.height / _lDpr;
     _lCtx.clearRect(0, 0, W, H);
     // grid
-    _lCtx.strokeStyle = 'rgba(255,255,255,0.04)'; _lCtx.lineWidth = 0.5;
+    _lCtx.strokeStyle = 'rgba(13,59,255,0.07)'; _lCtx.lineWidth = 0.5;
     for (let x=0; x<W; x+=40) { _lCtx.beginPath(); _lCtx.moveTo(x,0); _lCtx.lineTo(x,H); _lCtx.stroke(); }
     for (let y=0; y<H; y+=40) { _lCtx.beginPath(); _lCtx.moveTo(0,y); _lCtx.lineTo(W,y); _lCtx.stroke(); }
     // zones
@@ -13443,7 +13442,7 @@ function seLayoutDraw() {
         _lCtx.lineWidth = z === _lSelected ? 2.5 : 1.5;
         _lCtx.strokeRect(z.x, z.y, z.w, z.h);
         // 구역명
-        _lCtx.fillStyle = 'rgba(255,255,255,0.9)';
+        _lCtx.fillStyle = '#fff';
         _lCtx.font = 'bold 11px sans-serif';
         _lCtx.textAlign = 'center'; _lCtx.textBaseline = 'top';
         _lCtx.fillText(z.label, z.x + z.w/2, z.y + 8);
@@ -13451,7 +13450,7 @@ function seLayoutDraw() {
         const zDisplays = seZoneDisplays(z.id);
         if (zDisplays.length > 0) {
             _lCtx.font = '10px sans-serif';
-            _lCtx.fillStyle = 'rgba(255,255,255,0.65)';
+            _lCtx.fillStyle = 'rgba(255,255,255,0.85)';
             _lCtx.textBaseline = 'top';
             const lineH = 14, startY = z.y + 26;
             const maxLines = Math.floor((z.h - 34) / lineH);
@@ -13460,12 +13459,12 @@ function seLayoutDraw() {
                 _lCtx.fillText('· ' + name, z.x + z.w/2, startY + i * lineH);
             });
             if (zDisplays.length > maxLines && maxLines > 0) {
-                _lCtx.fillStyle = 'rgba(255,255,255,0.35)';
+                _lCtx.fillStyle = 'rgba(255,255,255,0.5)';
                 _lCtx.fillText(`+${zDisplays.length - maxLines}개 더`, z.x + z.w/2, startY + maxLines * lineH);
             }
         } else {
             _lCtx.font = '10px sans-serif';
-            _lCtx.fillStyle = 'rgba(255,255,255,0.2)';
+            _lCtx.fillStyle = 'rgba(255,255,255,0.45)';
             _lCtx.textBaseline = 'middle';
             _lCtx.fillText('전시품 없음', z.x + z.w/2, z.y + z.h/2);
         }
