@@ -13168,8 +13168,26 @@ const ZONE_TYPES = [
     { type:'custom',   label:'커스텀',          color:'#475569' },
 ];
 let _layoutStore = null, _layoutZones = [], _layoutDirty = false;
-let _lDrag = null, _lMove = null, _lSelected = null, _lActiveType = ZONE_TYPES[0];
+let _lDrag = null, _lMove = null, _lResize = null, _lSelected = null, _lActiveType = ZONE_TYPES[0];
 let _lCanvas = null, _lCtx = null, _lDpr = 1;
+const _lHR = 8; // handle radius
+
+function _lGetHandle(p, z) {
+    // returns handle id: 'nw','n','ne','e','se','s','sw','w' or null
+    const handles = [
+        { id:'nw', x:z.x,        y:z.y        },
+        { id:'n',  x:z.x+z.w/2,  y:z.y        },
+        { id:'ne', x:z.x+z.w,    y:z.y        },
+        { id:'e',  x:z.x+z.w,    y:z.y+z.h/2  },
+        { id:'se', x:z.x+z.w,    y:z.y+z.h    },
+        { id:'s',  x:z.x+z.w/2,  y:z.y+z.h    },
+        { id:'sw', x:z.x,        y:z.y+z.h    },
+        { id:'w',  x:z.x,        y:z.y+z.h/2  },
+    ];
+    return handles.find(h => Math.abs(p.x-h.x)<=_lHR && Math.abs(p.y-h.y)<=_lHR) || null;
+}
+const _lHandleCursor = { nw:'nw-resize', n:'n-resize', ne:'ne-resize', e:'e-resize',
+                          se:'se-resize', s:'s-resize', sw:'sw-resize', w:'w-resize' };
 
 function seLayoutInit() {
     const sel = document.getElementById('seLayoutStoreSelect');
@@ -13219,16 +13237,41 @@ function seLayoutPos(e) {
 function seLayoutMouseDown(e) {
     if (e.button !== 0) return;
     const p = seLayoutPos(e);
+    // check resize handle on selected zone first
+    if (_lSelected) {
+        const h = _lGetHandle(p, _lSelected);
+        if (h) {
+            _lResize = { zone: _lSelected, handle: h.id,
+                ox: _lSelected.x, oy: _lSelected.y, ow: _lSelected.w, oh: _lSelected.h,
+                px: p.x, py: p.y };
+            return;
+        }
+    }
     const hit = [..._layoutZones].reverse().find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
     if (hit) {
         _lSelected = hit;
         _lMove = { zone: hit, ox: p.x - hit.x, oy: p.y - hit.y };
         seLayoutDraw(); return;
     }
+    _lSelected = null;
     _lDrag = { sx: p.x, sy: p.y, ex: p.x, ey: p.y };
+    seLayoutDraw();
 }
 function seLayoutMouseMove(e) {
     const p = seLayoutPos(e);
+    if (_lResize) {
+        const r = _lResize, dx = p.x - r.px, dy = p.y - r.py;
+        const z = r.zone;
+        const h = r.handle;
+        let nx = r.ox, ny = r.oy, nw = r.ow, nh = r.oh;
+        if (h.includes('e')) nw = Math.max(20, r.ow + dx);
+        if (h.includes('s')) nh = Math.max(20, r.oh + dy);
+        if (h.includes('w')) { nx = r.ox + dx; nw = Math.max(20, r.ow - dx); if(nw===20) nx=r.ox+r.ow-20; }
+        if (h.includes('n')) { ny = r.oy + dy; nh = Math.max(20, r.oh - dy); if(nh===20) ny=r.oy+r.oh-20; }
+        z.x=nx; z.y=ny; z.w=nw; z.h=nh;
+        _lCanvas.style.cursor = _lHandleCursor[h];
+        seLayoutDraw(); return;
+    }
     if (_lMove) {
         _lMove.zone.x = p.x - _lMove.ox;
         _lMove.zone.y = p.y - _lMove.oy;
@@ -13239,10 +13282,16 @@ function seLayoutMouseMove(e) {
         _lDrag.ex = p.x; _lDrag.ey = p.y;
         seLayoutDraw(); return;
     }
+    // cursor hint
+    if (_lSelected) {
+        const h = _lGetHandle(p, _lSelected);
+        if (h) { _lCanvas.style.cursor = _lHandleCursor[h.id]; return; }
+    }
     const hover = [..._layoutZones].reverse().find(z => p.x>=z.x&&p.x<=z.x+z.w&&p.y>=z.y&&p.y<=z.y+z.h);
     _lCanvas.style.cursor = hover ? 'grab' : 'crosshair';
 }
 function seLayoutMouseUp(e) {
+    if (_lResize) { _layoutDirty = true; _lResize = null; seLayoutDraw(); return; }
     if (_lMove) {
         _layoutDirty = true;
         _lMove = null;
@@ -13253,9 +13302,9 @@ function seLayoutMouseUp(e) {
     const x = Math.min(_lDrag.sx, _lDrag.ex), y = Math.min(_lDrag.sy, _lDrag.ey);
     const w = Math.abs(_lDrag.ex - _lDrag.sx), h = Math.abs(_lDrag.ey - _lDrag.sy);
     if (w > 20 && h > 20) {
-        _layoutZones.push({ id: crypto.randomUUID(), type: _lActiveType.type,
-            label: _lActiveType.label, color: _lActiveType.color, x, y, w, h });
-        _layoutDirty = true;
+        const z = { id: crypto.randomUUID(), type: _lActiveType.type,
+            label: _lActiveType.label, color: _lActiveType.color, x, y, w, h };
+        _layoutZones.push(z); _lSelected = z; _layoutDirty = true;
     }
     _lDrag = null; seLayoutDraw();
 }
@@ -13286,6 +13335,22 @@ function seLayoutDraw() {
         _lCtx.font = 'bold 12px sans-serif';
         _lCtx.textAlign = 'center'; _lCtx.textBaseline = 'middle';
         _lCtx.fillText(z.label, z.x + z.w/2, z.y + z.h/2);
+        // resize handles for selected zone
+        if (z === _lSelected) {
+            const hpts = [
+                {x:z.x,       y:z.y      }, {x:z.x+z.w/2, y:z.y      }, {x:z.x+z.w,   y:z.y      },
+                {x:z.x+z.w,   y:z.y+z.h/2}, {x:z.x+z.w,   y:z.y+z.h  }, {x:z.x+z.w/2, y:z.y+z.h  },
+                {x:z.x,       y:z.y+z.h  }, {x:z.x,       y:z.y+z.h/2},
+            ];
+            hpts.forEach(h => {
+                _lCtx.fillStyle = '#fff';
+                _lCtx.strokeStyle = z.color;
+                _lCtx.lineWidth = 1.5;
+                _lCtx.beginPath();
+                _lCtx.arc(h.x, h.y, _lHR/2+1, 0, Math.PI*2);
+                _lCtx.fill(); _lCtx.stroke();
+            });
+        }
     });
     // drag preview
     if (_lDrag) {
